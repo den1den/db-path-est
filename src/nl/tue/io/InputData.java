@@ -1,26 +1,24 @@
 package nl.tue.io;
 
-import java.util.LinkedList;
-
 /**
  * De unprocessed input data set
  *
  * Created by dennis on 17-5-16.
  */
 public class InputData {
-    public int[] src;
-    public int[] label;
-    public int[] dest;
+    InputTuple[] tuples;
 
-    /**
-     * The number of labels in the set
-     */
-    public int LABELS;
-
-    public int size(){
-        return this.src.length;
+    InputData(InputTuple[] tuples) {
+        this.tuples = tuples;
     }
 
-    public class DirectedGraph{
+    public int size(){
+        return this.tuples.length;
+    }
+
+    class InputTuple{
+        int src;
+        int label;
+        int dest;
     }
 }
