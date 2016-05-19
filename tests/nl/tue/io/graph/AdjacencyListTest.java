@@ -48,4 +48,41 @@ public class AdjacencyListTest {
         Assert.assertTrue(list.getNodes().containsKey(2));
     }
 
+    @Test
+    public void testOneLabelTwoNodesEdgeIsRead() throws  IOException {
+        PrintWriter out = new PrintWriter(file);
+
+        out.println("1 0 2");
+        out.flush();
+        out.close();
+
+        Parser p = new Parser();
+
+        p.parse(file);
+
+        AdjacencyList list = new AdjacencyList(p);
+
+        Assert.assertTrue(list.getNodes().get(1).get(0).contains(2));
+        Assert.assertTrue(list.getNodes().get(1).get(0).size() == 1);
+    }
+
+    @Test
+    public void testTwoOutgoingOneLabel() throws IOException {
+        PrintWriter out = new PrintWriter(file);
+
+        out.println("1 0 2");
+        out.println("1 0 3");
+        out.flush();
+        out.close();
+
+        Parser p = new Parser();
+
+        p.parse(file);
+
+        AdjacencyList list = new AdjacencyList(p);
+
+        Assert.assertTrue(list.getNodes().get(1).get(0).contains(2));
+        Assert.assertTrue(list.getNodes().get(1).get(0).contains(3));
+        Assert.assertTrue(list.getNodes().get(1).get(0).size() == 2);
+    }
 }
