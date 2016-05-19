@@ -1,22 +1,14 @@
 package nl.tue;
 
 import junit.framework.TestCase;
-import org.junit.Test;
-
 import java.io.*;
-import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Stream;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by dennis on 19-5-16.
  */
 public class IOTest extends TestCase {
     private static File testFolder = new File(System.getenv("testFolder"));
-
     public void testSimple() throws Exception {
         String testFile = "biblio.txt";
         long maxLength = 5;
@@ -60,25 +52,30 @@ public class IOTest extends TestCase {
             }
 
             int doRead() throws IOException {
-                if (current == null) {
-                    // first time
-                    current = nextLine();
-                }
-                int read = current.read();
-                if (read == -1) {
-                    // string ends
-                    current = nextLine();
-                    read = current.read();
-                }
-                return read;
-            }
+                synchronized (current) {
+                    if (current == null) {
+                        // first time
+                        current = nextLine();
+                    }
 
+                    int read = current.read();
+                    if (read == -1) {
+                        // string ends
+                        current = nextLine();
+                        read = current.read();
+                    }
+                    return read;
+                }
+            }
             @Override
             public int read() throws IOException {
                 if (input >= inputsS.length) {
                     // End of stream
-                    timings.add(System.currentTimeMillis());
-                    timings.notify();
+
+                    synchronized (timings) {
+                        timings.add(System.currentTimeMillis());
+                        timings.notify();
+                    }
                 }
                 return doRead();
             }
