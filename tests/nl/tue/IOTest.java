@@ -52,20 +52,21 @@ public class IOTest extends TestCase {
             }
 
             int doRead() throws IOException {
-                synchronized (current) {
+
                     if (current == null) {
                         // first time
                         current = nextLine();
                     }
-
-                    int read = current.read();
-                    if (read == -1) {
-                        // string ends
-                        current = nextLine();
-                        read = current.read();
+                    synchronized (current) {
+                        int read = current.read();
+                        if (read == -1) {
+                            // string ends
+                            current = nextLine();
+                            read = current.read();
+                        }
+                        return read;
                     }
-                    return read;
-                }
+
             }
             @Override
             public int read() throws IOException {
