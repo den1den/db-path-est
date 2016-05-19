@@ -1,6 +1,9 @@
 package nl.tue.io;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -17,12 +20,16 @@ public class Parser {
     public long highestDest = -1;
     public LinkedList<long[]> tuples = new LinkedList<>();
 
-    public void parse(File file) {
-        try {
-            parse(new FileReader(file));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public void parse(String pathname) throws IOException {
+        File f = new File(pathname);
+        if (!f.isFile()) {
+            throw new FileNotFoundException(f.getAbsolutePath());
         }
+        parse(f);
+    }
+
+    public void parse(File file) throws IOException {
+        parse(new FileReader(file));
     }
 
     public void parse(Readable source) throws IOException {
