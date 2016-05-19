@@ -1,22 +1,14 @@
 package nl.tue;
 
 import junit.framework.TestCase;
-import org.junit.Test;
-
 import java.io.*;
-import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Stream;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by dennis on 19-5-16.
  */
 public class IOTest extends TestCase {
     private static File testFolder = new File(System.getenv("testFolder"));
-
     public void testSimple() throws Exception {
         String testFile = "biblio.txt";
         long maxLength = 5;
@@ -55,30 +47,52 @@ public class IOTest extends TestCase {
             StringReader current = null;
 
             private StringReader nextLine() {
-                timings.add(System.currentTimeMillis());
-                return new StringReader(inputsS[input++] + System.lineSeparator());
+
+                    timings.add(System.currentTimeMillis());
+                    if (input < inputsS.length-1)
+                    {
+                        input++;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                    return new StringReader(inputsS[input] + System.lineSeparator());
+
             }
 
             int doRead() throws IOException {
-                if (current == null) {
-                    // first time
-                    current = nextLine();
-                }
-                int read = current.read();
-                if (read == -1) {
-                    // string ends
-                    current = nextLine();
-                    read = current.read();
-                }
-                return read;
-            }
 
+                    if (current == null) {
+                        // first time
+
+                            current = nextLine();
+
+                        if (current == null)
+                        {
+                            return -1;
+                        }
+                    }
+
+                        int read = current.read();
+                        if (read == -1) {
+                            // string ends
+                            current = nextLine();
+                            read = current.read();
+                        }
+                        return read;
+
+
+            }
             @Override
             public int read() throws IOException {
                 if (input >= inputsS.length) {
                     // End of stream
-                    timings.add(System.currentTimeMillis());
-                    timings.notify();
+
+                    synchronized (timings) {
+                        timings.add(System.currentTimeMillis());
+                        timings.notify();
+                    }
                 }
                 return doRead();
             }
@@ -95,11 +109,17 @@ public class IOTest extends TestCase {
         System.out.println(String.format("Time to construct OG: %sms", t1 - t0));
 
         synchronized (timings) {
-            timings.wait();
+            //timings.wait();
             long t_0 = t1;
             for (int i = 0; i < timings.size(); i++) {
                 long t_1 = timings.get(i);
-                System.out.println(String.format("Query: %sms for %s", t_1 - t_0, inputsS[i]));
+                if (i == 0)
+                {
+                    System.out.println(String.format("Query: %sms for %s", System.currentTimeMillis() - t_1 , inputsS[i]));
+                }
+                else {
+                    System.out.println(String.format("Query: %sms for %s", t_1 - t_0, inputsS[i]));
+                }
                 t_0 = t_1;
             }
         }
