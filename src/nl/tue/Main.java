@@ -1,18 +1,45 @@
 package nl.tue;
 
+import nl.tue.algorithm.Algorithm;
 import nl.tue.io.Parser;
 import nl.tue.io.datatypes.DGHashMap;
 import nl.tue.io.datatypes.OrderedEdgeArray;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
+        String file = args[0];
+        long maximalPathLength = Long.parseLong(args[1]);
+        long budget = Long.parseLong(args[2]);
+
+        // Create OG
+
+        Algorithm algorithm = null;
+
+        // Write actual bytes used to System.out
+
+        Scanner s = new Scanner(System.in);
+        while (s.hasNextLine()) {
+            String nextLine = s.nextLine();
+            Scanner numberScanner = new Scanner(nextLine);
+            LinkedList<Long> input = new LinkedList<>();
+            while (numberScanner.hasNextLong()) {
+                input.add(s.nextLong());
+            }
+            //Execute
+            long result = algorithm.query(input);
+            System.out.println(result);
+        }
+    }
+
+    public static void test(String[] args) throws IOException {
         //Try to read all files from first argument
         String baseFolder = args[0];
         for (Parser p : readAll(baseFolder)){
@@ -44,5 +71,11 @@ public class Main {
             return p;
         }).iterator();
         return () -> it;
+    }
+
+    public static class Tester {
+        public static void main(String[] args) throws IOException {
+
+        }
     }
 }
