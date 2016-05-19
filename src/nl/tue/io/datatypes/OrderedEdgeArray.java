@@ -2,98 +2,156 @@ package nl.tue.io.datatypes;
 
 import nl.tue.io.Parser;
 
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * An ordered list of all edges with all duplicates removed
  * Created by Dennis on 17-5-2016.
  */
-public interface OrderedEdgeArray {
+public class OrderedEdgeArray implements DirectedGraph {
 
-    int getSrc(int index);
-    int getLabel(int index);
-    int getDst(int index);
-    int size();
+    public static final List<Integer> NO = Collections.emptyList();
+    public static final Set<Long> EMPTY = Collections.emptySet();
 
-    class Integers implements OrderedEdgeArray{
-        public final int[] srcs;
-        public final int[] labels;
-        public final int[] dests;
+    final ArrayList<Long> srcs;
+    final ArrayList<Long> labels;
+    final ArrayList<Long> dests;
 
-        public Integers(Parser p) {
-            this.srcs = new int[p.tuples.size()];
-            this.labels = new int[p.tuples.size()];
-            this.dests = new int[p.tuples.size()];
+    public static OrderedEdgeArray construct(Parser p) {
+        ArrayList<long[]> ordered = p.getOrderedUnique(Parser.CompLabelSourceDestination);
+        int size = ordered.size();
 
-            ArrayList<int[]> ordered = p.getOrdered();
-
-            int i = 0;
-            for (int[] tuple : ordered){
-                srcs[i] = tuple[0];
-                labels[i] = tuple[1];
-                dests[i] = tuple[2];
-            }
+        ArrayList<Long> srcs = new ArrayList<>(size);
+        ArrayList<Long> labels = new ArrayList<>(size);
+        ArrayList<Long> dests = new ArrayList<>(size);
+        for (long[] tuple : ordered) {
+            srcs.add(tuple[0]);
+            labels.add(tuple[1]);
+            dests.add(tuple[2]);
         }
-
-        @Override
-        public int getSrc(int index) {
-            return srcs[index];
-        }
-
-        @Override
-        public int getLabel(int index) {
-            return labels[index];
-        }
-
-        @Override
-        public int getDst(int index) {
-            return dests[index];
-        }
-
-        @Override
-        public int size() {
-            return srcs.length;
-        }
+        return new OrderedEdgeArray(srcs, labels, dests);
     }
 
-    class LabelBytes implements OrderedEdgeArray{
-        public final int[] srcs;
-        public final byte[] labels;
-        public final int[] dests;
+    private OrderedEdgeArray(ArrayList<Long> srcs, ArrayList<Long> labels, ArrayList<Long> dests) {
+        this.srcs = srcs;
+        this.labels = labels;
+        this.dests = dests;
+    }
 
-        public LabelBytes(Parser p) {
-            this.srcs = new int[p.tuples.size()];
-            this.labels = new byte[p.tuples.size()];
-            this.dests = new int[p.tuples.size()];
+    public long getSrc(int index) {
+        return srcs.get(index);
+    }
 
-            ArrayList<int[]> ordered = p.getOrdered();
+    public long getLabel(int index) {
+        return labels.get(index);
+    }
 
-            int i = 0;
-            for (int[] tuple : ordered){
-                srcs[i] = tuple[0];
-                labels[i] = (byte) tuple[1];
-                dests[i] = tuple[2];
+    public long getDst(int index) {
+        return dests.get(index);
+    }
+
+    int lowestLabelIndex(long label) {
+        int b = Collections.binarySearch(labels, label);
+        long labelB = labels.get(b);
+        if (labelB != label) {
+            return -1;
+        }
+        while (--b > 0) {
+            labelB = labels.get(b);
+            if (labelB != label) {
+                break;
             }
         }
+        return b + 1;
+    }
 
-        @Override
-        public int getSrc(int index) {
-            return srcs[index];
+    @Override
+    public Set<Long> getAll(long label) {
+        int index = lowestLabelIndex(label);
+        if (index == -1) {
+            return EMPTY;
         }
+        return getDestinations(filterLinear(index, label));
+    }
 
-        @Override
-        public int getLabel(int index) {
-            return labels[index];
+    Set<Long> getDestinations(List<Integer> incides) {
+        Set<Long> result = new HashSet<>();
+        for (Integer index : incides) {
+            result.add(dests.get(index));
         }
+        return result;
+    }
 
-        @Override
-        public int getDst(int index) {
-            return dests[index];
-        }
+    List<Integer> filterLinear(int startIndex, long whileLabel) {
+        List<Integer> indices = new ArrayList<>();
+        int index = startIndex;
+        long l;
+        do {
+            indices.add(index);
 
-        @Override
-        public int size() {
-            return srcs.length;
+            index++;
+            if (index >= getSize()) {
+                break;
+            }
+
+            l = labels.get(index);
+        } while (l == whileLabel);
+        return indices;
+    }
+
+    List<Integer> filterLinear(int startIndex, long whileLabel, long source) {
+        int index = startIndex;
+        long l;
+        long src;
+        // First look for destination
+        do {
+            src = srcs.get(index);
+            if (src == source) {
+                break;
+            }
+
+            index++;
+            if (index >= getSize()) {
+                return NO;
+            }
+            if (labels.get(index) != whileLabel) {
+                return NO;
+            }
+        } while (true);
+        // Found it
+        List<Integer> indices = new ArrayList<>();
+        indices.add(index);
+        do {
+            index++;
+            if (index >= getSize()) {
+                break;
+            }
+            if (labels.get(index) != whileLabel) {
+                break;
+            }
+            src = srcs.get(index);
+            if (src != source) {
+                break;
+            }
+        } while (true);
+        return indices;
+    }
+
+    @Override
+    public Set<Long> get(long label, Set<Long> sources) {
+        // TODO: Might be a good idea to also accept sorted `sources`
+        int index = lowestLabelIndex(label);
+        if (index == -1) {
+            return EMPTY;
         }
+        List<Integer> indices = new ArrayList<>();
+        for (long src : sources) {
+            indices.addAll(filterLinear(index, label, src));
+        }
+        return getDestinations(indices);
+    }
+
+    public long getSize() {
+        return srcs.size();
     }
 }

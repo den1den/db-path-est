@@ -3,138 +3,80 @@ package nl.tue.io.datatypes;
 import nl.tue.io.Parser;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Directed Graph
  * Created by Dennis on 17-5-2016.
  */
-public interface DGHashMap {
-    /**
-     * Get the destinations for a given source and label
-     * @param src
-     * @param label
-     * @return Set of destinations, or the empty set if the (src, label) is not present
-     */
-    Set<Integer> getDestinations(int src, int label);
+public abstract class DGHashMap implements DirectedGraph {
 
     /**
      * Directed Graph with an array of hashmaps, with the label as index
      */
-    class LabelArray implements DGHashMap{
-        HashMap<Integer, Set<Integer>>[] m;
+    public static class LabelArray extends DGHashMap {
+        ArrayList<HashMap<Long, Set<Long>>> m;
 
         public LabelArray(Parser p) {
-            m = new HashMap[p.highestLabel + 1];
-            for (int i = 0; i < m.length; i++) {
-                m[i] = new HashMap<>();
+            if (!p.labelFitsInArrayLength()) {
+                throw new OutOfMemoryError("Label does not fit in array");
             }
-            for (int[] tuple : p.tuples){
-                int src = tuple[0];
-                int label = tuple[1];
-                int dst = tuple[2];
-                Set<Integer> dsts = m[label].get(src);
+            m = new ArrayList<>((int) (p.highestLabel - 1));
+            for (int i = 0; i < p.highestLabel - 1; i++) {
+                m.set(i, new HashMap<>());
+            }
+            for (long[] tuple : p.tuples) {
+                long src = tuple[0];
+                int label = (int) tuple[1];
+                long dst = tuple[2];
+                HashMap<Long, Set<Long>> labelHM = m.get(label);
+                Set<Long> dsts = labelHM.get(src);
                 if(dsts == null){
                     dsts = new HashSet<>();
-                    m[label].put(src, dsts);
+                    labelHM.put(src, dsts);
                 }
                 dsts.add(dst);
             }
         }
 
-        @Override
-        public Set<Integer> getDestinations(int src, int label) {
-            HashMap<Integer, Set<Integer>> dg = m[label];
-            return dg.getOrDefault(src, Collections.EMPTY_SET);
-        }
-    }
-
-    @Deprecated
-    class LabelHashMap implements DGHashMap{
-        HashMap<Integer, HashMap<Integer, Set<Integer>>> m;
-
-        public LabelHashMap(Parser p) {
-            m = new HashMap<>();
-            for (int[] tuple : p.tuples){
-                int src = tuple[0];
-                int label = tuple[1];
-                int dst = tuple[2];
-
-                HashMap<Integer, Set<Integer>> stod = m.get(label);
-                if(stod == null){
-                    stod = new HashMap<>();
-                    m.put(label, stod);
-                }
-
-                Set<Integer> dsts = stod.get(src);
-                if(dsts == null){
-                    dsts = new HashSet<>();
-                    stod.put(src, dsts);
-                }
-                dsts.add(dst);
-            }
+        public Set<Long> getAll(int label) {
+            HashMap<Long, Set<Long>> labelHM = m.get(label);
+            return labelHM.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
         }
 
         @Override
-        public Set<Integer> getDestinations(int src, int label) {
-            HashMap<Integer, Set<Integer>> stod = m.get(label);
-            if(stod == null){
-                return Collections.EMPTY_SET;
-            }
-            return stod.getOrDefault(src, Collections.EMPTY_SET);
+        public Set<Long> getAll(long label) {
+            return getAll((int) label);
         }
-    }
 
-    @Deprecated
-    class SrcHashMap implements DGHashMap{
-        HashMap<Integer, HashMap<Integer, Set<Integer>>> m;
-
-        public SrcHashMap(Parser p) {
-            m = new HashMap<>();
-            for (int[] tuple : p.tuples){
-                int src = tuple[0];
-                int label = tuple[1];
-                int dst = tuple[2];
-
-                HashMap<Integer, Set<Integer>> stod = m.get(label);
-                if(stod == null){
-                    stod = new HashMap<>();
-                    m.put(label, stod);
-                }
-
-                Set<Integer> dsts = stod.get(src);
-                if(dsts == null){
-                    dsts = new HashSet<>();
-                    stod.put(src, dsts);
-                }
-                dsts.add(dst);
-            }
+        public Set<Long> get(int label, Set<Long> sources) {
+            final HashMap<Long, Set<Long>> labelHM = m.get(label);
+            return sources.stream()
+                    .map(labelHM::get).flatMap(Collection::stream)
+                    .collect(Collectors.toSet());
         }
 
         @Override
-        public Set<Integer> getDestinations(int src, int label) {
-            HashMap<Integer, Set<Integer>> stod = m.get(label);
-            if(stod == null){
-                return Collections.EMPTY_SET;
-            }
-            return stod.getOrDefault(src, Collections.EMPTY_SET);
+        public Set<Long> get(long label, Set<Long> sources) {
+            return get((int) label, sources);
         }
     }
 
     /**
      * DirectedGraph that uses an double index as keys
      */
-    class DoubleIndexedHashMap implements DGHashMap{
-        HashMap<Index, Set<Integer>> m;
+    public static class DoubleIndexedHashMap extends DGHashMap {
+        HashMap<IndexLong, Set<Long>> m;
 
         public DoubleIndexedHashMap(Parser p) {
             this.m = new HashMap<>();
-            for (int[] tuple : p.tuples) {
-                int src = tuple[0];
-                int label = tuple[1];
-                Index i = new Index(src, label);
-                int dst = tuple[2];
+            for (long[] tuple : p.tuples) {
+                long src = tuple[0];
+                long label = tuple[1];
+                IndexLong i = new IndexLong(src, label);
+                long dst = tuple[2];
 
-                Set<Integer> dsts = m.get(i);
+                Set<Long> dsts = m.get(i);
                 if(dsts == null){
                     dsts = new HashSet<>();
                     m.put(i, dsts);
@@ -144,34 +86,50 @@ public interface DGHashMap {
         }
 
         @Override
-        public Set<Integer> getDestinations(int src, int label) {
-            return m.getOrDefault(new Index(src, label), Collections.EMPTY_SET);
+        public Set<Long> getAll(long label) {
+            Set<Long> set = new HashSet<>();
+            for (Map.Entry<IndexLong, Set<Long>> entry : this.m.entrySet()) {
+                if (entry.getKey().label == label) {
+                    set.addAll(entry.getValue());
+                }
+            }
+            return set;
         }
 
-        private static class Index{
-            int a, b;
+        @Override
+        public Set<Long> get(long label, Set<Long> sources) {
+            Set<Long> set = new HashSet<>();
+            for (Long s : set) {
+                IndexLong i = new IndexLong(s, label);
+                set.addAll(m.get(i));
+            }
+            return set;
+        }
 
-            private Index(int a, int b) {
-                this.a = a;
-                this.b = b;
+        private static class IndexLong {
+            long src, label;
+
+            public IndexLong(long src, long label) {
+                this.src = src;
+                this.label = label;
             }
 
             @Override
             public boolean equals(Object o) {
                 if (this == o) return true;
-                if (o == null || getClass() != o.getClass()) return false;
+                if (!(o instanceof IndexLong)) return false;
 
-                Index index = (Index) o;
+                IndexLong indexLong = (IndexLong) o;
 
-                if (a != index.a) return false;
-                return b == index.b;
+                if (src != indexLong.src) return false;
+                return label == indexLong.label;
 
             }
 
             @Override
             public int hashCode() {
-                int result = a;
-                result = 31 * result + b;
+                int result = (int) (src ^ (src >>> 32));
+                result = 31 * result + (int) (label ^ (label >>> 32));
                 return result;
             }
         }

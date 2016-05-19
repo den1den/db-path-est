@@ -9,13 +9,13 @@ import java.util.*;
  */
 public class Parser {
 
-    public int lowestSrc = -1;
-    public int lowestLabel = -1;
-    public int lowestDest = -1;
-    public int highestSrc = -1;
-    public int highestLabel = -1;
-    public int highestDest = -1;
-    public LinkedList<int[]> tuples = new LinkedList<>();
+    public long lowestSrc = -1;
+    public long lowestLabel = -1;
+    public long lowestDest = -1;
+    public long highestSrc = -1;
+    public long highestLabel = -1;
+    public long highestDest = -1;
+    public LinkedList<long[]> tuples = new LinkedList<>();
 
     public void parse(File file) {
         try {
@@ -29,20 +29,20 @@ public class Parser {
         Scanner scanner = new Scanner(source);
 
         try {
-            while (scanner.hasNextInt()) {
-                int src, label, dest;
+            while (scanner.hasNextLong()) {
+                long src, label, dest;
 
-                src = scanner.nextInt();
-                label = scanner.nextInt();
-                dest = scanner.nextInt();
+                src = scanner.nextLong();
+                label = scanner.nextLong();
+                dest = scanner.nextLong();
                 foundTuple(src, label, dest);
             }
         } catch (NoSuchElementException e) {
-            throw new IOException("Expected an integer in input file", e);
+            throw new IOException("Expected an long in input file", e);
         }
     }
 
-    private void foundTuple(int src, int label, int dest){
+    private void foundTuple(long src, long label, long dest) {
         if(lowestSrc == -1 || src < lowestSrc){
             lowestSrc = src;
         }
@@ -61,35 +61,45 @@ public class Parser {
         if(highestDest == -1 || dest > highestDest){
             highestDest = dest;
         }
-        tuples.add(new int[]{src, label, dest});
+        tuples.add(new long[]{src, label, dest});
     }
 
-    static final Comparator<int[]> tupleLexiComparator = new Comparator<int[]>() {
+    public static final Comparator<long[]> CompSourceLabelDestination = new Comparator<long[]>() {
         @Override
-        public int compare(int[] o1, int[] o2) {
-            int cmp = Integer.compare(o1[0], o2[0]);
+        public int compare(long[] o1, long[] o2) {
+            int cmp = Long.compare(o1[0], o2[0]);
             if (cmp != 0) return cmp;
-            cmp = Integer.compare(o1[1], o2[1]);
+            cmp = Long.compare(o1[1], o2[1]);
             if (cmp != 0) return cmp;
-            cmp = Integer.compare(o1[2], o2[2]);
+            cmp = Long.compare(o1[2], o2[2]);
             return cmp;
         }
     };
 
-    public ArrayList<int[]> getOrdered() {
-        ArrayList<int[]> ordered = new ArrayList<>(tuples);
-        Collections.sort(ordered, tupleLexiComparator);
-        return ordered;
-    }
+    public static final Comparator<long[]> CompLabelSourceDestination = new Comparator<long[]>() {
+        @Override
+        public int compare(long[] o1, long[] o2) {
+            int cmp = Long.compare(o1[1], o2[1]);
+            if (cmp != 0) return cmp;
+            cmp = Long.compare(o1[0], o2[0]);
+            if (cmp != 0) return cmp;
+            cmp = Long.compare(o1[2], o2[2]);
+            return cmp;
+        }
+    };
 
-    public ArrayList<int[]> getOrderedUnique(){
-        TreeSet<int[]> ordered = new TreeSet<>(tupleLexiComparator);
+    public ArrayList<long[]> getOrderedUnique(Comparator<long[]> comparator) {
+        TreeSet<long[]> ordered = new TreeSet<>(comparator);
         ordered.addAll(tuples);
-        if(true) throw new UnsupportedOperationException("arrays cannot be used to find duplicates");
+
         return new ArrayList<>(ordered);
     }
 
     public boolean labelFitsInByte(){
         return this.highestLabel <= Byte.MAX_VALUE;
+    }
+
+    public boolean labelFitsInArrayLength() {
+        return this.highestLabel < Integer.MAX_VALUE - 8; // See ArrayList
     }
 }
