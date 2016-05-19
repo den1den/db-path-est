@@ -47,17 +47,33 @@ public class IOTest extends TestCase {
             StringReader current = null;
 
             private StringReader nextLine() {
-                timings.add(System.currentTimeMillis());
-                return new StringReader(inputsS[input++] + System.lineSeparator());
+
+                    timings.add(System.currentTimeMillis());
+                    if (input < inputsS.length-1)
+                    {
+                        input++;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                    return new StringReader(inputsS[input] + System.lineSeparator());
+
             }
 
             int doRead() throws IOException {
 
                     if (current == null) {
                         // first time
-                        current = nextLine();
+
+                            current = nextLine();
+
+                        if (current == null)
+                        {
+                            return -1;
+                        }
                     }
-                    synchronized (current) {
+
                         int read = current.read();
                         if (read == -1) {
                             // string ends
@@ -65,7 +81,7 @@ public class IOTest extends TestCase {
                             read = current.read();
                         }
                         return read;
-                    }
+
 
             }
             @Override
@@ -93,11 +109,17 @@ public class IOTest extends TestCase {
         System.out.println(String.format("Time to construct OG: %sms", t1 - t0));
 
         synchronized (timings) {
-            timings.wait();
+            //timings.wait();
             long t_0 = t1;
             for (int i = 0; i < timings.size(); i++) {
                 long t_1 = timings.get(i);
-                System.out.println(String.format("Query: %sms for %s", t_1 - t_0, inputsS[i]));
+                if (i == 0)
+                {
+                    System.out.println(String.format("Query: %sms for %s", System.currentTimeMillis() - t_1 , inputsS[i]));
+                }
+                else {
+                    System.out.println(String.format("Query: %sms for %s", t_1 - t_0, inputsS[i]));
+                }
                 t_0 = t_1;
             }
         }
