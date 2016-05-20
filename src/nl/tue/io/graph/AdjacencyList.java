@@ -22,9 +22,6 @@ public class AdjacencyList {
                 continue;
             }
 
-            /**
-             * Operates under the assumption that all labels between and including lowestlabel and highest label exist.
-             */
             if(!nodes.containsKey((int)tuple[0])) {
                nodes.put((int)tuple[0], emptyEdges(parser.lowestLabel, parser.highestLabel));
             }
@@ -33,14 +30,29 @@ public class AdjacencyList {
             }
 
             Set<Integer> edgesForLabel = nodes.get((int)tuple[0]).get((int)tuple[1]);
+            Set<Integer> backEdgesForLabel = nodes.get((int)tuple[2]).get(0 - ((int)tuple[1]));
 
             edgesForLabel.add((int)tuple[2]);
+            backEdgesForLabel.add((int)tuple[0]);
         }
     }
 
+    /**
+     * Adds empty hashsets for both all the edges in between lowestlabel and highestlabel and addesd empty hashsets for
+     * all the empty hashsets between 0 - lowestlabel and 0 - highesetlabel. Operates under the assumption that all
+     * lables in between and including those two numbers are utilized.
+     *
+     * @param lowestLabel
+     * @param highestLabel
+     * @return
+     */
     private Map<Integer, Set<Integer>> emptyEdges(long lowestLabel, long highestLabel) {
         Map<Integer, Set<Integer>> edges = new HashMap<>();
         for(long i = lowestLabel; i <= highestLabel; i++) {
+            edges.put((int)i, new HashSet<>());
+        }
+
+        for(long i = 0 - lowestLabel; i >= 0 - highestLabel; i--) {
             edges.put((int)i, new HashSet<>());
         }
 
