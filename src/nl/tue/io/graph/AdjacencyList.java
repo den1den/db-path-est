@@ -13,7 +13,6 @@ public class AdjacencyList {
 
     public AdjacencyList(Parser parser) {
 
-
         nodes = new HashMap<>();
 
         for(long[] tuple : parser.tuples) {
@@ -57,6 +56,45 @@ public class AdjacencyList {
         }
 
        return edges;
+    }
+
+    public Set<NodePair> solvePathQuery(int[] path) {
+        if(path.length  <= 0) {
+            throw new IllegalArgumentException(String.format("A path length of %d does not make any sense", path.length));
+        }
+
+        Set<NodePair> out = new HashSet<>();
+
+        for(int nodeStart : nodes.keySet()) {
+            for(int nodeEnd : tracePath(nodeStart, path)) {
+                out.add(new NodePair(nodeStart, nodeEnd));
+            }
+        }
+
+        return out;
+    }
+
+    private Set<Integer> tracePath(int node, int[] path) {
+        if(path.length <= 0) {
+            throw new IllegalArgumentException(String.format("A path length of %d does not make any sense", path.length));
+        }
+        Set<Integer> out = new HashSet<>();
+
+        int start = path[0];
+
+        if(path.length > 1) {
+            Set<Integer> outgoingOverStart = nodes.get(node).get(start);
+
+            for(int nodeAfterStart : outgoingOverStart) {
+                out.addAll(tracePath(nodeAfterStart, Arrays.copyOfRange(path, 1, path.length)));
+            }
+
+            return out;
+        } else {
+            out = nodes.get(node).get(start);
+
+            return out;
+        }
     }
 
     public Map<Integer, Map<Integer, Set<Integer>>> getNodes() {
