@@ -45,7 +45,6 @@ public class Parser {
                 dest = scanner.nextLong();
                 foundTuple(src, label, dest);
             }
-            assertConsecutiveLabels();
         } catch (NoSuchElementException e) {
             throw new IOException("Expected an long in input file", e);
         }
@@ -54,6 +53,11 @@ public class Parser {
     private void assertConsecutiveLabels() {
         assert lowestLabel == 0;
         assert highestLabel == this.labels.size() - 1;
+    }
+
+    public int getNLabels() {
+        assertConsecutiveLabels();
+        return this.labels.size();
     }
 
     private void foundTuple(long src, long label, long dest) {

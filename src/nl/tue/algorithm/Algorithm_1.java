@@ -1,5 +1,6 @@
 package nl.tue.algorithm;
 
+import nl.tue.algorithm.astar.AStart;
 import nl.tue.io.Parser;
 
 import java.util.List;
@@ -13,6 +14,14 @@ public class Algorithm_1 extends Algorithm {
     public Algorithm_1(Parser p, long maxPathLength, long maxMemoryUsage) {
         super(p, maxPathLength, maxMemoryUsage);
         // TOOD: Construct OG
+
+        //Example A*
+        AStart aStart = new AStart(p.getNLabels(), (int) maxPathLength);
+        AStart.AStartIterator iterator = aStart.iterator();
+        int[] next = iterator.next();
+        aStart.setHeuristic(5);
+        boolean hasNext = iterator.hasNext();
+
     }
 
     @Override

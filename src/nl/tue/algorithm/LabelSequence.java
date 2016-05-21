@@ -1,5 +1,7 @@
 package nl.tue.algorithm;
 
+import java.util.Comparator;
+
 /**
  * Created by dennis on 21-5-16.
  */
@@ -48,4 +50,22 @@ public class LabelSequence {
     int getFloorIndex(int length) {
         return (int) ((Math.pow(N_l, length) - N_l) / (N_l - 1));
     }
+
+    public static Comparator<int[]> lexicalGraphicOrder = new Comparator<int[]>() {
+        @Override
+        public int compare(int[] o1, int[] o2) {
+            int i = o1.length - 1;
+            int cmp = 0;
+            while (i >= 0) {
+                int valA = o1[i];
+                int valB = o2[i];
+                cmp = Integer.compare(valA, valB);
+                if (cmp != 0) {
+                    return cmp;
+                }
+                i--;
+            }
+            return cmp;
+        }
+    };
 }
