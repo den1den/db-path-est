@@ -7,7 +7,7 @@ import java.util.*;
 /**
  * Created by Nathan on 5/19/2016.
  */
-public class AdjacencyList {
+public class AdjacencyList implements DirectedBackEdgeGraph {
 
     private final Map<Integer, Map<Integer, Set<Integer>>> nodes;
 
