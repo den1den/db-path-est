@@ -18,6 +18,7 @@ public class Parser {
     public long highestSrc = -1;
     public long highestLabel = -1;
     public long highestDest = -1;
+    private Set<Long> labels = new HashSet<>();
     public LinkedList<long[]> tuples = new LinkedList<>();
 
     public void parse(String pathname) throws IOException {
@@ -49,6 +50,16 @@ public class Parser {
         }
     }
 
+    private void assertConsecutiveLabels() {
+        assert lowestLabel == 0;
+        assert highestLabel == this.labels.size() - 1;
+    }
+
+    public int getNLabels() {
+        assertConsecutiveLabels();
+        return this.labels.size();
+    }
+
     private void foundTuple(long src, long label, long dest) {
         if(lowestSrc == -1 || src < lowestSrc){
             lowestSrc = src;
@@ -68,6 +79,7 @@ public class Parser {
         if(highestDest == -1 || dest > highestDest){
             highestDest = dest;
         }
+        labels.add(label);
         tuples.add(new long[]{src, label, dest});
     }
 
