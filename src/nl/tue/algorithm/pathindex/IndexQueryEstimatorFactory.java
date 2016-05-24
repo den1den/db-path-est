@@ -6,10 +6,7 @@ import nl.tue.io.graph.AdjacencyList;
 import nl.tue.io.graph.DirectedBackEdgeGraph;
 import nl.tue.io.graph.NodePair;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Nathan on 5/24/2016.
@@ -23,12 +20,28 @@ public class IndexQueryEstimatorFactory {
 
         AStart aStart = new AStart(p.getNLabels(), k);
 
+        List<PathSummary> zeroLengthPaths = new ArrayList<>();
+
         for(int[] path : aStart) {
             if(output.size() >= noOfPaths) {
                 break;
             }
 
-            output.add(estimationForPath(graph, path, aStart));
+            /**
+             * If this is a bona fide zero path we already know about then we skip it, and set heuristic to zero.
+             */
+            if(pathInList(zeroLengthPaths, path)) {
+                aStart.setHeuristic(0);
+                continue;
+            }
+
+            PathSummary summary = estimationForPath(graph, path, aStart);
+
+            if(summary.getSummary().getTuples() == 0) {
+                zeroLengthPaths.add(summary);
+            }
+
+            output.add(summary);
         }
 
         return output;
@@ -56,8 +69,23 @@ public class IndexQueryEstimatorFactory {
 
         PathIndex index = new PathIndex(path);
 
-        astart.setHeuristic(10);
+        if(result.size() == 0) {
+            astart.setHeuristic(0);
+        } else {
+            astart.setHeuristic(10);
+        }
 
         return new PathSummary(index, summary);
+    }
+
+    private static boolean pathInList(List<PathSummary> items, int[] path) {
+        for(PathSummary summary : items) {
+            if(Collections.indexOfSubList(Arrays.asList(path), Arrays.asList(summary.getIndex().getPathAsArray()))
+                    != -1) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

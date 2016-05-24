@@ -24,6 +24,18 @@ public final class PathIndex {
         return path;
     }
 
+    public int[] getPathAsArray() {
+        String[] splitPath = this.path.split("/");
+
+        int[] pathArray = new int[splitPath.length];
+
+        for(int i = 0; i < splitPath.length; i++) {
+            pathArray[i] = Integer.parseInt(splitPath[i]);
+        }
+
+        return pathArray;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

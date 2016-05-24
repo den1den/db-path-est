@@ -3,9 +3,8 @@ package nl.tue.algorithm.pathindex;
 import nl.tue.algorithm.Algorithm;
 import nl.tue.io.Parser;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * Computes a summary for the given graph, after the summary has been computed the summary is serialized to a byte
@@ -20,15 +19,20 @@ import java.util.*;
 public class IndexQueryEstimator implements Algorithm {
 
     /**
+     * If set to true debug information is printed by this class.
+     */
+    private static final boolean DEBUG = true;
+
+    /**
      * 2 Bytes for a path index, one byte for start, stop and end, plus bytes for the separation characters
      * Be aware that this is a rough underestimation, this is fixed when the actual summary is serialized into memory.
      */
     private static final double STORAGE_PER_PATH_ESTIMATE = 2 + 2 + 2 + 2;
 
     /**
-     * Overhead of the array + this class.
+     * Overhead of the array + this class and there reference to the array.
      */
-    private static final double OVERHEAD = (12 + 4) + 16;
+    private static final double OVERHEAD = (12 + 4) + (16 + 4);
 
     /**
      * Right now the optimized graph is stored as an array of chars, where each path index and summary is delimited by
@@ -46,7 +50,7 @@ public class IndexQueryEstimator implements Algorithm {
     @Override
     public void buildSummary(Parser p, int k, double b) {
 
-        int maxNoOfPaths = (int) Math.floor((b - OVERHEAD) / STORAGE_PER_PATH_ESTIMATE);
+        int maxNoOfPaths = (int) Math.floor((b - OVERHEAD) / STORAGE_PER_PATH_ESTIMATE) * 2;
 
         Queue<PathSummary> fullSummary = IndexQueryEstimatorFactory.construct(p, k, maxNoOfPaths);
 
@@ -54,26 +58,82 @@ public class IndexQueryEstimator implements Algorithm {
          * Serialize the fuck out of this.
          */
 
-        optimizedGraph = summaryToByteArray(fullSummary);
+        optimizedGraph = summaryToByteArray(fullSummary, (int) (b - OVERHEAD));
     }
 
     @Override
     public int query(List<Long> query) {
         Map<PathIndex, Summary> pathIndexMap = indexFromOptimizedArray(optimizedGraph);
 
-        int[] path = new int[query.size()];
-
-        for (int i = 0; i < query.size(); i++) {
-            path[i] = query.get(i).intValue();
-        }
+        int[] path = queryToIntArray(query);
 
         PathIndex requested = new PathIndex(path);
 
         if (pathIndexMap.containsKey(requested)) {
             return pathIndexMap.get(requested).getTuples();
         } else {
-            return -1;
+            return guesstimate(path, pathIndexMap);
         }
+    }
+
+    private static int guesstimate(int[] path, Map<PathIndex, Summary> pathIndexMap) {
+
+        if(DEBUG) {
+            System.out.println(String.format("Attempting to guess the result of %s", new PathIndex(path).getPath()));
+        }
+
+        for(PathIndex index : pathIndexMap.keySet()) {
+            if(pathIndexMap.get(index).getTuples() == 0) {
+                if(Collections.indexOfSubList(Arrays.asList(path), Arrays.asList(index.getPathAsArray())) != -1) {
+                    return 0;
+                }
+            }
+        }
+
+        LinkedBlockingDeque<Summary> items = new LinkedBlockingDeque<>();
+
+        int[] remainingPath = path;
+
+        do {
+            int index = remainingPath.length;
+
+            do {
+                int[] subPath = Arrays.copyOf(remainingPath, index);
+
+                if(pathIndexMap.containsKey(new PathIndex(subPath))) {
+                    items.add(pathIndexMap.get(new PathIndex(subPath)));
+
+                    if(DEBUG) {
+                        System.out.println(String.format("Identified %s as subpath", new PathIndex(subPath).getPath()));
+                    }
+
+                    break;
+
+                } else {
+                    index--;
+                }
+            } while(index > 0);
+
+            remainingPath = Arrays.copyOfRange(remainingPath, index, remainingPath.length);
+        } while(remainingPath.length > 0);
+
+        do {
+            Summary left = items.poll();
+            Summary right = items.poll();
+
+
+            int newTuples = (int)Math.min(((double)left.getTuples())*((double)right.getTuples()/(double)right.getStart()),
+                    ((double)right.getTuples())*((double)left.getTuples()/(double)left.getEnd()));
+
+            int newStart = left.getEnd();
+            int newEnd = right.getStart();
+
+
+
+            items.addFirst(new Summary(newStart, newTuples, newEnd));
+        } while(items.size() > 1);
+
+        return items.peek().getTuples();
     }
 
     @Override
@@ -81,15 +141,43 @@ public class IndexQueryEstimator implements Algorithm {
         return 0;
     }
 
+    private static int[] queryToIntArray(List<Long> query) {
+        int[] path = new int[query.size()];
+
+        for (int i = 0; i < query.size(); i++) {
+            path[i] = query.get(i).intValue();
+        }
+
+        return path;
+    }
+
     private static byte[] summaryToByteArray(Queue<PathSummary> summaries) {
+        return summaryToByteArray(summaries, -1);
+    }
+
+    /**
+
+     * @param summaries
+     * @param byteLimit Byte limit of the output array. Use -1 for infinite.
+     * @return
+     */
+    private static byte[] summaryToByteArray(Queue<PathSummary> summaries, int byteLimit) {
         List<Byte> output = new ArrayList<>();
 
-        for (PathSummary summary : summaries) {
-            String summaryAsString = String.format("%s-%d-%d-%d#", summary.getIndex().getPath(),
-                    summary.getSummary().getStart(), summary.getSummary().getTuples(), summary.getSummary().getEnd());
+        int totalBytes = 0;
+        int indexed = 0;
 
+        for(PathSummary summary : summaries) {
+            byte[] serialized = PathSummarySerializer.serialize(summary);
 
-            for (byte b : summaryAsString.getBytes(StandardCharsets.US_ASCII)) {
+            if(byteLimit >= 0 && output.size() + serialized.length > byteLimit + 1 /* Last character is removed */) {
+                break;
+            }
+
+            totalBytes += summary.getIndex().getPath().length() + 3*4;
+            indexed++;
+
+            for(byte b : serialized) {
                 output.add(b);
             }
         }
@@ -100,8 +188,16 @@ public class IndexQueryEstimator implements Algorithm {
             out[i] = output.get(i);
         }
 
+        if(DEBUG) {
+            System.out.println(String.format("Compressed %s bytes from %s paths into %s bytes which is less than the allotted " +
+                    "amount of %s",
+                    totalBytes, indexed, out.length, byteLimit));
+        }
+
         return out;
     }
+
+
 
     private static final Map<PathIndex, Summary> indexFromOptimizedArray(byte[] array) {
         Map<PathIndex, Summary> res = new HashMap<>();

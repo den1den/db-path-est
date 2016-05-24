@@ -22,7 +22,7 @@ public class PathIndexQueryEstimatorTest {
 
     private static AdjacencyList verifier;
 
-
+    private static IndexQueryEstimator estimator;
 
     @BeforeClass
     public static void loadFile() throws IOException {
@@ -31,21 +31,69 @@ public class PathIndexQueryEstimatorTest {
         parser.parse(file);
 
         verifier = new AdjacencyList(parser);
+
+        estimator = new IndexQueryEstimator();
+        estimator.buildSummary(parser, 1, verifier.getNodes().keySet().size() * 8);
     }
 
     @Test
     public void testIndexedPaths() {
-        IndexQueryEstimator estimator = new IndexQueryEstimator();
 
         /**
-         * Indexes 10? paths
+         * Indexes 132? paths
          */
-        estimator.buildSummary(parser, 1, 32 + 8*10);
 
         List<Long> query = new ArrayList<>();
 
         query.add(1l);
 
         Assert.assertEquals(verifier.solvePathQuery(new int[]{1}).size(), estimator.query(query));
+    }
+
+    @Test
+    public void testNonIndexedPaths() {
+
+        List<Long> query = new ArrayList<>();
+
+        query.add(5l);
+        query.add(0l);
+        query.add(4l);
+        query.add(1l);
+        query.add(2l);
+
+        int res = estimator.query(query);
+
+        System.out.println(String.format("Estimated %s actual %s", res, 71));
+    }
+
+    @Test
+    public void testNonIndexedPaths_2() {
+
+        List<Long> query = new ArrayList<>();
+
+        query.add(5l);
+        query.add(0l);
+        query.add(4l);
+        query.add(3l);
+
+        int res = estimator.query(query);
+
+        System.out.println(String.format("Estimated %s actual %s", res, 49));
+    }
+
+    @Test
+    public void testNonIndexedPaths_3() {
+
+        List<Long> query = new ArrayList<>();
+
+        query.add(5l);
+        query.add(0l);
+        query.add(1l);
+        query.add(2l);
+
+        int res = estimator.query(query);
+
+        //THE OLD DATA IS DEAD, LONG LIVE THE NEW DATA
+        System.out.println(String.format("Estimated %s actual %s", res, 51));
     }
 }
