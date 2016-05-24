@@ -5,6 +5,7 @@ import java.util.Set;
 /**
  * Created by dennis on 19-5-16.
  */
+@Deprecated
 public interface DirectedGraph {
     /**
      * Get all destination nodes of src given label

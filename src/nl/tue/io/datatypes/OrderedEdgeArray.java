@@ -8,6 +8,7 @@ import java.util.*;
  * An ordered list of all edges with all duplicates removed
  * Created by Dennis on 17-5-2016.
  */
+@Deprecated
 public class OrderedEdgeArray implements DirectedGraph {
 
     public static final List<Integer> NO = Collections.emptyList();

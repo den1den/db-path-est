@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
  * Directed Graph
  * Created by Dennis on 17-5-2016.
  */
+@Deprecated
 public abstract class DGHashMap implements DirectedGraph {
 
     /**
