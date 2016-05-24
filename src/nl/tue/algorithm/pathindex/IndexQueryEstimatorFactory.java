@@ -56,6 +56,8 @@ public class IndexQueryEstimatorFactory {
 
         PathIndex index = new PathIndex(path);
 
+        astart.setHeuristic(10);
+
         return new PathSummary(index, summary);
     }
 }

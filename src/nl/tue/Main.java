@@ -24,7 +24,7 @@ public class Main {
         p.parse(file);
 
         // Create OG
-        Algorithm algorithm = new Algorithm_1(p, maximalPathLength, budget);
+        Algorithm algorithm = new Algorithm_1();
 
         // Write actual bytes used to System.out
         long bytes = algorithm.getBytesUsed();
