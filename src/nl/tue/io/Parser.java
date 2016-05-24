@@ -1,9 +1,9 @@
 package nl.tue.io;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import com.sun.deploy.Environment;
+import com.sun.xml.internal.ws.commons.xmlutil.Converter;
+
+import java.io.*;
 import java.util.*;
 
 /**
@@ -20,7 +20,8 @@ public class Parser {
     public long highestDest = -1;
     private Set<Long> labels = new HashSet<>();
     public LinkedList<long[]> tuples = new LinkedList<>();
-
+    public LinkedList<long[]> invertedTuples = new LinkedList<>();
+    public LinkedList<long[]> combinedList = new LinkedList<>();
     public void parse(String pathname) throws IOException {
         File f = new File(pathname);
         if (!f.isFile()) {
@@ -49,7 +50,42 @@ public class Parser {
             throw new IOException("Expected an long in input file", e);
         }
     }
+    public void inverse(File file) throws IOException {
+        inverse(new FileReader(file));
+    }
+    public void inverse(Readable source) throws IOException {
+        Scanner scanner = new Scanner(source);
 
+        try {
+            while (scanner.hasNextLong()) {
+                long src, label, dest;
+
+                src = scanner.nextLong();
+                label = scanner.nextLong();
+                label = -label;
+                dest = scanner.nextLong();
+                invertedTuples.add(new long[]{dest, label, src});;
+            }
+        } catch (NoSuchElementException e) {
+            throw new IOException("Expected an long in input file", e);
+        }
+    }
+    public void writeToFile(String  filename) throws IOException {
+        FileWriter fw = new FileWriter(filename);
+        combinedList.addAll(tuples);
+        combinedList.addAll(invertedTuples);
+        for (long[] longArray: combinedList
+             ) {
+            for (int i =0;i < longArray.length;i++)
+            {
+                fw.append(String.valueOf(longArray[i]) + " ");
+            }
+            fw.append(System.lineSeparator());
+
+        }
+
+        fw.close();
+    }
     private void assertConsecutiveLabels() {
         assert lowestLabel == 0;
         assert highestLabel == this.labels.size() - 1;
