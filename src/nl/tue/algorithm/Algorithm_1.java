@@ -1,6 +1,9 @@
 package nl.tue.algorithm;
 
 import nl.tue.algorithm.astar.AStart;
+import nl.tue.algorithm.query.DynamicProgramming;
+import nl.tue.algorithm.query.Estimator;
+import nl.tue.algorithm.query.Evaluator;
 import nl.tue.io.Parser;
 
 import java.util.List;
@@ -10,6 +13,8 @@ import java.util.Map;
  * Created by dennis on 19-5-16.
  */
 public class Algorithm_1 extends Algorithm {
+
+    Evaluator dpEvaluator = null;
 
     public Algorithm_1(Parser p, long maxPathLength, long maxMemoryUsage) {
         super(p, maxPathLength, maxMemoryUsage);
@@ -23,6 +28,9 @@ public class Algorithm_1 extends Algorithm {
             double heuristic = process(next);
             aStart.setHeuristic(heuristic);
         } while (getBytesUsed() < maxMemoryUsage && iterator.hasNext());
+
+        Estimator precissionEvaluator = null; //TODO
+        dpEvaluator = new DynamicProgramming(precissionEvaluator);
     }
 
     /**
@@ -38,8 +46,7 @@ public class Algorithm_1 extends Algorithm {
 
     @Override
     public int query(List<Long> query) {
-        //TODO
-        return 0;
+        return dpEvaluator.query(query);
     }
 
     @Override
