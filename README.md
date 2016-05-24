@@ -1,2 +1,2 @@
 # db-path-est
-Path estimation implementation for the Database Technology course
+Path summary implementation for the Database Technology course

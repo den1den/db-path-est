@@ -30,7 +30,7 @@ public class IndexQueryEstimator implements QueryEstimator {
 
         int maxNoOfPaths = (int)Math.floor((b - OVERHEAD) / STORAGE_PER_PATH_ESTIMATE);
 
-        Queue<PathEstimation> fullSummary = IndexQueryEstimatorFactory.construct(p, k, maxNoOfPaths);
+        Queue<PathSummary> fullSummary = IndexQueryEstimatorFactory.construct(p, k, maxNoOfPaths);
 
         /**
          * Serialize the fuck out of this.

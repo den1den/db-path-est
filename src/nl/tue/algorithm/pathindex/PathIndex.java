@@ -10,6 +10,20 @@ public final class PathIndex {
         this.path = path;
     }
 
+    public PathIndex(int[] path) {
+        String out = "";
+
+        for(int element : path) {
+            out = out + element + "/";
+        }
+
+        this.path = out.substring(0, out.length() - 1);
+    }
+
+    public String getPath() {
+        return path;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
