@@ -1,25 +1,22 @@
 package nl.tue.algorithm;
 
 import nl.tue.algorithm.astar.AStart;
-import nl.tue.algorithm.query.DynamicProgramming;
+import nl.tue.algorithm.query.DPO;
 import nl.tue.algorithm.query.Estimator;
-import nl.tue.algorithm.query.Evaluator;
+import nl.tue.algorithm.query.Optimizer;
 import nl.tue.io.Parser;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by dennis on 19-5-16.
- */
-public class Algorithm_1 extends Algorithm {
+public class Algorithm_1 implements Algorithm {
 
-    Evaluator dpEvaluator = null;
+    Optimizer currentOptimizer;
 
-    public Algorithm_1(Parser p, long maxPathLength, long maxMemoryUsage) {
-        super(p, maxPathLength, maxMemoryUsage);
-
-        AStart aStart = new AStart(p.getNLabels(), (int) maxPathLength);
+    @Override
+    public void buildSummary(Parser p, int k, double b) {
+        AStart aStart = new AStart(p.getNLabels(), k);
         AStart.AStartIterator iterator = aStart.iterator();
 
         int[] next;
@@ -27,11 +24,12 @@ public class Algorithm_1 extends Algorithm {
             next = iterator.next();
             double heuristic = process(next);
             aStart.setHeuristic(heuristic);
-        } while (getBytesUsed() < maxMemoryUsage && iterator.hasNext());
+        } while (getBytesUsed() < b && iterator.hasNext());
 
         Estimator precissionEvaluator = null; //TODO
-        dpEvaluator = new DynamicProgramming(precissionEvaluator);
+        currentOptimizer = new DPO(precissionEvaluator);
     }
+
 
     /**
      * Store information of a subQuery in memory
@@ -46,7 +44,21 @@ public class Algorithm_1 extends Algorithm {
 
     @Override
     public int query(List<Long> query) {
-        return dpEvaluator.query(query);
+        if (query.isEmpty()) {
+            return 0;
+        }
+        Iterator<List<Long>> order = currentOptimizer.getExecutionOrder(query).iterator();
+
+        int total = evalSubQuery(order.next());
+        while (order.hasNext()) {
+            List<Long> joinedSubQuery;
+            //TODO: Dennis
+        }
+        return 0;
+    }
+
+    int evalSubQuery(List<Long> subQuery) {
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
@@ -54,6 +66,7 @@ public class Algorithm_1 extends Algorithm {
         return 0;
     }
 
+    // Depricated?
     Map<QPath, QPathInfo> optimizedGraph;
 
     private static class QPath {
