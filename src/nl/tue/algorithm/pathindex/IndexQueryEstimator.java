@@ -1,6 +1,6 @@
 package nl.tue.algorithm.pathindex;
 
-import nl.tue.algorithm.QueryEstimator;
+import nl.tue.algorithm.Algorithm;
 import nl.tue.io.Parser;
 
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.Queue;
 /**
  * Created by Nathan on 5/24/2016.
  */
-public class IndexQueryEstimator implements QueryEstimator {
+public class IndexQueryEstimator implements Algorithm {
 
     /**
      * 2 Bytes for a path index, one byte for start, stop and end.
