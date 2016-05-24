@@ -8,13 +8,20 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
+ * Computes a summary for the given graph, after the summary has been computed the summary is serialized to a byte
+ * array which is then stored in main memory. The deep memory usage of this class (overhead of this class, overhead of
+ * the byte array and items in the byte array) is the memory usage used for the summary.
+ *
+ * When this summary is queried it deserializes the byte array to a map of paths and summaries, which is then queried to
+ * return the path recorded for the given query.
+ *
  * Created by Nathan on 5/24/2016.
  */
 public class IndexQueryEstimator implements Algorithm {
 
     /**
-     * 2 Bytes for a path index, one byte for start, stop and end.
-     * Be aware that this is a rough overestimation.
+     * 2 Bytes for a path index, one byte for start, stop and end, plus bytes for the separation characters
+     * Be aware that this is a rough underestimation, this is fixed when the actual summary is serialized into memory.
      */
     private static final double STORAGE_PER_PATH_ESTIMATE = 2 + 2 + 2 + 2;
 
@@ -24,7 +31,6 @@ public class IndexQueryEstimator implements Algorithm {
     private static final double OVERHEAD = (12 + 4) + 16;
 
     private byte[] optimizedGraph;
-
 
     @Override
     public void buildSummary(Parser p, int k, double b) {
