@@ -1,14 +1,28 @@
 package nl.tue;
 
 import junit.framework.TestCase;
-import java.io.*;
+import org.junit.Assert;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
 import java.util.LinkedList;
 
 /**
  * Created by dennis on 19-5-16.
  */
 public class IOTest extends TestCase {
-    private static File testFolder = new File(System.getenv("testFolder"));
+    File testFolder;
+
+    @Override
+    protected void setUp() throws Exception {
+        String testFolderS = System.getenv("testFolder");
+        Assert.assertNotNull("testFolder not defined as enviroment variable in run configuration", testFolderS);
+        testFolder = new File(System.getenv(testFolderS));
+    }
+
+
     public void testSimple() throws Exception {
         String testFile = "biblio.txt";
         long maxLength = 5;

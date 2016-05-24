@@ -13,15 +13,27 @@ public class Algorithm_1 extends Algorithm {
 
     public Algorithm_1(Parser p, long maxPathLength, long maxMemoryUsage) {
         super(p, maxPathLength, maxMemoryUsage);
-        // TOOD: Construct OG
 
-        //Example A*
         AStart aStart = new AStart(p.getNLabels(), (int) maxPathLength);
         AStart.AStartIterator iterator = aStart.iterator();
-        int[] next = iterator.next();
-        aStart.setHeuristic(5);
-        boolean hasNext = iterator.hasNext();
 
+        int[] next;
+        do {
+            next = iterator.next();
+            double heuristic = process(next);
+            aStart.setHeuristic(heuristic);
+        } while (getBytesUsed() < maxMemoryUsage && iterator.hasNext());
+    }
+
+    /**
+     * Store information of a subQuery in memory
+     *
+     * @param subQuery
+     * @return heuristic value of this subQuery, higher is better
+     */
+    private double process(int[] subQuery) {
+        //TODO
+        return 1;
     }
 
     @Override
@@ -35,13 +47,7 @@ public class Algorithm_1 extends Algorithm {
         return 0;
     }
 
-    public class OptimizedGraph {
-        Map<QPath, QPathInfo> map;
-
-        public OptimizedGraph(Map<QPath, QPathInfo> map) {
-            this.map = map;
-        }
-    }
+    Map<QPath, QPathInfo> optimizedGraph;
 
     private static class QPath {
 
