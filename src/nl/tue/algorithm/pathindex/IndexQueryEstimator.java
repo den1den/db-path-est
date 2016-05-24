@@ -11,10 +11,10 @@ import java.util.*;
  * Computes a summary for the given graph, after the summary has been computed the summary is serialized to a byte
  * array which is then stored in main memory. The deep memory usage of this class (overhead of this class, overhead of
  * the byte array and items in the byte array) is the memory usage used for the summary.
- *
+ * <p>
  * When this summary is queried it deserializes the byte array to a map of paths and summaries, which is then queried to
  * return the path recorded for the given query.
- *
+ * <p>
  * Created by Nathan on 5/24/2016.
  */
 public class IndexQueryEstimator implements Algorithm {
@@ -30,6 +30,17 @@ public class IndexQueryEstimator implements Algorithm {
      */
     private static final double OVERHEAD = (12 + 4) + 16;
 
+    /**
+     * Right now the optimized graph is stored as an array of chars, where each path index and summary is delimited by
+     * a '#'. A path index and summary consist out of a index, which is just PathIndex.getIndex(). This is delimited by
+     * a '-', then there are three integers (start, tuples, end) stored as their string representation where start and
+     * tuples are delimited by '-' and end delimited by '#' as it is the last element of the index and summary
+     *
+     * Possible idea is storing path indexes as bytes instead of string representations of labels.
+     *
+     * Possible idea is storing an identifier for s, t and e which denotes whether a byte, short, int or long is used
+     * to serialize the three numbers.
+     */
     private byte[] optimizedGraph;
 
     @Override
