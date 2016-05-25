@@ -1,6 +1,5 @@
 package nl.tue.algorithm.pathindex;
 
-import nl.tue.algorithm.Estimation;
 import nl.tue.algorithm.Estimator;
 import nl.tue.io.Parser;
 
@@ -13,11 +12,11 @@ import java.util.concurrent.LinkedBlockingDeque;
  * the byte array and items in the byte array) is the memory usage used for the summary.
  * <p>
  * When this summary is queried it deserializes the byte array to a map of paths and summaries, which is then queried to
- * return the path recorded for the given query.
+ * return the path recorded for the given getEstimation.
  * <p>
  * Created by Nathan on 5/24/2016.
  */
-public class IndexQueryEstimator implements Estimator {
+public class IndexQueryEstimator implements Estimator<PathSummary> {
 
     /**
      * If set to true debug information is printed by this class.
@@ -62,8 +61,7 @@ public class IndexQueryEstimator implements Estimator {
         optimizedGraph = summaryToByteArray(fullSummary, (int) (b - OVERHEAD));
     }
 
-    @Override
-    public Estimation query(List<Long> query) {
+    public int getEstimation(List<Long> query) {
         Map<PathIndex, Summary> pathIndexMap = indexFromOptimizedArray(optimizedGraph);
 
         int[] path = queryToIntArray(query);
@@ -75,6 +73,16 @@ public class IndexQueryEstimator implements Estimator {
         } else {
             return guesstimate(path, pathIndexMap);
         }
+    }
+
+    @Override
+    public PathSummary combineEstimations(PathSummary left, PathSummary right) {
+        throw new UnsupportedOperationException("TODO");
+    }
+
+    @Override
+    public Collection<PathSummary> retrieveAllExactEstimations() {
+        throw new UnsupportedOperationException("TODO");
     }
 
     private static int guesstimate(int[] path, Map<PathIndex, Summary> pathIndexMap) {

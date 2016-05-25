@@ -14,7 +14,6 @@ public class AStart implements Iterable<int[]> {
     public AStart(int labels, int maxDepth) {
         this.labels = labels;
         assert labels > 0;
-        //TODO: do something with the maxDepth
     }
 
     @Override
@@ -118,7 +117,7 @@ public class AStart implements Iterable<int[]> {
 
             private Node(Node parent, int[] subQuery, double heuristic) {
                 if (Double.isNaN(heuristic)) {
-                    throw new AssertionError("parentHeuristic not set for query: " + Arrays.toString(subQuery));
+                    throw new AssertionError("parentHeuristic not set for getEstimation: " + Arrays.toString(subQuery));
                 }
                 this.parent = parent;
                 this.subQuery = subQuery;

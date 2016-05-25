@@ -1,19 +1,15 @@
 package nl.tue.algorithm;
 
-import java.util.List;
+import nl.tue.MemoryConstrained;
+
+import java.util.Collection;
 
 /**
  * Created by dennis on 24-5-16.
  */
-public interface Estimator extends MemoryConstrained {
+public interface Estimator<E extends Estimation> extends MemoryConstrained {
 
-    /**
-     * Gives an estimate of a query
-     *
-     * @param query
-     * @return Estimation of a query, or null when it is not known
-     */
-    Estimation query(List<Long> query);
+    E combineEstimations(E left, E right);
 
-    Estimation combineEstimations(Estimation left, Estimation right);
+    Collection<E> retrieveAllExactEstimations();
 }

@@ -65,7 +65,7 @@ public class AStartIteratorTest extends TestCase {
         // On tie, take the second best
         chckNext(new int[]{0, 0, 0, 1, 0}, 0);
         chckNext(new int[]{0, 0, 0, 1, 1}, 0);
-        // On tie, continue with smallest query
+        // On tie, continue with smallest getEstimation
         chckNext(new int[]{1, 0}, 0);
         chckNext(new int[]{1, 1}, 0);
     }

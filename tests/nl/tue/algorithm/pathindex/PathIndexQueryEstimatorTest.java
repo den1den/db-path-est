@@ -47,7 +47,7 @@ public class PathIndexQueryEstimatorTest {
 
         query.add(1l);
 
-        Assert.assertEquals(verifier.solvePathQuery(new int[]{1}).size(), estimator.query(query));
+        Assert.assertEquals(verifier.solvePathQuery(new int[]{1}).size(), estimator.getEstimation(query));
     }
 
     @Test
@@ -61,7 +61,7 @@ public class PathIndexQueryEstimatorTest {
         query.add(1l);
         query.add(2l);
 
-        int res = estimator.query(query);
+        int res = estimator.getEstimation(query);
 
         System.out.println(String.format("Estimated %s actual %s", res, 71));
     }
@@ -76,7 +76,7 @@ public class PathIndexQueryEstimatorTest {
         query.add(4l);
         query.add(3l);
 
-        int res = estimator.query(query);
+        int res = estimator.getEstimation(query);
 
         System.out.println(String.format("Estimated %s actual %s", res, 49));
     }
@@ -91,7 +91,7 @@ public class PathIndexQueryEstimatorTest {
         query.add(1l);
         query.add(2l);
 
-        int res = estimator.query(query);
+        int res = estimator.getEstimation(query);
 
         //THE OLD DATA IS DEAD, LONG LIVE THE NEW DATA
         System.out.println(String.format("Estimated %s actual %s", res, 51));
