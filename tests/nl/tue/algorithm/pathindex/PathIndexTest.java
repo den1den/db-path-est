@@ -43,4 +43,11 @@ public class PathIndexTest {
 
         Assert.assertEquals("1/-2/4", index.getPath());
     }
+
+    @Test
+    public void testIndexToIntArray() {
+        PathIndex index = new PathIndex("1/-3/4/2");
+
+        Assert.assertArrayEquals(new int[]{1, -3, 4, 2}, index.getPathAsIntArray());
+    }
 }
