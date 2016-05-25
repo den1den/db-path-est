@@ -1,7 +1,7 @@
 package nl.tue.io.graph;
 
 /**
- * Represent a pair of two nodes as the result of a path query.
+ * Represent a pair of two nodes as the result of a path getEstimation.
  *
  * Created by Nathan on 5/20/2016.
  */

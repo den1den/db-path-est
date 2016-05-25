@@ -1,10 +1,10 @@
 package nl.tue.io;
 
-import com.sun.deploy.Environment;
-import com.sun.xml.internal.ws.commons.xmlutil.Converter;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.*;
 import java.util.*;
+import java.util.function.LongToIntFunction;
 
 /**
  * Parses a file to a LinkedList of tuples (keeps duplicates)
@@ -156,5 +156,30 @@ public class Parser {
 
     public boolean labelFitsInArrayLength() {
         return this.highestLabel < Integer.MAX_VALUE - 8; // See ArrayList
+    }
+
+    public LabelMapping getLabelMapping() {
+        throw new NotImplementedException();
+    }
+
+    public int getNEdges() {
+        return tuples.size();
+    }
+
+    /**
+     * Naive, consecutive
+     */
+    public static class LabelMapping implements LongToIntFunction {
+
+        final int N;
+
+        public LabelMapping(int n) {
+            N = n;
+        }
+
+        @Override
+        public int applyAsInt(long value) {
+            return Math.toIntExact(value + N);
+        }
     }
 }

@@ -1,4 +1,4 @@
-package nl.tue.algorithm;
+package nl.tue.algorithm.query;
 
 import junit.framework.TestCase;
 import org.junit.Test;

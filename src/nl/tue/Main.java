@@ -2,6 +2,8 @@ package nl.tue;
 
 import nl.tue.algorithm.Algorithm;
 import nl.tue.algorithm.Algorithm_1;
+import nl.tue.algorithm.pathindex.IndexQueryEstimator;
+import nl.tue.algorithm.pathindex.PathSummary;
 import nl.tue.io.Parser;
 import nl.tue.io.datatypes.DGHashMap;
 import nl.tue.io.datatypes.OrderedEdgeArray;
@@ -24,7 +26,8 @@ public class Main {
         p.parse(file);
 
         // Create OG
-        Algorithm algorithm = new Algorithm_1();
+        IndexQueryEstimator estimator = new IndexQueryEstimator();
+        Algorithm<PathSummary, IndexQueryEstimator> algorithm = new Algorithm_1<>(estimator);
         algorithm.buildSummary(p, (int) maximalPathLength, budget);
 
         // Write actual bytes used to System.out
@@ -40,7 +43,7 @@ public class Main {
                 input.add(s.nextLong());
             }
             //Execute
-            long result = algorithm.query(input);
+            long result = algorithm.queryRaw(input);
             System.out.println(result);
         }
     }
