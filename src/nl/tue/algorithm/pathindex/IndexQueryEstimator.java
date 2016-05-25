@@ -85,7 +85,7 @@ public class IndexQueryEstimator implements Estimator {
 
         for(PathIndex index : pathIndexMap.keySet()) {
             if(pathIndexMap.get(index).getTuples() == 0) {
-                if(Collections.indexOfSubList(Arrays.asList(path), Arrays.asList(index.getPathAsArray())) != -1) {
+                if(Collections.indexOfSubList(Arrays.asList(path), Arrays.asList(index.getPathAsIntArray())) != -1) {
                     return 0;
                 }
             }

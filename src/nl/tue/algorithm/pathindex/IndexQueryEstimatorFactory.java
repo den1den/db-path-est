@@ -80,7 +80,7 @@ public class IndexQueryEstimatorFactory {
 
     private static boolean pathInList(List<PathSummary> items, int[] path) {
         for(PathSummary summary : items) {
-            if(Collections.indexOfSubList(Arrays.asList(path), Arrays.asList(summary.getIndex().getPathAsArray()))
+            if(Collections.indexOfSubList(Arrays.asList(path), Arrays.asList(summary.getIndex().getPathAsIntArray()))
                     != -1) {
                 return true;
             }

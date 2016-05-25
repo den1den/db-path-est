@@ -1,5 +1,8 @@
 package nl.tue.algorithm.pathindex;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Nathan on 5/24/2016.
  */
@@ -24,7 +27,7 @@ public final class PathIndex {
         return path;
     }
 
-    public int[] getPathAsArray() {
+    public int[] getPathAsIntArray() {
         String[] splitPath = this.path.split("/");
 
         int[] pathArray = new int[splitPath.length];
@@ -34,6 +37,16 @@ public final class PathIndex {
         }
 
         return pathArray;
+    }
+
+    public List<Long> getPathAsLongList() {
+        List<Long> out = new ArrayList<>();
+
+        for(int i : getPathAsIntArray()) {
+            out.add((long)i);
+        }
+
+        return out;
     }
 
     @Override
