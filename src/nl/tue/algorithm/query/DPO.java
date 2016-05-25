@@ -1,5 +1,9 @@
 package nl.tue.algorithm.query;
 
+import nl.tue.algorithm.Estimation;
+import nl.tue.algorithm.Estimator;
+
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -7,9 +11,6 @@ import java.util.List;
  * Created by dennis on 24-5-16.
  */
 public class DPO implements Optimizer {
-
-    Estimator precessionEvaluator;
-
     /**
      * Dynamic Programming Optimizer
      *
@@ -19,8 +20,24 @@ public class DPO implements Optimizer {
         this.precessionEvaluator = precessionEvaluator;
     }
 
+    HashMap<List<Long>, D> precision = new HashMap<>();
+
     @Override
-    public List<List<Long>> getExecutionOrder(List<Long> query) {
-        throw new UnsupportedOperationException("TODO");
+    public Plan getExecutionOrder(List<Long> query) {
+        D dynamicResult = execute(query);
+    }
+
+    private D execute(List<Long> query) {
+        D best = precision.get(query);
+        if (best.plan != null) {
+            return best;
+        }
+
+    }
+
+
+    private class D {
+        Estimation estimation;
+        Plan plan;
     }
 }

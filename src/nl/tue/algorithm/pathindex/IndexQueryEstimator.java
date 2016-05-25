@@ -1,6 +1,7 @@
 package nl.tue.algorithm.pathindex;
 
-import nl.tue.algorithm.Algorithm;
+import nl.tue.algorithm.Estimation;
+import nl.tue.algorithm.Estimator;
 import nl.tue.io.Parser;
 
 import java.util.*;
@@ -16,7 +17,7 @@ import java.util.concurrent.LinkedBlockingDeque;
  * <p>
  * Created by Nathan on 5/24/2016.
  */
-public class IndexQueryEstimator implements Algorithm {
+public class IndexQueryEstimator implements Estimator {
 
     /**
      * If set to true debug information is printed by this class.
@@ -62,7 +63,7 @@ public class IndexQueryEstimator implements Algorithm {
     }
 
     @Override
-    public int query(List<Long> query) {
+    public Estimation query(List<Long> query) {
         Map<PathIndex, Summary> pathIndexMap = indexFromOptimizedArray(optimizedGraph);
 
         int[] path = queryToIntArray(query);

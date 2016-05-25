@@ -25,6 +25,7 @@ public class Main {
 
         // Create OG
         Algorithm algorithm = new Algorithm_1();
+        algorithm.buildSummary(p, (int) maximalPathLength, budget);
 
         // Write actual bytes used to System.out
         long bytes = algorithm.getBytesUsed();
