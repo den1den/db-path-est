@@ -18,7 +18,7 @@ public class ComparisonExecutor {
         List<ComparisonResult> res = new ArrayList<>();
 
         for(PathIndex path : paths) {
-            int estimation = method.query(path.getPathAsLongList());
+            int estimation = method.query(path.getPathAsIntArray());
 
             int result = graph.solvePathQuery(path.getPathAsIntArray()).size();
 

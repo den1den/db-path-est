@@ -35,6 +35,6 @@ public class PathSummary implements Estimation {
 
     @Override
     public int[] getQuery() {
-        return index.getPathAsArray();
+        return index.getPathAsIntArray();
     }
 }
