@@ -9,10 +9,18 @@ public class PathSummary implements Estimation {
 
     private final PathIndex index;
     private final Summary summary;
+    private final double precision;
 
     public PathSummary(PathIndex index, Summary summary) {
         this.index = index;
         this.summary = summary;
+        precision = Double.MAX_VALUE;
+    }
+
+    public PathSummary(PathIndex index, Summary summary, double precision) {
+        this.index = index;
+        this.summary = summary;
+        this.precision = precision;
     }
 
     public PathIndex getIndex() {

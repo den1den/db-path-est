@@ -1,6 +1,8 @@
 package nl.tue.comparison;
 
 import nl.tue.algorithm.Algorithm;
+import nl.tue.algorithm.Estimation;
+import nl.tue.algorithm.Estimator;
 import nl.tue.algorithm.pathindex.PathIndex;
 import nl.tue.io.graph.DirectedBackEdgeGraph;
 
@@ -13,7 +15,8 @@ import java.util.List;
  */
 public class ComparisonExecutor {
 
-    public static List<ComparisonResult> executeComparisonsForPaths(List<PathIndex> paths, Algorithm method,
+    public static <E extends Estimation, A extends Estimator<E>> List<ComparisonResult> executeComparisonsForPaths(List<PathIndex> paths,
+                                                                           Algorithm<E, A> method,
                                                                     DirectedBackEdgeGraph graph) {
         List<ComparisonResult> res = new ArrayList<>();
 

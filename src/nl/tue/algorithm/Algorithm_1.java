@@ -1,5 +1,6 @@
 package nl.tue.algorithm;
 
+import nl.tue.algorithm.pathindex.PathIndex;
 import nl.tue.algorithm.query.QueryTree;
 
 import java.util.Collection;
@@ -23,14 +24,14 @@ public class Algorithm_1<E extends Estimation, R extends Estimator<E>> extends A
 
     class DynamicProgram {
         final int[] query;
-        HashMap<int[], E> cache; // start and end node -> D
+        HashMap<PathIndex, E> cache; // start and end node -> D
 
         public DynamicProgram(int[] query) {
             this.query = query;
             Collection<E> exactEstimations = inMemoryEstimator.retrieveAllExactEstimations();
             cache = new HashMap<>(exactEstimations.size());
             for (E e : exactEstimations) {
-                cache.put(query, e);
+                cache.put(new PathIndex(e.getQuery()), e);
             }
         }
 
@@ -39,7 +40,7 @@ public class Algorithm_1<E extends Estimation, R extends Estimator<E>> extends A
         }
 
         E getBest(int[] query) {
-            E best = cache.get(query);
+            E best = cache.get(new PathIndex(query));
             if (best != null) {
                 return best;
             }
@@ -51,7 +52,7 @@ public class Algorithm_1<E extends Estimation, R extends Estimator<E>> extends A
                 int[] head = new int[tailIndex + offset];
                 System.arraycopy(query, 0, head, 0, head.length);
                 int[] tail = new int[query.length - head.length];
-                System.arraycopy(query, head.length, head, 0, tail.length);
+                System.arraycopy(query, head.length, tail, 0, tail.length);
 
                 // head and tail
                 E headEstimation = getBest(head);

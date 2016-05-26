@@ -5,6 +5,7 @@ import nl.tue.io.Parser;
 
 import java.util.*;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.stream.Collectors;
 
 /**
  * Computes a summary for the given graph, after the summary has been computed the summary is serialized to a byte
@@ -71,20 +72,34 @@ public class IndexQueryEstimator implements Estimator<PathSummary> {
         if (pathIndexMap.containsKey(requested)) {
             return pathIndexMap.get(requested).getTuples();
         } else {
-            return guesstimate(path, pathIndexMap);
+            return -1;
         }
     }
 
     @Override
     public PathSummary combineEstimations(PathSummary left, PathSummary right) {
-        throw new UnsupportedOperationException("TODO");
+        int newTuples = (int)Math.min(((double)left.getTuples())*((double)right.getTuples()/(double)right.getSummary().getStart()),
+                ((double)right.getTuples())*((double)left.getTuples()/(double)left.getSummary().getEnd()));
+
+        int newStart = left.getSummary().getEnd();
+        int newEnd = right.getSummary().getStart();
+
+        return new PathSummary(new PathIndex(left.getIndex().getPath() + right.getIndex().getPathAsIntArray()),
+                new Summary(newStart, newTuples, newEnd), (left.getPrecision() + right.getPrecision())/2);
     }
 
     @Override
     public Collection<PathSummary> retrieveAllExactEstimations() {
-        throw new UnsupportedOperationException("TODO");
+
+        Map<PathIndex, Summary> pathIndexSummaryMap = indexFromOptimizedArray(optimizedGraph);
+
+        List<PathSummary> out = pathIndexSummaryMap.keySet().
+                stream().map(index -> new PathSummary(index, pathIndexSummaryMap.get(index))).collect(Collectors.toList());
+
+        return out;
     }
 
+    @Deprecated
     private static int guesstimate(int[] path, Map<PathIndex, Summary> pathIndexMap) {
 
         if(DEBUG) {
