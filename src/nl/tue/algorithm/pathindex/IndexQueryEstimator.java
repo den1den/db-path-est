@@ -99,8 +99,9 @@ public class IndexQueryEstimator implements Estimator<PathSummary> {
         return out;
     }
 
-    @Deprecated
-    private static int guesstimate(int[] path, Map<PathIndex, Summary> pathIndexMap) {
+    public int guesstimate(int[] path) {
+
+        Map<PathIndex, Summary> pathIndexMap = indexFromOptimizedArray(optimizedGraph);
 
         if(DEBUG) {
             System.out.println(String.format("Attempting to guess the result of %s", new PathIndex(path).getPath()));

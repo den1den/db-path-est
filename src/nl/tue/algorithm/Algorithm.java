@@ -2,6 +2,7 @@ package nl.tue.algorithm;
 
 import nl.tue.MemoryConstrained;
 import nl.tue.io.Parser;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,7 +16,6 @@ public abstract class Algorithm<E extends Estimation, R extends Estimator<E>> im
 
     R inMemoryEstimator;
     private int ALL_VALUES = 0;
-    private Parser.LabelMapping labelMapping = null;
 
     public Algorithm(R estimator) {
         this.inMemoryEstimator = estimator;
@@ -37,13 +37,14 @@ public abstract class Algorithm<E extends Estimation, R extends Estimator<E>> im
     protected abstract int executeQuery(int[] query);
 
     final public int queryRaw(long[] rawQuery) {
-        return query(Arrays.stream(rawQuery).mapToInt(labelMapping).toArray());
+
+
+        throw new NotImplementedException(); //TODO rework to get it up to spec.
     }
 
     @Override
     public void buildSummary(Parser p, int k, double b) {
         this.ALL_VALUES = p.getNEdges() * p.getNEdges();
-        this.labelMapping = p.getLabelMapping();
         inMemoryEstimator.buildSummary(p, k, b);
     }
 

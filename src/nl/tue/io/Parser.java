@@ -18,10 +18,21 @@ public class Parser {
     public long highestSrc = -1;
     public long highestLabel = -1;
     public long highestDest = -1;
+
+    /**
+     * Map that contains the edge mapping which maps edges from the world to the application domain. Edges in the
+     * application domain start at 0, are consecutive and go up to n - 1. Where n is the number of unique labels. Back
+     * edges are assigned from n to 2n - 1. Where the back edge for a label l can be found by doing l + n.
+     */
+    private Map<String, Integer> edgeMappings = new HashMap<>();
+
+
     private Set<Long> labels = new HashSet<>();
+
     public LinkedList<long[]> tuples = new LinkedList<>();
     public LinkedList<long[]> invertedTuples = new LinkedList<>();
     public LinkedList<long[]> combinedList = new LinkedList<>();
+
     public void parse(String pathname) throws IOException {
         File f = new File(pathname);
         if (!f.isFile()) {
@@ -46,6 +57,17 @@ public class Parser {
                 dest = scanner.nextLong();
                 foundTuple(src, label, dest);
             }
+
+            Map<String, Integer> reversedMappings = new HashMap<>();
+
+            for(String mappingKey : this.edgeMappings.keySet()) {
+                int mappedTo = this.edgeMappings.get(mappingKey);
+
+                reversedMappings.put(mappingKey.replace("+", "-"), mappedTo + this.labels.size());
+            }
+
+            this.edgeMappings.putAll(reversedMappings);
+
         } catch (NoSuchElementException e) {
             throw new IOException("Expected an long in input file", e);
         }
@@ -62,7 +84,7 @@ public class Parser {
 
                 src = scanner.nextLong();
                 label = scanner.nextLong();
-                label = -label;
+                label = -label; //TODO fix this
                 dest = scanner.nextLong();
                 invertedTuples.add(new long[]{dest, label, src});;
             }
@@ -115,7 +137,14 @@ public class Parser {
         if(highestDest == -1 || dest > highestDest){
             highestDest = dest;
         }
+
+        if(!edgeMappings.containsKey(label)) {
+            edgeMappings.put("+" + label, this.labels.size());
+        }
+
+
         labels.add(label);
+
         tuples.add(new long[]{src, label, dest});
     }
 
@@ -158,28 +187,11 @@ public class Parser {
         return this.highestLabel < Integer.MAX_VALUE - 8; // See ArrayList
     }
 
-    public LabelMapping getLabelMapping() {
-        throw new NotImplementedException();
-    }
-
     public int getNEdges() {
         return tuples.size();
     }
 
-    /**
-     * Naive, consecutive
-     */
-    public static class LabelMapping implements LongToIntFunction {
-
-        final int N;
-
-        public LabelMapping(int n) {
-            N = n;
-        }
-
-        @Override
-        public int applyAsInt(long value) {
-            return Math.toIntExact(value + N);
-        }
+    public Map<String, Integer> getEdgeMappings() {
+        return edgeMappings;
     }
 }

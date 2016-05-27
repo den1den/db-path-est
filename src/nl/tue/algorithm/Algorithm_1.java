@@ -40,7 +40,7 @@ public class Algorithm_1<E extends Estimation, R extends Estimator<E>> extends A
         }
 
         /**
-         * This recursive call does not seem to terminate when subpaths need to be joined. 
+         * This recursive call does not seem to terminate when subpaths need to be joined.
          * @param query
          * @return
          */

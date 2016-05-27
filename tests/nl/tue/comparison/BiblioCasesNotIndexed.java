@@ -2,6 +2,7 @@ package nl.tue.comparison;
 
 import nl.tue.algorithm.Algorithm;
 import nl.tue.algorithm.Algorithm_1;
+import nl.tue.algorithm.NaiveJoinAlgorithm;
 import nl.tue.algorithm.pathindex.IndexQueryEstimator;
 import nl.tue.algorithm.pathindex.PathIndex;
 import nl.tue.algorithm.pathindex.PathSummary;
@@ -46,7 +47,7 @@ public class BiblioCasesNotIndexed {
 
         estimator.buildSummary(parser, 3, 800*2);
 
-        algo = new Algorithm_1<>(estimator);
+        algo = new NaiveJoinAlgorithm(estimator);
     }
 
     @Test
