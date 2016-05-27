@@ -39,6 +39,11 @@ public class Algorithm_1<E extends Estimation, R extends Estimator<E>> extends A
             return getBest(query);
         }
 
+        /**
+         * This recursive call does not seem to terminate when subpaths need to be joined. 
+         * @param query
+         * @return
+         */
         E getBest(int[] query) {
             E best = cache.get(new PathIndex(query));
             if (best != null) {
