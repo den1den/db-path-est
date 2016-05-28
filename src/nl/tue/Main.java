@@ -5,14 +5,11 @@ import nl.tue.algorithm.Algorithm_1;
 import nl.tue.algorithm.pathindex.IndexQueryEstimator;
 import nl.tue.algorithm.pathindex.PathSummary;
 import nl.tue.io.Parser;
-import nl.tue.io.datatypes.DGHashMap;
-import nl.tue.io.datatypes.OrderedEdgeArray;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Scanner;
 
 public class Main {
@@ -37,40 +34,36 @@ public class Main {
         Scanner s = new Scanner(System.in);
         while (s.hasNextLine()) {
             String nextLine = s.nextLine();
-            Scanner numberScanner = new Scanner(nextLine);
-            LinkedList<Long> input = new LinkedList<>();
-            while (numberScanner.hasNextLong()) {
-                input.add(s.nextLong());
-            }
-            //Execute
-            long result = algorithm.queryRaw(input);
+
+            long result = algorithm.queryRaw(translateTextQueryToDomainQuery(nextLine, p));
+
             System.out.println(result);
         }
     }
 
-    public static void test(String[] args) throws IOException {
-        //Try to read all files from first argument
-        String baseFolder = args[0];
-        for (Parser p : readAll(baseFolder)){
-            //TODO: Test creation of graphs in testsuite
-            DGHashMap dg0 = new DGHashMap.LabelArray(p);
-            DGHashMap dg1 = new DGHashMap.DoubleIndexedHashMap(p);
+    public static int[] translateTextQueryToDomainQuery(String query, Parser parser) {
+        String[] parts = query.split(" ");
+        int[] out = new int[parts.length / 2];
 
-            OrderedEdgeArray oea0 = OrderedEdgeArray.construct(p);
+        for (int i = 0; i < parts.length; i += 2) {
+            out[i/2] = parser.getEdgeMappings().get(parts[i] + parts[i+1]);
         }
+
+        return out;
     }
 
     /**
      * Read and parse all files from some folder
+     *
      * @param folder
      * @return
      */
-    private static Iterable<Parser> readAll(String folder){
+    private static Iterable<Parser> readAll(String folder) {
         File baseFolder = new File(folder);
-        if(!baseFolder.isDirectory()){
-            throw new RuntimeException("Expected first argument to be a directory, instead found: "+baseFolder.toString());
+        if (!baseFolder.isDirectory()) {
+            throw new RuntimeException("Expected first argument to be a directory, instead found: " + baseFolder.toString());
         }
-        File[] files = baseFolder.listFiles((File dir, String name)->name.endsWith(".txt"));
+        File[] files = baseFolder.listFiles((File dir, String name) -> name.endsWith(".txt"));
         Iterator<Parser> it = Arrays.stream(files).map(file -> {
             Parser p = new Parser();
             try {

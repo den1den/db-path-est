@@ -1,10 +1,9 @@
 package nl.tue.comparison;
 
+import nl.tue.Main;
 import nl.tue.algorithm.Algorithm;
-import nl.tue.algorithm.Algorithm_1;
 import nl.tue.algorithm.NaiveJoinAlgorithm;
 import nl.tue.algorithm.pathindex.IndexQueryEstimator;
-import nl.tue.algorithm.pathindex.PathIndex;
 import nl.tue.algorithm.pathindex.PathSummary;
 import nl.tue.io.Parser;
 import nl.tue.io.graph.AdjacencyList;
@@ -15,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Nathan on 5/25/2016.
@@ -30,8 +30,9 @@ public class BiblioCasesNotIndexed {
     /**
      * These paths will not be indexed if byte allocation is set to nodes * 2.
      */
-    private static List<PathIndex> paths = Arrays.asList(new PathIndex("5/0/4/1/2"), new PathIndex("5/0/4/3"),
-            new PathIndex("5/0/1/2"), new PathIndex("0/4/1/2"));
+    private static List<String> paths = Arrays.asList("+ 5 + 0 + 4 + 1 + 2", "+ 5 + 0 + 4 + 3",
+            "+ 5 + 0 + 1 + 2", "+ 0 + 4 + 1 + 2", "+ 5 + 0 - 4 + 1 + 2", "- 5 + 0 + 4 + 1 - 1",
+            "- 5 + 0 - 4 + 3", "+ 0 - 4 + 1 + 2");
 
     @BeforeClass
     public static void beforeClass() throws IOException {
@@ -39,20 +40,17 @@ public class BiblioCasesNotIndexed {
 
         parser.parse(biblioFile);
 
-        /**
-         * Figure out how to instantiate the algorithm class. TODO
-         */
-
         IndexQueryEstimator estimator = new IndexQueryEstimator();
 
-        estimator.buildSummary(parser, 3, 800*2);
+        estimator.buildSummary(parser, 3, 837*8);
 
         algo = new NaiveJoinAlgorithm(estimator);
     }
 
     @Test
     public void execute() {
-        List<ComparisonResult> res = ComparisonExecutor.executeComparisonsForPaths(paths, algo, new AdjacencyList(parser));
+        List<int[]> intArrPaths = paths.stream().map(path -> Main.translateTextQueryToDomainQuery(path, parser)).collect(Collectors.toList());
+        List<ComparisonResult> res = ComparisonExecutor.executeComparisonsForPaths(intArrPaths, algo, new AdjacencyList(parser));
 
         double percentageSum = 0;
 

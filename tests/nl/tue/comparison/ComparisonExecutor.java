@@ -15,17 +15,18 @@ import java.util.List;
  */
 public class ComparisonExecutor {
 
-    public static <E extends Estimation, A extends Estimator<E>> List<ComparisonResult> executeComparisonsForPaths(List<PathIndex> paths,
+    public static <E extends Estimation, A extends Estimator<E>> List<ComparisonResult>
+        executeComparisonsForPaths(List<int[]> paths,
                                                                            Algorithm<E, A> method,
                                                                     DirectedBackEdgeGraph graph) {
         List<ComparisonResult> res = new ArrayList<>();
 
-        for(PathIndex path : paths) {
-            int estimation = method.query(path.getPathAsIntArray());
+        for(int[] path : paths) {
+            int estimation = method.query(path);
 
-            int result = graph.solvePathQuery(path.getPathAsIntArray()).size();
+            int result = graph.solvePathQuery(path).size();
 
-            res.add(new ComparisonResult(path, result, estimation));
+            res.add(new ComparisonResult(new PathIndex(path), result, estimation));
         }
 
         return res;

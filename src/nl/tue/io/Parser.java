@@ -16,7 +16,6 @@ public class Parser {
     public long lowestLabel = -1;
     public long lowestDest = -1;
     public long highestSrc = -1;
-    public long highestLabel = -1;
     public long highestDest = -1;
 
     /**
@@ -25,9 +24,6 @@ public class Parser {
      * edges are assigned from n to 2n - 1. Where the back edge for a label l can be found by doing l + n.
      */
     private Map<String, Integer> edgeMappings = new HashMap<>();
-
-
-    private Set<Long> labels = new HashSet<>();
 
     public LinkedList<long[]> tuples = new LinkedList<>();
     public LinkedList<long[]> invertedTuples = new LinkedList<>();
@@ -63,7 +59,7 @@ public class Parser {
             for(String mappingKey : this.edgeMappings.keySet()) {
                 int mappedTo = this.edgeMappings.get(mappingKey);
 
-                reversedMappings.put(mappingKey.replace("+", "-"), mappedTo + this.labels.size());
+                reversedMappings.put(mappingKey.replace("+", "-"), mappedTo + this.edgeMappings.size());
             }
 
             this.edgeMappings.putAll(reversedMappings);
@@ -108,14 +104,9 @@ public class Parser {
 
         fw.close();
     }
-    private void assertConsecutiveLabels() {
-        assert lowestLabel == 0;
-        assert highestLabel == this.labels.size() - 1;
-    }
 
     public int getNLabels() {
-        assertConsecutiveLabels();
-        return this.labels.size();
+        return this.edgeMappings.size();
     }
 
     private void foundTuple(long src, long label, long dest) {
@@ -128,9 +119,6 @@ public class Parser {
         if(lowestLabel == -1 || label < lowestLabel){
             lowestLabel = label;
         }
-        if(highestLabel == -1 || label > highestLabel){
-            highestLabel = label;
-        }
         if(lowestDest == -1 || dest < lowestDest){
             lowestDest = dest;
         }
@@ -138,12 +126,9 @@ public class Parser {
             highestDest = dest;
         }
 
-        if(!edgeMappings.containsKey(label)) {
-            edgeMappings.put("+" + label, this.labels.size());
+        if(!edgeMappings.containsKey("+" + label)) {
+            edgeMappings.put("+" + label, this.edgeMappings.size());
         }
-
-
-        labels.add(label);
 
         tuples.add(new long[]{src, label, dest});
     }
@@ -180,11 +165,11 @@ public class Parser {
     }
 
     public boolean labelFitsInByte(){
-        return this.highestLabel <= Byte.MAX_VALUE;
+        return this.edgeMappings.size() <= Byte.MAX_VALUE;
     }
 
     public boolean labelFitsInArrayLength() {
-        return this.highestLabel < Integer.MAX_VALUE - 8; // See ArrayList
+        return this.edgeMappings.size() < Integer.MAX_VALUE - 8; // See ArrayList
     }
 
     public int getNEdges() {

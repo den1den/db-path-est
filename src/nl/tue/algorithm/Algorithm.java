@@ -14,7 +14,7 @@ import java.util.List;
  */
 public abstract class Algorithm<E extends Estimation, R extends Estimator<E>> implements MemoryConstrained {
 
-    R inMemoryEstimator;
+    protected R inMemoryEstimator;
     private int ALL_VALUES = 0;
 
     public Algorithm(R estimator) {
@@ -36,10 +36,9 @@ public abstract class Algorithm<E extends Estimation, R extends Estimator<E>> im
 
     protected abstract int executeQuery(int[] query);
 
-    final public int queryRaw(long[] rawQuery) {
+    final public int queryRaw(int[] rawQuery) {
 
-
-        throw new NotImplementedException(); //TODO rework to get it up to spec.
+        return executeQuery(rawQuery);
     }
 
     @Override
@@ -51,9 +50,5 @@ public abstract class Algorithm<E extends Estimation, R extends Estimator<E>> im
     @Override
     public long getBytesUsed() {
         return inMemoryEstimator.getBytesUsed();
-    }
-
-    public int queryRaw(List<Long> query) {
-        return queryRaw(query.stream().mapToLong(i -> i).toArray());
     }
 }

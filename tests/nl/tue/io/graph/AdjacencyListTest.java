@@ -64,8 +64,8 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Assert.assertTrue(list.getNodes().get(1).get(1).contains(2));
-        Assert.assertTrue(list.getNodes().get(1).get(1).size() == 1);
+        Assert.assertTrue(list.getNodes().get(1).get(p.getEdgeMappings().get("+1")).contains(2));
+        Assert.assertTrue(list.getNodes().get(1).get(p.getEdgeMappings().get("+1")).size() == 1);
     }
 
     @Test
@@ -83,9 +83,9 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Assert.assertTrue(list.getNodes().get(1).get(1).contains(2));
-        Assert.assertTrue(list.getNodes().get(1).get(1).contains(3));
-        Assert.assertTrue(list.getNodes().get(1).get(1).size() == 2);
+        Assert.assertTrue(list.getNodes().get(1).get(p.getEdgeMappings().get("+1")).contains(2));
+        Assert.assertTrue(list.getNodes().get(1).get(p.getEdgeMappings().get("+1")).contains(3));
+        Assert.assertTrue(list.getNodes().get(1).get(p.getEdgeMappings().get("+1")).size() == 2);
     }
     @Test
     public void testThreeOutgoingOneLabel() throws IOException {
@@ -103,10 +103,10 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Assert.assertTrue(list.getNodes().get(1).get(1).contains(2));
-        Assert.assertTrue(list.getNodes().get(1).get(1).contains(3));
-        Assert.assertTrue(list.getNodes().get(1).get(1).contains(4));
-        Assert.assertTrue(list.getNodes().get(1).get(1).size() == 3);
+        Assert.assertTrue(list.getNodes().get(1).get(p.getEdgeMappings().get("+1")).contains(2));
+        Assert.assertTrue(list.getNodes().get(1).get(p.getEdgeMappings().get("+1")).contains(3));
+        Assert.assertTrue(list.getNodes().get(1).get(p.getEdgeMappings().get("+1")).contains(4));
+        Assert.assertTrue(list.getNodes().get(1).get(p.getEdgeMappings().get("+1")).size() == 3);
     }
     @Test
     public void testBackEdgeIntroduced() throws IOException {
@@ -122,10 +122,10 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Assert.assertTrue(list.getNodes().get(1).get(1).contains(2));
-        Assert.assertTrue(list.getNodes().get(1).get(1).size() == 1);
-        Assert.assertTrue(list.getNodes().get(2).get(-1).size() == 1);
-        Assert.assertTrue(list.getNodes().get(2).get(-1).contains(1));
+        Assert.assertTrue(list.getNodes().get(1).get(p.getEdgeMappings().get("+1")).contains(2));
+        Assert.assertTrue(list.getNodes().get(1).get(p.getEdgeMappings().get("+1")).size() == 1);
+        Assert.assertTrue(list.getNodes().get(2).get(p.getEdgeMappings().get("-1")).size() == 1);
+        Assert.assertTrue(list.getNodes().get(2).get(p.getEdgeMappings().get("-1")).contains(1));
     }
 
     @Test
@@ -142,7 +142,7 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Set<NodePair> res = list.solvePathQuery(new int[] {1});
+        Set<NodePair> res = list.solvePathQuery(new int[] {p.getEdgeMappings().get("+1")});
 
         Assert.assertTrue(res.size() == 1);
         Assert.assertTrue(res.contains(new NodePair(1, 2)));
@@ -164,7 +164,8 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Set<NodePair> res = list.solvePathQuery(new int[] {1, 1, 2});
+        Set<NodePair> res = list.solvePathQuery(new int[] {p.getEdgeMappings().get("+1"),
+                p.getEdgeMappings().get("+1"), p.getEdgeMappings().get("+2")});
 
         Assert.assertTrue(res.size() == 1);
         Assert.assertTrue(res.contains(new NodePair(1, 3)));
@@ -189,7 +190,8 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Set<NodePair> res = list.solvePathQuery(new int[] {3, 2, 2});
+        Set<NodePair> res = list.solvePathQuery(new int[] {p.getEdgeMappings().get("+3"),
+                p.getEdgeMappings().get("+2"), p.getEdgeMappings().get("+2")});
 
         Assert.assertTrue(res.size() == 2);
         Assert.assertTrue(res.contains(new NodePair(1,3)));
@@ -212,7 +214,7 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Set<NodePair> res = list.solvePathQuery(new int[]{1});
+        Set<NodePair> res = list.solvePathQuery(new int[]{p.getEdgeMappings().get("+1")});
 
         Assert.assertTrue(res.size() == 2);
 
@@ -238,7 +240,8 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Set<NodePair> res = list.solvePathQuery(new int[]{1, 2, 1});
+        Set<NodePair> res = list.solvePathQuery(new int[]{p.getEdgeMappings().get("+1"),
+                p.getEdgeMappings().get("+2"), p.getEdgeMappings().get("+1")});
 
         Assert.assertTrue(res.size() == 3);
 
@@ -263,7 +266,7 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Set<NodePair> res = list.solvePathQuery(new int[]{1, 1});
+        Set<NodePair> res = list.solvePathQuery(new int[]{p.getEdgeMappings().get("+1"), p.getEdgeMappings().get("+1")});
 
         Assert.assertTrue(res.size() == 3);
 
@@ -288,7 +291,8 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Set<NodePair> res = list.solvePathQuery(new int[]{2, 1, 1});
+        Set<NodePair> res = list.solvePathQuery(new int[]{p.getEdgeMappings().get("+2"),
+                p.getEdgeMappings().get("+1"), p.getEdgeMappings().get("+1")});
 
         Assert.assertTrue(res.size() == 0);
     }
@@ -308,7 +312,7 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Set<NodePair> res = list.solvePathQuery(new int[]{1, -1});
+        Set<NodePair> res = list.solvePathQuery(new int[]{p.getEdgeMappings().get("+1"), p.getEdgeMappings().get("-1")});
 
         Assert.assertTrue(res.size() == 4);
 
@@ -317,6 +321,7 @@ public class AdjacencyListTest {
         Assert.assertTrue(res.contains(new NodePair(1, 3)));
         Assert.assertTrue(res.contains(new NodePair(3, 1)));
     }
+
     @Test
     public void testQueryLengthFiveWithCycleQuery() throws IOException {
         PrintWriter out = new PrintWriter(file);
@@ -335,10 +340,12 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Set<NodePair> res = list.solvePathQuery(new int[]{1, 1, 1 , 1 ,1});
+        Set<NodePair> res = list.solvePathQuery(new int[]{p.getEdgeMappings().get("+1"), p.getEdgeMappings().get("+1"),
+                p.getEdgeMappings().get("+1"), p.getEdgeMappings().get("+1"), p.getEdgeMappings().get("+1")});
 
         Assert.assertTrue(res.size() == 5);
     }
+
     @Test
     public void doRandomGraphLengthTwoWithCycleQuery() throws IOException {
         PrintWriter out = new PrintWriter(file);
@@ -357,13 +364,14 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Set<NodePair> res = list.solvePathQuery(new int[]{1, 1});
+        Set<NodePair> res = list.solvePathQuery(new int[]{p.getEdgeMappings().get("+1"), p.getEdgeMappings().get("+1")});
 
         Assert.assertTrue(res.size() == 2);
 
         Assert.assertTrue(res.contains(new NodePair(2, 2)));
         Assert.assertTrue(res.contains(new NodePair(1, 4)));
     }
+
     @Test
     public void testBackQueryLengthThreeWithCycle() throws IOException {
         PrintWriter out = new PrintWriter(file);
@@ -380,7 +388,8 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Set<NodePair> res = list.solvePathQuery(new int[]{-1, -1, -1});
+        Set<NodePair> res = list.solvePathQuery(new int[]{p.getEdgeMappings().get("-1"), p.getEdgeMappings().get("-1"),
+                p.getEdgeMappings().get("-1")});
 
         Assert.assertTrue(res.size() == 3);
     }

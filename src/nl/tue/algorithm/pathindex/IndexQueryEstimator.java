@@ -62,12 +62,10 @@ public class IndexQueryEstimator implements Estimator<PathSummary> {
         optimizedGraph = summaryToByteArray(fullSummary, (int) (b - OVERHEAD));
     }
 
-    public int getEstimation(List<Long> query) {
+    public int getEstimation(int[] query) {
         Map<PathIndex, Summary> pathIndexMap = indexFromOptimizedArray(optimizedGraph);
 
-        int[] path = queryToIntArray(query);
-
-        PathIndex requested = new PathIndex(path);
+        PathIndex requested = new PathIndex(query);
 
         if (pathIndexMap.containsKey(requested)) {
             return pathIndexMap.get(requested).getTuples();
@@ -164,20 +162,6 @@ public class IndexQueryEstimator implements Estimator<PathSummary> {
     @Override
     public long getBytesUsed() {
         return 0;
-    }
-
-    private static int[] queryToIntArray(List<Long> query) {
-        int[] path = new int[query.size()];
-
-        for (int i = 0; i < query.size(); i++) {
-            path[i] = query.get(i).intValue();
-        }
-
-        return path;
-    }
-
-    private static byte[] summaryToByteArray(Queue<PathSummary> summaries) {
-        return summaryToByteArray(summaries, -1);
     }
 
     /**

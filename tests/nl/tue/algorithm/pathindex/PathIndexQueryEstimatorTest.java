@@ -1,5 +1,6 @@
 package nl.tue.algorithm.pathindex;
 
+import nl.tue.Main;
 import nl.tue.io.Parser;
 import nl.tue.io.graph.AdjacencyList;
 import org.junit.Assert;
@@ -8,8 +9,6 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Nathan on 5/24/2016.
@@ -43,57 +42,20 @@ public class PathIndexQueryEstimatorTest {
          * Indexes 132? paths
          */
 
-        List<Long> query = new ArrayList<>();
+        int[] query = Main.translateTextQueryToDomainQuery("+ 1", parser);
 
-        query.add(1l);
-
-        Assert.assertEquals(verifier.solvePathQuery(new int[]{1}).size(), estimator.getEstimation(query));
+        Assert.assertEquals(verifier.solvePathQuery(query).size(), estimator.getEstimation(query));
     }
 
     @Test
     public void testNonIndexedPaths() {
 
-        List<Long> query = new ArrayList<>();
-
-        query.add(5l);
-        query.add(0l);
-        query.add(4l);
-        query.add(1l);
-        query.add(2l);
+        int[] query = Main.translateTextQueryToDomainQuery("+ 5 + 0 + 4 + 1 + 2", parser);
 
         int res = estimator.getEstimation(query);
 
-        System.out.println(String.format("Estimated %s actual %s", res, 71));
+        Assert.assertEquals(-1, res);
     }
 
-    @Test
-    public void testNonIndexedPaths_2() {
 
-        List<Long> query = new ArrayList<>();
-
-        query.add(5l);
-        query.add(0l);
-        query.add(4l);
-        query.add(3l);
-
-        int res = estimator.getEstimation(query);
-
-        System.out.println(String.format("Estimated %s actual %s", res, 49));
-    }
-
-    @Test
-    public void testNonIndexedPaths_3() {
-
-        List<Long> query = new ArrayList<>();
-
-        query.add(5l);
-        query.add(0l);
-        query.add(1l);
-        query.add(2l);
-
-        int res = estimator.getEstimation(query);
-
-        //THE OLD DATA IS DEAD, LONG LIVE THE NEW DATA
-        System.out.println(String.format("Estimated %s actual %s", res, 51));
-    }
 }

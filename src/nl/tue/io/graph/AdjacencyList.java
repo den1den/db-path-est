@@ -22,14 +22,14 @@ public class AdjacencyList implements DirectedBackEdgeGraph {
             }
 
             if(!nodes.containsKey((int)tuple[0])) {
-               nodes.put((int)tuple[0], emptyEdges(parser.lowestLabel, parser.highestLabel));
+               nodes.put((int)tuple[0], emptyEdges(0, parser.getNLabels() - 1));
             }
             if(!nodes.containsKey((int)tuple[2])) {
-                nodes.put((int)tuple[2], emptyEdges(parser.lowestLabel, parser.highestLabel));
+                nodes.put((int)tuple[2], emptyEdges(0, parser.getNLabels() - 1));
             }
 
-            Set<Integer> edgesForLabel = nodes.get((int)tuple[0]).get((int)tuple[1]);
-            Set<Integer> backEdgesForLabel = nodes.get((int)tuple[2]).get(0 - ((int)tuple[1]));
+            Set<Integer> edgesForLabel = nodes.get((int)tuple[0]).get(parser.getEdgeMappings().get("+" + tuple[1]));
+            Set<Integer> backEdgesForLabel = nodes.get((int)tuple[2]).get(parser.getEdgeMappings().get("-" + tuple[1]));
 
             edgesForLabel.add((int)tuple[2]);
             backEdgesForLabel.add((int)tuple[0]);
@@ -48,10 +48,6 @@ public class AdjacencyList implements DirectedBackEdgeGraph {
     private Map<Integer, Set<Integer>> emptyEdges(long lowestLabel, long highestLabel) {
         Map<Integer, Set<Integer>> edges = new HashMap<>();
         for(long i = lowestLabel; i <= highestLabel; i++) {
-            edges.put((int)i, new HashSet<>());
-        }
-
-        for(long i = 0 - lowestLabel; i >= 0 - highestLabel; i--) {
             edges.put((int)i, new HashSet<>());
         }
 

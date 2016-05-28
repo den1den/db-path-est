@@ -1,5 +1,6 @@
 package nl.tue.io.graph;
 
+import nl.tue.Main;
 import nl.tue.io.Parser;
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,13 +21,15 @@ public class AdjacencyListTestOnBiblio {
 
     private static AdjacencyList list;
 
+    private static Parser parser;
+
     @BeforeClass
     public static void loadFile() throws IOException {
-        Parser p = new Parser();
+        parser = new Parser();
 
-        p.parse(file);
+        parser.parse(file);
 
-        list = new AdjacencyList(p);
+        list = new AdjacencyList(parser);
 
     }
 
@@ -37,14 +40,14 @@ public class AdjacencyListTestOnBiblio {
 
     @Test
     public void testCitiesQuery() throws IOException {
-        Set<NodePair> nodes = list.solvePathQuery(new int[]{5});
+        Set<NodePair> nodes = list.solvePathQuery(Main.translateTextQueryToDomainQuery("+ 5", parser));
 
         Assert.assertEquals(366, nodes.size());
     }
 
     @Test
     public void testLongerPathQuery() throws IOException {
-        Set<NodePair> nodes = list.solvePathQuery(new int[]{5, 0, 3});
+        Set<NodePair> nodes = list.solvePathQuery(Main.translateTextQueryToDomainQuery("+ 5 + 0 + 3", parser));
 
         Assert.assertEquals(47, nodes.size());
     }
