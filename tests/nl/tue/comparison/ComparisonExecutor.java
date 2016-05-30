@@ -13,9 +13,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by Nathan on 5/25/2016.
@@ -34,9 +33,18 @@ public class ComparisonExecutor {
 
         File biblioFile = new File(AdjacencyList.class.getClassLoader().getResource("biblio.txt").getFile());
 
-        TestEnvironment biblio = new TestEnvironment(biblioQueries, biblioFile);
+        TestEnvironment biblio = new TestEnvironment(biblioQueries, biblioFile, "Biblio");
 
         environments.add(biblio);
+
+        List<String> musicQueries = Arrays.asList("+ 3 - 4 + 5 - 5 + 6", "- 2 - 2 + 5 - 5 + 6", "- 6 - 2 + 5 - 5 + 6",
+                "- 4 + 5 - 5 + 6");
+
+        File musicFile = new File(AdjacencyList.class.getClassLoader().getResource("generatedmusicdata.txt").getFile());
+
+        TestEnvironment music = new TestEnvironment(musicQueries, musicFile, "Music");
+
+        environments.add(music);
     }
 
     @Test
@@ -49,21 +57,35 @@ public class ComparisonExecutor {
     private static void executeAndReportTests(Algorithm<? extends Estimation, ? extends Estimator<? extends Estimation>> algo,
                                        List<TestEnvironment> envs) {
         List<ComparisonResult> res = new ArrayList<>();
+        Map<String, Double> envAcc = new HashMap<>();
 
         for(TestEnvironment env : envs) {
-            res.addAll(env.execute(algo));
+            List<ComparisonResult> comparisonResults = env.execute(algo);
+            double envAccuracy = computeAverage(comparisonResults.stream().
+                    map(ComparisonResult::getAccuracy).collect(Collectors.toList()));
+
+            envAcc.put(env.getName(), envAccuracy);
+
+            res.addAll(comparisonResults);
         }
 
+       double accAverage = computeAverage(res.stream().map(ComparisonResult::getAccuracy).collect(Collectors.toList()));
+
+        for(String envName : envAcc.keySet()) {
+            System.out.println(String.format("\tAccuracy for environment: '%s' is %f", envName, envAcc.get(envName)));
+        }
+
+        System.out.println(String.format("Total average accuracy over all environment is: %f", accAverage));
+    }
+
+    private static double computeAverage(List<Double> in) {
         double percentageSum = 0;
 
-        for(ComparisonResult comparisonResult : res) {
-            percentageSum += comparisonResult.getAccuracy();
+        for(double i : in) {
+            percentageSum += i;
         }
 
-        double accAverage = percentageSum / ((double)res.size());
-
-        System.out.println(String.format("Default method with dynamic joining of paths and naive joining " +
-                "has an accuracy of %s", accAverage));
+       return percentageSum / ((double)in.size());
     }
 
 }
