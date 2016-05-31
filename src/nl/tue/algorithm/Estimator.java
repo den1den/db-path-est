@@ -1,15 +1,18 @@
 package nl.tue.algorithm;
 
 import nl.tue.MemoryConstrained;
+import nl.tue.io.Parser;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by dennis on 24-5-16.
  */
 public interface Estimator<E extends Estimation> extends MemoryConstrained {
 
-    E combineEstimations(E left, E right);
+    E concatEstimations(E left, E right);
+    int combineEstimations(List<E> sortedEs);
 
     Collection<E> retrieveAllExactEstimations();
 

@@ -7,9 +7,14 @@ import java.util.List;
 /**
  * Created by dennis on 24-5-16.
  */
-public abstract class Estimation {
+public abstract class Estimation implements Comparable<Estimation> {
+    public final int joins;
+
+    public Estimation(int joins) {
+        this.joins = joins;
+    }
+
     /**
-     *
      * An notion of precision.
      *
      * @return The higher the better, with Double.MAX_VALUE being exact
@@ -22,9 +27,19 @@ public abstract class Estimation {
      */
     public abstract int getTuples();
 
+    @Override
+    public int compareTo(Estimation o) {
+        int compare = -Integer.compare(joins, o.joins);
+        if (compare != 0) {
+            return compare;
+        }
+        compare = Double.compare(getPrecision(), o.getPrecision());
+        return compare;
+    }
+
     /**
      * If this query is exact the exact (non null) query should be given
-     * Note: multiple constraints in Java Generics is not allowed
+     * Note: because multiple constraints in Java Generics is not allowed
      *
      * @return exact query of null
      */

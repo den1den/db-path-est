@@ -2,6 +2,7 @@ package nl.tue.algorithm.pathindex;
 
 import nl.tue.algorithm.Estimator;
 import nl.tue.io.Parser;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -75,7 +76,7 @@ public class IndexQueryEstimator implements Estimator<PathSummary> {
     }
 
     @Override
-    public PathSummary combineEstimations(PathSummary left, PathSummary right) {
+    public PathSummary concatEstimations(PathSummary left, PathSummary right) {
         int newTuples = (int)Math.min(((double)left.getTuples())*((double)right.getTuples()/(double)right.getSummary().getStart()),
                 ((double)right.getTuples())*((double)left.getTuples()/(double)left.getSummary().getEnd()));
 
@@ -85,7 +86,18 @@ public class IndexQueryEstimator implements Estimator<PathSummary> {
         PathIndex newPathIndex = new PathIndex(left.getIndex(), right.getIndex());
         Summary newSummary = new Summary(newStart, newTuples, newEnd);
         double precission = (left.getPrecision() + right.getPrecision()) / 2;
-        return new PathSummary(newPathIndex, newSummary, precission);
+        int joins = left.joins + right.joins + 1;
+        return new PathSummary(newPathIndex, newSummary, precission, joins);
+    }
+
+    @Override
+    public int combineEstimations(List<PathSummary> sortedEs) {
+        //FIXME: Has to be revisioned
+        final double totalP = sortedEs.stream().mapToDouble(PathSummary::getPrecision).sum();
+        double finalEstimate = sortedEs.stream().mapToDouble(
+              ps -> ps.getPrecision() / totalP * ps.getTuples()
+        ).sum();
+        return (int) Math.round(finalEstimate);
     }
 
     @Override
