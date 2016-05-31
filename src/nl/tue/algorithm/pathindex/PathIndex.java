@@ -8,13 +8,16 @@ import java.util.List;
  */
 public final class PathIndex {
     private final String path;
+    private final int length;
 
     public PathIndex(String path) {
         this.path = path;
+        length = path.split("/").length;
     }
 
     public PathIndex(int[] path) {
         String out = "";
+        length = path.length;
 
         for(int element : path) {
             out = out + element + "/";
@@ -39,14 +42,8 @@ public final class PathIndex {
         return pathArray;
     }
 
-    public List<Long> getPathAsLongList() {
-        List<Long> out = new ArrayList<>();
-
-        for(int i : getPathAsIntArray()) {
-            out.add((long)i);
-        }
-
-        return out;
+    public int getLength() {
+        return this.length;
     }
 
     @Override

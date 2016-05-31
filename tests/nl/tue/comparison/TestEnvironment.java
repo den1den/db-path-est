@@ -9,7 +9,6 @@ import nl.tue.io.Parser;
 import nl.tue.io.graph.AdjacencyList;
 import nl.tue.io.graph.DirectedBackEdgeGraph;
 
-import javax.management.Query;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,11 +21,12 @@ import java.util.stream.Collectors;
 public class TestEnvironment {
     private final List<String> queries;
     private final File file;
+    private final String name;
 
-    public TestEnvironment(List<String> queries,
-                           File file) {
+    public TestEnvironment(List<String> queries, File file, String name) {
         this.queries = queries;
         this.file = file;
+        this.name = name;
     }
 
     public List<ComparisonResult> execute(Algorithm<? extends Estimation, ? extends Estimator<? extends Estimation>> algo) {
@@ -43,9 +43,13 @@ public class TestEnvironment {
 
         AdjacencyList graph = new AdjacencyList(parser);
 
-        algo.buildSummary(parser, 5, graph.getNodes().size() * 8);
+        algo.buildSummary(parser, 5, 837 * 8);
 
         return executeComparisonsForPaths(intArrQueries, algo, graph);
+    }
+
+    public String getName() {
+        return name;
     }
 
     private static List<ComparisonResult>
