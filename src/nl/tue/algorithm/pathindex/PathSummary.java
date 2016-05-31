@@ -5,7 +5,7 @@ import nl.tue.algorithm.Estimation;
 /**
  * Created by Nathan on 5/24/2016.
  */
-public class PathSummary implements Estimation {
+public class PathSummary extends Estimation {
 
     private final PathIndex index;
     private final Summary summary;
