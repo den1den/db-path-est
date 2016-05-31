@@ -56,7 +56,7 @@ public class ComparisonExecutor {
     public void testAlgorithm_1() {
         Algorithm<PathSummary, IndexQueryEstimator> algo = new Algorithm_1<>(new IndexQueryEstimator());
 
-        executeAndReportTests(algo, smallEnvironments);
+        executeAndReportTests(algo, environments);
     }
 
     private static void executeAndReportTests(Algorithm<? extends Estimation, ? extends Estimator<? extends Estimation>> algo,
@@ -72,13 +72,11 @@ public class ComparisonExecutor {
             envAcc.put(env.getName(), envAccuracy);
 
             res.addAll(comparisonResults);
+
+            System.out.println(String.format("%nAccuracy for environment: '%s' is %f", env.getName(), envAccuracy));
         }
 
        double accAverage = computeAverage(res.stream().map(ComparisonResult::getAccuracy).collect(Collectors.toList()));
-
-        for(String envName : envAcc.keySet()) {
-            System.out.println(String.format("\tAccuracy for environment: '%s' is %f", envName, envAcc.get(envName)));
-        }
 
         System.out.println(String.format("Total average accuracy over all environment is: %f", accAverage));
     }
