@@ -2,10 +2,6 @@ package nl.tue.algorithm;
 
 import nl.tue.MemoryConstrained;
 import nl.tue.io.Parser;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Generic wrapper for the execution and memory management of the algorithm

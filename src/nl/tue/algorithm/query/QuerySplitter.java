@@ -13,7 +13,7 @@ public class QuerySplitter implements Iterator<int[][]> {
 
     public QuerySplitter(int[] query) {
         if(query.length <= 1){
-            throw new IllegalArgumentException("Cannot split query, to small: " + Arrays.toString(query));
+            throw new UnspilltableException(query);
         }
         this.QUERY = query;
         index = 0;

@@ -49,8 +49,7 @@ public abstract class Estimation implements Comparable<Estimation> {
      * {@see getQuery}
      * @return hashable query representation
      */
-    public List<Integer> getQueryObj(){
+    public List<Integer> getQueryObj() {
         return Utils.toList(getQuery());
     }
-
 }
