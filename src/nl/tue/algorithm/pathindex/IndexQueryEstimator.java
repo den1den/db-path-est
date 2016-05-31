@@ -163,7 +163,8 @@ public class IndexQueryEstimator implements Estimator<PathSummary> {
 
     @Override
     public long getBytesUsed() {
-        return 0;
+        //TODO:
+        throw new NotImplementedException();
     }
 
     /**
