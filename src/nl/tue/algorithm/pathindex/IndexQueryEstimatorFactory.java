@@ -75,7 +75,7 @@ public class IndexQueryEstimatorFactory {
             astart.setHeuristic(10);
         }
 
-        System.out.println("Indexed path '" + index.getPath() + "'");
+        //System.out.println("Indexed path '" + index.getPath() + "'");
 
         return new PathSummary(index, summary);
     }

@@ -72,12 +72,13 @@ public class Algorithm_1Test extends TestCase {
 
         int i;
         for (i = 0; i < expecteds.length; i++) {
-            assert d.canSplit(i);
-            int actual = d.getSplitIndex(i);
+            assert d.canSplit(i, length);
+            int actual = d.getSplitIndex(i, length);
             int expected = expecteds[i];
             System.out.println(actual);
             assertEquals("Fail on index " + i, expected, actual);
         }
-        assert !d.canSplit(i);
+        assert !d.canSplit(i, length);
+        assert !d.canSplit(i + 1, length);
     }
 }

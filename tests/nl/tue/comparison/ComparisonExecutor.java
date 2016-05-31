@@ -1,9 +1,6 @@
 package nl.tue.comparison;
 
-import nl.tue.algorithm.Algorithm;
-import nl.tue.algorithm.Estimation;
-import nl.tue.algorithm.Estimator;
-import nl.tue.algorithm.NaiveJoinAlgorithm;
+import nl.tue.algorithm.*;
 import nl.tue.algorithm.pathindex.IndexQueryEstimator;
 import nl.tue.algorithm.pathindex.PathSummary;
 import nl.tue.io.graph.AdjacencyList;
@@ -20,10 +17,12 @@ import java.util.stream.Collectors;
 public class ComparisonExecutor {
 
     private static List<TestEnvironment> environments;
+    private static List<TestEnvironment> smallEnvironments;
 
     @BeforeClass
     public static void before() {
         environments = new ArrayList<>();
+        smallEnvironments = new ArrayList<>();
 
         List<String> biblioQueries = Arrays.asList("+ 5 + 0 + 4 + 1 + 2", "+ 5 + 0 + 4 + 3",
                 "+ 5 + 0 + 1 + 2", "+ 0 + 4 + 1 + 2", "+ 5 + 0 - 4 + 1 + 2", "- 5 + 0 + 4 + 1 - 1",
@@ -34,6 +33,7 @@ public class ComparisonExecutor {
         TestEnvironment biblio = new TestEnvironment(biblioQueries, biblioFile, "Biblio");
 
         environments.add(biblio);
+        smallEnvironments.add(biblio);
 
         List<String> musicQueries = Arrays.asList("+ 3 - 4 + 5 - 5 + 6", "- 2 - 2 + 5 - 5 + 6", "- 6 - 2 + 5 - 5 + 6",
                 "- 4 + 5 - 5 + 6");
@@ -50,6 +50,13 @@ public class ComparisonExecutor {
         Algorithm<PathSummary, IndexQueryEstimator> algo = new NaiveJoinAlgorithm(new IndexQueryEstimator());
 
         executeAndReportTests(algo, environments);
+    }
+
+    @Test
+    public void testAlgorithm_1() {
+        Algorithm<PathSummary, IndexQueryEstimator> algo = new Algorithm_1<>(new IndexQueryEstimator());
+
+        executeAndReportTests(algo, smallEnvironments);
     }
 
     private static void executeAndReportTests(Algorithm<? extends Estimation, ? extends Estimator<? extends Estimation>> algo,

@@ -52,8 +52,8 @@ public class Algorithm_1<E extends Estimation, R extends Estimator<E>> extends A
             }
             // query is not known, split it in different ways
             int index = 0;
-            while (canSplit(index)) {
-                int splitIndex = getSplitIndex(index);
+            while (canSplit(index, query.length)) {
+                int splitIndex = getSplitIndex(index, query.length);
 
                 int[] head = new int[splitIndex];
                 System.arraycopy(query, 0, head, 0, head.length);
@@ -69,6 +69,8 @@ public class Algorithm_1<E extends Estimation, R extends Estimator<E>> extends A
                 } else if (combined.getPrecision() > best.getPrecision()) {
                     best = combined;
                 }
+
+                index++;
             }
             if (best == null) {
                 throw new RuntimeException("Cannot split up a query into a smaller query, " +
@@ -77,20 +79,20 @@ public class Algorithm_1<E extends Estimation, R extends Estimator<E>> extends A
             return best;
         }
 
-        int getSplitIndex(int index) {
-            final int HALF = query.length / 2 + query.length % 2;
+        int getSplitIndex(int index, final int length) {
+            final int HALF = length / 2 + length % 2;
             if (index == 0) {
                 return HALF;
             }
             int offset;
             if (index % 2 == 0) {
-                if (query.length % 2 == 0) {
+                if (length % 2 == 0) {
                     offset = -(index + 1) / 2;
                 } else {
                     offset = (index + 1) / 2;
                 }
             } else {
-                if (query.length % 2 == 0) {
+                if (length % 2 == 0) {
                     offset = (index + 1) / 2;
                 } else {
                     offset = -(index + 1) / 2;
@@ -99,8 +101,8 @@ public class Algorithm_1<E extends Estimation, R extends Estimator<E>> extends A
             return HALF + offset;
         }
 
-        boolean canSplit(int index) {
-            return index < query.length;
+        boolean canSplit(int index, final int length) {
+            return index < length;
         }
     }
 
