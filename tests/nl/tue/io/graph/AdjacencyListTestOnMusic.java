@@ -43,10 +43,35 @@ public class AdjacencyListTestOnMusic {
     }
 
     @Test
-    public void testLongerPathQuery() throws IOException {
-        Set<NodePair> nodes = list.solvePathQuery(Main.translateTextQueryToDomainQuery("+ 5 - 5 + 2", parser));
+    public void testShortQuery_2() throws IOException {
+        Set<NodePair> nodes = list.solvePathQuery(Main.translateTextQueryToDomainQuery("+ 2 + 2", parser));
 
-        Assert.assertEquals(461629, nodes.size());
+        Assert.assertEquals(6278, nodes.size());
+    }
+
+    @Test
+    public void testShortQuery_3() throws IOException {
+        Set<NodePair> nodes = list.solvePathQuery(Main.translateTextQueryToDomainQuery("+ 4 - 3", parser));
+
+        Assert.assertEquals(105000, nodes.size());
+    }
+
+    @Test
+    public void testShortQuery_4() throws IOException {
+        Set<NodePair> nodes = list.solvePathQuery(Main.translateTextQueryToDomainQuery("- 6 - 2 - 2", parser));
+
+        Assert.assertEquals(1768, nodes.size());
+    }
+
+    @Test
+    public void testLongerPathQuery() throws IOException {
+        Set<NodePair> nodes = list.solvePathQuery(Main.translateTextQueryToDomainQuery("+ 5 - 5 - 2", parser));
+
+        for(NodePair pair : nodes) {
+            System.out.println(String.format("(%d, %d)", pair.getLeft(), pair.getRight()));
+        }
+
+        Assert.assertEquals(408810, nodes.size());
     }
 
     @Test
