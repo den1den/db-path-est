@@ -3,6 +3,7 @@ package nl.tue.algorithm;
 import nl.tue.algorithm.pathindex.PathIndex;
 import nl.tue.algorithm.query.QueryTree;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -26,16 +27,16 @@ public class Algorithm_1<E extends Estimation, R extends Estimator<E>> extends A
         final int[] query;
         HashMap<PathIndex, E> cache; // start and end node -> D
 
-        public DynamicProgram(int[] query) {
+        DynamicProgram(int[] query) {
             this.query = query;
+        }
+
+        E getBest() {
             Collection<E> exactEstimations = inMemoryEstimator.retrieveAllExactEstimations();
             cache = new HashMap<>(exactEstimations.size());
             for (E e : exactEstimations) {
                 cache.put(new PathIndex(e.getQuery()), e);
             }
-        }
-
-        E getBest() {
             return getBest(query);
         }
 
@@ -50,11 +51,11 @@ public class Algorithm_1<E extends Estimation, R extends Estimator<E>> extends A
                 return best;
             }
             // query is not known, split it in different ways
-            int tailIndex = query.length / 2 + query.length % 2; //aaacbbb
-            int offset = 0;
-            int sign = 1;
-            do {
-                int[] head = new int[tailIndex + offset];
+            int index = 0;
+            while (canSplit(index)) {
+                int splitIndex = getSplitIndex(index);
+
+                int[] head = new int[splitIndex];
                 System.arraycopy(query, 0, head, 0, head.length);
                 int[] tail = new int[query.length - head.length];
                 System.arraycopy(query, head.length, tail, 0, tail.length);
@@ -68,11 +69,38 @@ public class Algorithm_1<E extends Estimation, R extends Estimator<E>> extends A
                 } else if (combined.getPrecision() > best.getPrecision()) {
                     best = combined;
                 }
-
-                offset += (offset + 1) * sign;
-                sign *= -1;
-            } while (tailIndex + offset < query.length);
+            }
+            if (best == null) {
+                throw new RuntimeException("Cannot split up a query into a smaller query, " +
+                        "and query estimate is not know. Subject: " + Arrays.toString(query));
+            }
             return best;
+        }
+
+        int getSplitIndex(int index) {
+            final int HALF = query.length / 2 + query.length % 2;
+            if (index == 0) {
+                return HALF;
+            }
+            int offset;
+            if (index % 2 == 0) {
+                if (query.length % 2 == 0) {
+                    offset = -(index + 1) / 2;
+                } else {
+                    offset = (index + 1) / 2;
+                }
+            } else {
+                if (query.length % 2 == 0) {
+                    offset = (index + 1) / 2;
+                } else {
+                    offset = -(index + 1) / 2;
+                }
+            }
+            return HALF + offset;
+        }
+
+        boolean canSplit(int index) {
+            return index < query.length;
         }
     }
 
