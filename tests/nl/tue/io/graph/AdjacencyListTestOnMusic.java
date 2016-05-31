@@ -48,4 +48,25 @@ public class AdjacencyListTestOnMusic {
 
         Assert.assertEquals(461629, nodes.size());
     }
+
+    @Test
+    public void testLongTimePathQuery() throws IOException {
+        Set<NodePair> nodes = list.solvePathQuery(new int[]{1, 7, 4});
+
+        Assert.assertEquals(3000460, nodes.size());
+    }
+
+    @Test
+    public void testLongTimePathQuery_2() throws IOException {
+        Set<NodePair> nodes = list.solvePathQuery(new int[]{1, 7, 4, 11});
+
+        Assert.assertEquals(45006900, nodes.size());
+    }
+
+    @Test
+    public void testLongTimePathQuery_3() throws IOException {
+        Set<NodePair> nodes = list.solvePathQuery(new int[]{5, 10, 1, 7});
+
+        Assert.assertEquals(45006900, nodes.size());
+    }
 }

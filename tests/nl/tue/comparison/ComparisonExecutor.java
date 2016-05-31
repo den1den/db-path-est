@@ -5,10 +5,8 @@ import nl.tue.algorithm.Estimation;
 import nl.tue.algorithm.Estimator;
 import nl.tue.algorithm.NaiveJoinAlgorithm;
 import nl.tue.algorithm.pathindex.IndexQueryEstimator;
-import nl.tue.algorithm.pathindex.PathIndex;
 import nl.tue.algorithm.pathindex.PathSummary;
 import nl.tue.io.graph.AdjacencyList;
-import nl.tue.io.graph.DirectedBackEdgeGraph;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

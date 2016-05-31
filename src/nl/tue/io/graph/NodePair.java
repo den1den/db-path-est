@@ -7,10 +7,12 @@ package nl.tue.io.graph;
  */
 public class NodePair {
     private final int left, right;
+    private final int hash;
 
     public NodePair(int left, int right) {
         this.left = left;
         this.right = right;
+        this.hash =  (left * 0x1f1f1f1f) ^ right;
     }
 
     public int getLeft() {
@@ -35,8 +37,6 @@ public class NodePair {
 
     @Override
     public int hashCode() {
-        int result = left;
-        result = 31 * result + right;
-        return result;
+        return hash;
     }
 }

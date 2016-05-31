@@ -51,7 +51,7 @@ public class IndexQueryEstimator implements Estimator<PathSummary> {
     @Override
     public void buildSummary(Parser p, int k, double b) {
 
-        int maxNoOfPaths = (int) Math.floor((b - OVERHEAD) / STORAGE_PER_PATH_ESTIMATE) * 2;
+        int maxNoOfPaths = (((int) Math.floor((b - OVERHEAD) / STORAGE_PER_PATH_ESTIMATE) * 2)/3)*2;
 
         Queue<PathSummary> fullSummary = IndexQueryEstimatorFactory.construct(p, k, maxNoOfPaths);
 
