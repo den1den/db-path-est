@@ -26,6 +26,11 @@ public final class PathIndex {
         this.path = out.substring(0, out.length() - 1);
     }
 
+    public PathIndex(PathIndex left, PathIndex right) {
+        this.path = left.path + "/" + right.path;
+        this.length = left.length + right.length;
+    }
+
     public String getPath() {
         return path;
     }

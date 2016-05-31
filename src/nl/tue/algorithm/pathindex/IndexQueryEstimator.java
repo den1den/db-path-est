@@ -82,8 +82,10 @@ public class IndexQueryEstimator implements Estimator<PathSummary> {
         int newStart = left.getSummary().getEnd();
         int newEnd = right.getSummary().getStart();
 
-        return new PathSummary(new PathIndex(left.getIndex().getPath() + right.getIndex().getPathAsIntArray()),
-                new Summary(newStart, newTuples, newEnd), (left.getPrecision() + right.getPrecision())/2);
+        PathIndex newPathIndex = new PathIndex(left.getIndex(), right.getIndex());
+        Summary newSummary = new Summary(newStart, newTuples, newEnd);
+        double precission = (left.getPrecision() + right.getPrecision()) / 2;
+        return new PathSummary(newPathIndex, newSummary, precission);
     }
 
     @Override
