@@ -1,14 +1,16 @@
 package nl.tue.algorithm;
 
+import nl.tue.Utils;
 import nl.tue.algorithm.pathindex.PathIndex;
-import nl.tue.algorithm.query.QueryTree;
+import nl.tue.algorithm.pathindex.PathSummary;
+import nl.tue.algorithm.query.QuerySplitter;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
 
 /**
- * Split the query up using Dynamic Programming
+ * Unpacks all in memory estimations and uses DynamicProgramming
+ * @param <E> Single estimation class
+ * @param <R> The class responsible for the estimation itself
  */
 public class Algorithm_1<E extends Estimation, R extends Estimator<E>> extends Algorithm<E, R> {
 
@@ -18,49 +20,60 @@ public class Algorithm_1<E extends Estimation, R extends Estimator<E>> extends A
 
     @Override
     protected int executeQuery(int[] query) {
-        DynamicProgram dynamicProgram = new DynamicProgram(query);
+        Collection<E> exactEstimations = super.inMemoryEstimator.retrieveAllExactEstimations();
+        DynamicProgram dynamicProgram = new DynamicProgram(query, exactEstimations);
         E best = dynamicProgram.getBest();
         return best.getTuples();
     }
 
+    /**
+     * Split the query up using Dynamic Programming
+     */
     class DynamicProgram {
         final int[] query;
-        HashMap<PathIndex, E> cache; // start and end node -> D
+        HashMap<List<Integer>, E> cache;
 
-        DynamicProgram(int[] query) {
+        /**
+         * Dynamic programming approach
+         * @param query the input
+         * @param baseEstimations the smallest possible way to split up the query, asserts full precision
+         */
+        DynamicProgram(int[] query, Collection<E> baseEstimations) {
             this.query = query;
+            cache = new HashMap<>(baseEstimations.size());
+            for (E e : baseEstimations) {
+                assert e.getPrecision() == Double.MAX_VALUE;
+                List<Integer> queryObj = e.getQueryObj();
+                cache.put(queryObj, e);
+            }
         }
 
         E getBest() {
-            Collection<E> exactEstimations = inMemoryEstimator.retrieveAllExactEstimations();
-            cache = new HashMap<>(exactEstimations.size());
-            for (E e : exactEstimations) {
-                cache.put(new PathIndex(e.getQuery()), e);
-            }
             return getBest(query);
         }
 
         /**
          * This recursive call does not seem to terminate when subpaths need to be joined.
-         * @param query
-         * @return
+         * @param query TODO: Could be a faster object
          */
         E getBest(int[] query) {
-            E best = cache.get(new PathIndex(query));
+            List<Integer> queryObj = Utils.toList(query);
+            E best = cache.get(queryObj);
             if (best != null) {
                 return best;
             }
+            if(query.length <= 1){
+                throw new RuntimeException("Cannot split up a query into a smaller query " +
+                        "and query estimate is not know exactly. query = " + Arrays.toString(query));
+                // Could use guesstimate here?
+            }
             // query is not known, split it in different ways
-            int index = 0;
-            while (canSplit(index, query.length)) {
-                int splitIndex = getSplitIndex(index, query.length);
+            QuerySplitter splitter = new QuerySplitter(query);
+            do{
+                int[][] next = splitter.next();
+                int[] head = next[0];
+                int[] tail = next[1];
 
-                int[] head = new int[splitIndex];
-                System.arraycopy(query, 0, head, 0, head.length);
-                int[] tail = new int[query.length - head.length];
-                System.arraycopy(query, head.length, tail, 0, tail.length);
-
-                // head and tail
                 E headEstimation = getBest(head);
                 E tailEstimation = getBest(tail);
                 E combined = inMemoryEstimator.combineEstimations(headEstimation, tailEstimation);
@@ -69,62 +82,8 @@ public class Algorithm_1<E extends Estimation, R extends Estimator<E>> extends A
                 } else if (combined.getPrecision() > best.getPrecision()) {
                     best = combined;
                 }
-
-                index++;
-            }
-            if (best == null) {
-                throw new RuntimeException("Cannot split up a query into a smaller query, " +
-                        "and query estimate is not know. Subject: " + Arrays.toString(query));
-            }
+            }while (splitter.hasNext());
             return best;
-        }
-
-        int getSplitIndex(int index, final int length) {
-            final int HALF = length / 2 + length % 2;
-            if (index == 0) {
-                return HALF;
-            }
-            int offset;
-            if (index % 2 == 0) {
-                if (length % 2 == 0) {
-                    offset = -(index + 1) / 2;
-                } else {
-                    offset = (index + 1) / 2;
-                }
-            } else {
-                if (length % 2 == 0) {
-                    offset = (index + 1) / 2;
-                } else {
-                    offset = -(index + 1) / 2;
-                }
-            }
-            return HALF + offset;
-        }
-
-        boolean canSplit(int index, final int length) {
-            return index < length;
-        }
-    }
-
-    @Deprecated
-    private class D {
-        E estimation;
-        QueryTree plan;
-
-        D(E estimation, QueryTree plan) {
-            this.estimation = estimation;
-            this.plan = plan;
-        }
-
-        D(E estimation, int[] exactQuery) {
-            this.estimation = estimation;
-            this.plan = new QueryTree.Leaf(exactQuery);
-        }
-
-        D combine(D right) {
-            E cEstimation = inMemoryEstimator.combineEstimations(estimation, right.estimation);
-            QueryTree cPlan = new QueryTree(plan, right.plan);
-            return new D(cEstimation, cPlan);
         }
     }
 }
