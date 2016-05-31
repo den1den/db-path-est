@@ -8,6 +8,7 @@ import static org.junit.Assert.assertArrayEquals;
 /**
  * Created by dennis on 21-5-16.
  */
+@Deprecated
 public class LabelSequenceTest extends TestCase {
     LabelSequence labelSequence1 = new LabelSequence(1); // 0
     LabelSequence labelSequence2 = new LabelSequence(2); // 0 1
