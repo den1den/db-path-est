@@ -19,5 +19,5 @@ public abstract class Algorithm<M extends MemoryConstrained> implements MemoryCo
 
     abstract M build(Parser p, int maximalPathLength, long budget);
 
-    public abstract long query(int[] query);
+    public abstract int query(int[] query);
 }

@@ -1,6 +1,6 @@
 package nl.tue.algorithm.brute;
 
-import nl.tue.algorithm.Estimator;
+import nl.tue.depricated.Estimator;
 import nl.tue.io.Parser;
 
 import java.util.ArrayList;

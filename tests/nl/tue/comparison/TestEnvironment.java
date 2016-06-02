@@ -2,8 +2,6 @@ package nl.tue.comparison;
 
 import nl.tue.Main;
 import nl.tue.algorithm.Algorithm;
-import nl.tue.algorithm.Estimation;
-import nl.tue.algorithm.Estimator;
 import nl.tue.algorithm.pathindex.PathIndex;
 import nl.tue.io.Parser;
 import nl.tue.io.graph.AdjacencyList;
@@ -29,7 +27,7 @@ public class TestEnvironment {
         this.name = name;
     }
 
-    public List<ComparisonResult> execute(Algorithm<? extends Estimation, ? extends Estimator<? extends Estimation>> algo) {
+    public List<ComparisonResult> execute(Algorithm algo) {
         Parser parser = new Parser();
 
         try {
@@ -53,8 +51,7 @@ public class TestEnvironment {
     }
 
     private static List<ComparisonResult>
-    executeComparisonsForPaths(List<int[]> paths, Algorithm<? extends Estimation,
-            ? extends Estimator<? extends Estimation>> method,
+    executeComparisonsForPaths(List<int[]> paths, Algorithm method,
                                DirectedBackEdgeGraph graph) {
         List<ComparisonResult> res = new ArrayList<>();
 

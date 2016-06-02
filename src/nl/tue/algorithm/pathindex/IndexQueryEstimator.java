@@ -1,6 +1,6 @@
 package nl.tue.algorithm.pathindex;
 
-import nl.tue.algorithm.Estimator;
+import nl.tue.depricated.Estimator;
 import nl.tue.io.Parser;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 

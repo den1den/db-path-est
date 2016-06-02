@@ -1,6 +1,7 @@
-package nl.tue.algorithm;
+package nl.tue.depricated;
 
 import nl.tue.MemoryConstrained;
+import nl.tue.algorithm.Estimation;
 import nl.tue.io.Parser;
 
 import java.util.Collection;

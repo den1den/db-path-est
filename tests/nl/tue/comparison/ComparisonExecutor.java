@@ -1,11 +1,6 @@
 package nl.tue.comparison;
 
 import nl.tue.algorithm.Algorithm;
-import nl.tue.algorithm.Algorithm_Brute;
-import nl.tue.algorithm.Estimation;
-import nl.tue.algorithm.Estimator;
-import nl.tue.algorithm.pathindex.IndexQueryEstimator;
-import nl.tue.algorithm.pathindex.PathSummary;
 import nl.tue.io.graph.AdjacencyList;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -49,21 +44,15 @@ public class ComparisonExecutor {
     }
 
     @Test
-    public void testNaiveIndexAndJoin() {
-        Algorithm<PathSummary, IndexQueryEstimator> algo = new NaiveJoinAlgorithm(new IndexQueryEstimator());
-
-        executeAndReportTests(algo, environments);
-    }
-
-    @Test
     public void testAlgorithm_1() {
-        Algorithm<PathSummary, IndexQueryEstimator> algo = new Algorithm_Brute<>(new IndexQueryEstimator());
+        Algorithm algo = null; //TODO: set new alorithm.
+        //new Algorithm_Brute(new IndexQueryEstimator());
 
         executeAndReportTests(algo, environments);
     }
 
-    private static void executeAndReportTests(Algorithm<? extends Estimation, ? extends Estimator<? extends Estimation>> algo,
-                                       List<TestEnvironment> envs) {
+    private static void executeAndReportTests(Algorithm algo,
+                                              List<TestEnvironment> envs) {
         List<ComparisonResult> res = new ArrayList<>();
         Map<String, Double> envAcc = new HashMap<>();
 

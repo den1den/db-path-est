@@ -18,7 +18,7 @@ public class Algorithm_Brute extends Algorithm<BruteTree> {
     }
 
     @Override
-    public long query(int[] query) {
+    public int query(int[] query) {
         throw new UnsupportedOperationException();
     }
 

@@ -1,5 +1,6 @@
 package nl.tue.algorithm.paths;
 
+import java.util.Arrays;
 import java.util.Comparator;
 
 /**
@@ -40,28 +41,33 @@ public class LabelSequence {
     }
 
     public int get(int[] path) {
-        final int k = path.length;
-        if (this.N_l == 1) {
-            return k - 1;
+        if (path.length == 0) {
+            throw new IllegalArgumentException("Path length cannot be zero");
         }
-        double base = (Math.pow(N_l, k) - N_l) / (N_l - 1);
+        if (this.N_l == 1) {
+            return path.length - 1;
+        }
+        double base = (Math.pow(N_l, path.length) - N_l) / (N_l - 1);
 
-        int index = (int) base;
-        int radix = 1;
+        long index = (long) base;
+        long radix = 1;
         for (int i = path.length - 1; i >= 0; i--) {
             int nthLabel = path[i];
+            if (nthLabel >= N_l) {
+                throw new IllegalArgumentException("path label out of bounds: " + Arrays.toString(path));
+            }
             index += radix * nthLabel;
-            radix *= this.N_l;
+            radix = Math.multiplyExact(radix, N_l);
         }
-        return index;
+        return Math.toIntExact(index);
     }
 
     int getLength(int index) {
         if (this.N_l == 1) {
             return index + 1;
         }
-        double k = Math.log(N_l + index * (N_l - 1)) / Math.log(N_l);
-        return (int) Math.floor(k);
+        double base = Math.log(N_l + index * (N_l - 1)) / Math.log(N_l);
+        return (int) Math.floor(base);
     }
 
     int getFloorIndex(int length) {
@@ -85,4 +91,8 @@ public class LabelSequence {
             return cmp;
         }
     };
+
+    public int getLabels() {
+        return N_l;
+    }
 }
