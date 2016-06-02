@@ -1,8 +1,5 @@
 package nl.tue.algorithm.pathindex;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by Nathan on 5/24/2016.
  */

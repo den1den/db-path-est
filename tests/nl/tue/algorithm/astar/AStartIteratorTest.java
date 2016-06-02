@@ -1,6 +1,7 @@
 package nl.tue.algorithm.astar;
 
 import junit.framework.TestCase;
+import nl.tue.algorithm.paths.LabelSequence;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -84,18 +85,26 @@ public class AStartIteratorTest extends TestCase {
 
     @Test
     public void testSpeed() {
-        final int N = 1024 * 250;
-        long t0 = System.currentTimeMillis();
-        for (int LABELS = 2; LABELS < 20; LABELS++) {
-            aStart = new AStart(LABELS, 10000);
-            it = aStart.iterator();
-            for (int i = 0; i < N; i++) {
-                int[] r = it.next();
+        int LABELS = 12;
+        for (int DEPTH = 4; DEPTH <= 6; DEPTH++) {
+            long t0 = System.currentTimeMillis();
+            aStart = new AStart(LABELS, DEPTH);
+            int it = 0;
+
+            int[] last = new int[DEPTH];
+            Arrays.fill(last, LABELS - 1);
+
+            final int MAX = new LabelSequence(LABELS).get(last);
+            System.out.println(String.format("Depth %s, with %s labels is %s iterations ", DEPTH, LABELS, MAX));
+            for (int[] ints : aStart) {
                 aStart.setHeuristic(0);
+                it++;
+                if (it > MAX) {
+                    break;
+                }
             }
             long t1 = System.currentTimeMillis();
-            System.out.println(String.format("With %s labels, %s iterations took %sms", LABELS, N, t1 - t0));
-            t0 = t1;
+            System.out.println(String.format("in %sms%n", t1 - t0));
         }
     }
 
@@ -117,14 +126,6 @@ public class AStartIteratorTest extends TestCase {
         }
         Assert.assertArrayEquals(ints, result);
         aStart.setHeuristic(heuristic);
-    }
-
-    private void tstCmpLast2() {
-        for (Iterator<AStart.AStartIterator.Node> iterator = it.nexts.iterator(); iterator.hasNext(); ) {
-            AStart.AStartIterator.Node n = iterator.next();
-            System.out.printf("tcl2 %s - %s%n", n.toString(), n.heuristic);
-        }
-        System.out.println();
     }
 
     @Test

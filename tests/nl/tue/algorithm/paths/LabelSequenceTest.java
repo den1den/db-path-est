@@ -1,14 +1,12 @@
-package nl.tue.algorithm.query;
+package nl.tue.algorithm.paths;
 
 import junit.framework.TestCase;
+import org.junit.Assert;
 import org.junit.Test;
-
-import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Created by dennis on 21-5-16.
  */
-@Deprecated
 public class LabelSequenceTest extends TestCase {
     LabelSequence labelSequence1 = new LabelSequence(1); // 0
     LabelSequence labelSequence2 = new LabelSequence(2); // 0 1
@@ -16,26 +14,34 @@ public class LabelSequenceTest extends TestCase {
 
     @Test
     public void testGet() throws Exception {
-        assertArrayEquals(new int[]{0}, labelSequence1.get(0));
-        assertArrayEquals(new int[]{0, 0}, labelSequence1.get(1));
-        assertArrayEquals(new int[]{0, 0, 0}, labelSequence1.get(2));
+        testGet(labelSequence2, new int[]{0, 0}, 2);
+        testGet(labelSequence2, new int[]{1, 1}, 5);
+        testGet(labelSequence2, new int[]{0}, 0);
+        testGet(labelSequence2, new int[]{1}, 1);
 
-        assertArrayEquals(new int[]{0}, labelSequence2.get(0));
-        assertArrayEquals(new int[]{1}, labelSequence2.get(1));
-        assertArrayEquals(new int[]{0, 0}, labelSequence2.get(2));
-        assertArrayEquals(new int[]{1, 1}, labelSequence2.get(5));
+        testGet(labelSequence1, new int[]{0}, 0);
+        testGet(labelSequence1, new int[]{0, 0}, 1);
+        testGet(labelSequence1, new int[]{0, 0, 0}, 2);
 
-        assertArrayEquals(new int[]{0}, labelSequence3.get(0));
-        assertArrayEquals(new int[]{1}, labelSequence3.get(1));
-        assertArrayEquals(new int[]{2}, labelSequence3.get(2));
-        assertArrayEquals(new int[]{0, 0}, labelSequence3.get(3));
-        assertArrayEquals(new int[]{0, 1}, labelSequence3.get(4));
-        assertArrayEquals(new int[]{0, 2}, labelSequence3.get(5));
-        assertArrayEquals(new int[]{1, 0}, labelSequence3.get(6));
-        assertArrayEquals(new int[]{2, 2}, labelSequence3.get(11));
-        assertArrayEquals(new int[]{0, 0, 0}, labelSequence3.get(12));
-        assertArrayEquals(new int[]{0, 0, 1}, labelSequence3.get(13));
-        assertArrayEquals(new int[]{1, 0, 1}, labelSequence3.get(22));
+        testGet(labelSequence3, new int[]{0}, 0);
+        testGet(labelSequence3, new int[]{1}, 1);
+        testGet(labelSequence3, new int[]{2}, 2);
+        testGet(labelSequence3, new int[]{0, 0}, 3);
+        testGet(labelSequence3, new int[]{0, 1}, 4);
+        testGet(labelSequence3, new int[]{0, 2}, 5);
+        testGet(labelSequence3, new int[]{1, 0}, 6);
+        testGet(labelSequence3, new int[]{2, 2}, 11);
+        testGet(labelSequence3, new int[]{0, 0, 0}, 12);
+        testGet(labelSequence3, new int[]{0, 0, 1}, 13);
+        testGet(labelSequence3, new int[]{1, 0, 1}, 22);
+    }
+
+    private void testGet(LabelSequence labelSequences, int[] expArr, int expIndex) {
+        int[] actArr = labelSequences.get(expIndex);
+        Assert.assertArrayEquals(expArr, actArr);
+
+        int actIndex = labelSequences.get(expArr);
+        Assert.assertEquals(expIndex, actIndex);
     }
 
     @Test
