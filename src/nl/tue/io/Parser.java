@@ -80,7 +80,7 @@ public class Parser {
 
                 src = scanner.nextLong();
                 label = scanner.nextLong();
-                label = -label; //TODO fix this
+                label = -label; 
                 dest = scanner.nextLong();
                 invertedTuples.add(new long[]{dest, label, src});;
             }
@@ -88,15 +88,41 @@ public class Parser {
             throw new IOException("Expected an long in input file", e);
         }
     }
+    public void GenerateGraph(int maxLabels, int nrOfNodes)
+    {
+        tuples.clear();
+        Random rand = new Random();
+            for (int i = 0; i < nrOfNodes; i++) {
+                long num0 = rand.nextInt(nrOfNodes) + 1;
+                long num1 = rand.nextInt(maxLabels) + 1;
+                long num2 = rand.nextInt(nrOfNodes) + 1;
+                long temp[] = {num0, num1, num2};
+                tuples.add(temp);
+            }
+    }
     public void writeToFile(String  filename) throws IOException {
         FileWriter fw = new FileWriter(filename);
-        combinedList.addAll(tuples);
-        combinedList.addAll(invertedTuples);
-        for (long[] longArray: combinedList
+        for (long[] longArray: tuples
              ) {
             for (int i =0;i < longArray.length;i++)
             {
                 fw.append(String.valueOf(longArray[i]) + " ");
+            }
+            fw.append(System.lineSeparator());
+
+        }
+        for (long[] longArray: invertedTuples
+                ) {
+            for (int i =0;i < longArray.length;i++)
+            {
+                if (longArray[i] != 0)
+                {
+                    fw.append(String.valueOf(longArray[i]) + " ");
+                }
+                else
+                {
+                    fw.append("-" + String.valueOf(longArray[i]) + " ");
+                }
             }
             fw.append(System.lineSeparator());
 

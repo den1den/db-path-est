@@ -54,6 +54,7 @@ public class IndexQueryEstimator implements Estimator<PathSummary> {
 
         int maxNoOfPaths = (((int) Math.floor((b - OVERHEAD) / STORAGE_PER_PATH_ESTIMATE) * 2)/3)*2;
 
+        // TODO keep requesting until memory full
         Queue<PathSummary> fullSummary = IndexQueryEstimatorFactory.construct(p, k, maxNoOfPaths);
 
         /**

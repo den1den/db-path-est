@@ -118,4 +118,22 @@ public class AStartIteratorTest extends TestCase {
         Assert.assertArrayEquals(ints, result);
         aStart.setHeuristic(heuristic);
     }
+
+    private void tstCmpLast2() {
+        for (Iterator<AStart.AStartIterator.Node> iterator = it.nexts.iterator(); iterator.hasNext(); ) {
+            AStart.AStartIterator.Node n = iterator.next();
+            System.out.printf("tcl2 %s - %s%n", n.toString(), n.heuristic);
+        }
+        System.out.println();
+    }
+
+    @Test
+    public void testMaxDepth() {
+        AStart star = new AStart(2, 2);
+
+        for(int[] path : star) {
+            star.setHeuristic(5);
+            Assert.assertTrue(path.length <= 2);
+        }
+    }
 }
