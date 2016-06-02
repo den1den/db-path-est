@@ -22,6 +22,7 @@ public class AStart implements Iterable<int[]> {
      */
     public AStart(int labels, int maxDepth) {
         this.LABELS = labels;
+        //TODO: implement maxDepth
         assert labels > 0;
     }
 

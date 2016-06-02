@@ -54,7 +54,7 @@ public class ComparisonExecutor {
 
     @Test
     public void testAlgorithm_1() {
-        Algorithm<PathSummary, IndexQueryEstimator> algo = new Algorithm_1<>(new IndexQueryEstimator());
+        Algorithm<PathSummary, IndexQueryEstimator> algo = new Algorithm_PS<>(new IndexQueryEstimator());
 
         executeAndReportTests(algo, environments);
     }

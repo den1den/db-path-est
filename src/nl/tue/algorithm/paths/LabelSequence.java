@@ -1,11 +1,10 @@
-package nl.tue.algorithm.query;
+package nl.tue.algorithm.paths;
 
 import java.util.Comparator;
 
 /**
- * Lexicographical label ordering
+ * Lexicographical label ordering: path -> index, index -> path
  */
-@Deprecated
 public class LabelSequence {
     private final int N_l;
 
@@ -38,6 +37,23 @@ public class LabelSequence {
             radix *= N_l;
         }
         return result;
+    }
+
+    public int get(int[] path) {
+        final int k = path.length;
+        if (this.N_l == 1) {
+            return k - 1;
+        }
+        double base = (Math.pow(N_l, k) - N_l) / (N_l - 1);
+
+        int index = (int) base;
+        int radix = 1;
+        for (int i = path.length - 1; i >= 0; i--) {
+            int nthLabel = path[i];
+            index += radix * nthLabel;
+            radix *= this.N_l;
+        }
+        return index;
     }
 
     int getLength(int index) {

@@ -1,7 +1,7 @@
 package nl.tue;
 
 import nl.tue.algorithm.Algorithm;
-import nl.tue.algorithm.Algorithm_1;
+import nl.tue.algorithm.Algorithm_PS;
 import nl.tue.algorithm.pathindex.IndexQueryEstimator;
 import nl.tue.algorithm.pathindex.PathSummary;
 import nl.tue.io.Parser;
@@ -38,7 +38,7 @@ public class Main {
 
         // Create OG
         IndexQueryEstimator estimator = new IndexQueryEstimator();
-        Algorithm<PathSummary, IndexQueryEstimator> algorithm = new Algorithm_1<>(estimator);
+        Algorithm<PathSummary, IndexQueryEstimator> algorithm = new Algorithm_PS<>(estimator);
         algorithm.buildSummary(p, (int) maximalPathLength, budget);
 
         // Write actual bytes used to System.out
