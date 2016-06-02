@@ -67,10 +67,6 @@ public class AdjacencyListTestOnMusic {
     public void testLongerPathQuery() throws IOException {
         Set<NodePair> nodes = list.solvePathQuery(Main.translateTextQueryToDomainQuery("+ 5 - 5 - 2", parser));
 
-        for(NodePair pair : nodes) {
-            System.out.println(String.format("(%d, %d)", pair.getLeft(), pair.getRight()));
-        }
-
         Assert.assertEquals(408810, nodes.size());
     }
 

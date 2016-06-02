@@ -43,7 +43,7 @@ public class TestEnvironment {
 
         AdjacencyList graph = new AdjacencyList(parser);
 
-        algo.buildSummary(parser, 5, 837 * 8);
+        algo.buildSummary(parser, 5, 800 * 8);
 
         return executeComparisonsForPaths(intArrQueries, algo, graph);
     }

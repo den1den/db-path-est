@@ -51,4 +51,23 @@ public class AdjacencyListTestOnBiblio {
 
         Assert.assertEquals(47, nodes.size());
     }
+
+    @Test
+    public void testIndex() throws IOException {
+        list.solvePathQuery(Main.translateTextQueryToDomainQuery("+ 5 + 0", parser));
+
+        Set<NodePair> nodes = list.solvePathQuery(Main.translateTextQueryToDomainQuery("+ 5 + 0 + 3", parser));
+
+        Assert.assertEquals(47, nodes.size());
+    }
+
+    @Test
+    public void testLongerIndex() throws IOException {
+        list.solvePathQuery(Main.translateTextQueryToDomainQuery("+ 5 + 0", parser));
+        list.solvePathQuery(Main.translateTextQueryToDomainQuery("+ 4 + 1", parser));
+
+        Set<NodePair> nodes = list.solvePathQuery(Main.translateTextQueryToDomainQuery("- 5 + 0 + 4 + 1 - 1", parser));
+
+        Assert.assertEquals(561, nodes.size());
+    }
 }
