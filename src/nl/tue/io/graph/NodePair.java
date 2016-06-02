@@ -5,7 +5,7 @@ package nl.tue.io.graph;
  *
  * Created by Nathan on 5/20/2016.
  */
-public class NodePair {
+public class NodePair implements Comparable{
     private final int left, right;
     private final int hash;
 
@@ -38,5 +38,21 @@ public class NodePair {
     @Override
     public int hashCode() {
         return hash;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        if(o instanceof NodePair) {
+            NodePair other = (NodePair) o;
+            int compareLeft = left - other.left;
+
+            if(compareLeft == 0) {
+                return right - other.right;
+            } else {
+                return compareLeft;
+            }
+        }
+
+        throw new RuntimeException();
     }
 }
