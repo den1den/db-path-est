@@ -1,9 +1,7 @@
 package nl.tue;
 
 import nl.tue.algorithm.Algorithm;
-import nl.tue.algorithm.Algorithm_PS;
-import nl.tue.algorithm.pathindex.IndexQueryEstimator;
-import nl.tue.algorithm.pathindex.PathSummary;
+import nl.tue.algorithm.Algorithm_Brute;
 import nl.tue.io.Parser;
 
 import java.io.File;
@@ -37,8 +35,7 @@ public class Main {
         p.parse(file);
 
         // Create OG
-        IndexQueryEstimator estimator = new IndexQueryEstimator();
-        Algorithm<PathSummary, IndexQueryEstimator> algorithm = new Algorithm_PS<>(estimator);
+        Algorithm algorithm = new Algorithm_Brute();
         algorithm.buildSummary(p, (int) maximalPathLength, budget);
 
         // Write actual bytes used to System.out
@@ -49,7 +46,7 @@ public class Main {
         while (s.hasNextLine()) {
             String nextLine = s.nextLine();
 
-            long result = algorithm.queryRaw(translateTextQueryToDomainQuery(nextLine, p));
+            long result = algorithm.query(translateTextQueryToDomainQuery(nextLine, p));
 
             System.out.println(result);
         }

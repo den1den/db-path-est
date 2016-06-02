@@ -5,52 +5,19 @@ import nl.tue.io.Parser;
 
 /**
  * Generic wrapper for the execution and memory management of the algorithm
- * @param <E> class used for Estimations
- * @param <R> class used to store create the Estimations
+ * @param <M> class used for whats in memory
  */
-public abstract class Algorithm<E extends Estimation, R extends Estimator<E>> implements MemoryConstrained {
+public abstract class Algorithm<M extends MemoryConstrained> implements MemoryConstrained {
+    M inMemory = null;
 
-    protected R inMemoryEstimator;
-    private int ALL_VALUES = 0;
-
-    public Algorithm(R estimator) {
-        this.inMemoryEstimator = estimator;
+    public Algorithm() {
     }
 
-    /**
-     * Estimates the number of expected unique start and end tuples of a getEstimation.
-     *
-     * @param query the path getEstimation, with all the indices of each label
-     * @return expected number of tuples in end result
-     */
-    final public int query(int[] query) {
-        if (query.length == 0) {
-            return ALL_VALUES;
-        }
-        return executeQuery(query);
+    public void buildSummary(Parser p, int maximalPathLength, long budget) {
+        this.inMemory = build(p, maximalPathLength, budget);
     }
 
-    protected abstract int executeQuery(int[] query);
+    abstract M build(Parser p, int maximalPathLength, long budget);
 
-    final public int queryRaw(int[] rawQuery) {
-
-        return executeQuery(rawQuery);
-    }
-
-    /**
-         * Instructs the estimator to build a summary of the given graph for a certain k and b.
-         *
-         * @param p
-         * @param k The maximum path length of a getEstimation that should be estimated.
-         * @param b The amount of memory that this class is allowed to store.
-         */
-    public void buildSummary(Parser p, int k, double b) {
-        this.ALL_VALUES = p.getNEdges() * p.getNEdges();
-        inMemoryEstimator.buildSummary(p, k, b);
-    }
-
-    @Override
-    public long getBytesUsed() {
-        return inMemoryEstimator.getBytesUsed();
-    }
+    public abstract long query(int[] query);
 }

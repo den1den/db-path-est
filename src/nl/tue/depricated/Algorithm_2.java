@@ -10,6 +10,7 @@ import java.util.*;
 /**
  * Dynamic Programming, combining the best results
  */
+@Deprecated
 public class Algorithm_2<E extends Estimation, R extends Estimator<E>> extends Algorithm_1<E, R> {
     public Algorithm_2(R inMemoryEstimator) {
         super(inMemoryEstimator);

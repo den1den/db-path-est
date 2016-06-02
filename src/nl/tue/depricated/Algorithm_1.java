@@ -1,7 +1,6 @@
 package nl.tue.depricated;
 
 import nl.tue.Utils;
-import nl.tue.algorithm.Algorithm;
 import nl.tue.algorithm.Estimation;
 import nl.tue.algorithm.Estimator;
 import nl.tue.algorithm.paths.QuerySplitter;
@@ -14,6 +13,7 @@ import java.util.List;
 /**
  * Basic Dynamic Programming, returning best result
  */
+@Deprecated
 public class Algorithm_1<E extends Estimation, R extends Estimator<E>> extends Algorithm<E, R> {
     public Algorithm_1(R inMemoryEstimator) {
         super(inMemoryEstimator);
@@ -25,7 +25,7 @@ public class Algorithm_1<E extends Estimation, R extends Estimator<E>> extends A
         HashMap<List<Integer>, E> cache = new HashMap<>(exactEstimations.size());
         for (E e : exactEstimations) {
             assert e.getPrecision() == Double.MAX_VALUE;
-            List<Integer> queryObj = e.getQueryObj();
+            List<Integer> queryObj = null;//e.getQueryObj();
             cache.put(queryObj, e);
         }
         return dynamic(query, cache);
@@ -64,10 +64,10 @@ public class Algorithm_1<E extends Estimation, R extends Estimator<E>> extends A
             E headEstimation = getBest(head, cache);
             E tailEstimation = getBest(tail, cache);
             E combined = inMemoryEstimator.concatEstimations(headEstimation, tailEstimation);
-            if (best == null || combined.compareTo(best) > 0) {
-                // Maximizing value
-                best = combined;
-            }
+//            if (best == null || combined.compareTo(best) > 0) {
+//                // Maximizing value
+//                best = combined;
+//            }
         }while (splitter.hasNext());
 
         return best;

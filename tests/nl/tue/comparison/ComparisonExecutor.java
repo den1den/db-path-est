@@ -1,6 +1,9 @@
 package nl.tue.comparison;
 
-import nl.tue.algorithm.*;
+import nl.tue.algorithm.Algorithm;
+import nl.tue.algorithm.Algorithm_Brute;
+import nl.tue.algorithm.Estimation;
+import nl.tue.algorithm.Estimator;
 import nl.tue.algorithm.pathindex.IndexQueryEstimator;
 import nl.tue.algorithm.pathindex.PathSummary;
 import nl.tue.io.graph.AdjacencyList;
@@ -54,7 +57,7 @@ public class ComparisonExecutor {
 
     @Test
     public void testAlgorithm_1() {
-        Algorithm<PathSummary, IndexQueryEstimator> algo = new Algorithm_PS<>(new IndexQueryEstimator());
+        Algorithm<PathSummary, IndexQueryEstimator> algo = new Algorithm_Brute<>(new IndexQueryEstimator());
 
         executeAndReportTests(algo, environments);
     }
