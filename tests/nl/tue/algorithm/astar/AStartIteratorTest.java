@@ -117,4 +117,14 @@ public class AStartIteratorTest extends TestCase {
         }
         System.out.println();
     }
+
+    @Test
+    public void testMaxDepth() {
+        AStart star = new AStart(2, 2);
+
+        for(int[] path : star) {
+            star.setHeuristic(5);
+            Assert.assertTrue(path.length <= 2);
+        }
+    }
 }
