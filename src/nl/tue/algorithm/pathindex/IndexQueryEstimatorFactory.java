@@ -9,6 +9,7 @@ import nl.tue.io.graph.NodePair;
 import java.util.*;
 
 /**
+ * TODO make this non static, allow it to maintain state and make a querynext method.
  * Created by Nathan on 5/24/2016.
  */
 public class IndexQueryEstimatorFactory {
@@ -40,6 +41,8 @@ public class IndexQueryEstimatorFactory {
             if(summary.getSummary().getTuples() == 0) {
                 zeroLengthPaths.add(summary);
             }
+
+            System.out.println(String.format("Indexed %s", summary.getIndex().getPath()));
 
             output.add(summary);
         }
