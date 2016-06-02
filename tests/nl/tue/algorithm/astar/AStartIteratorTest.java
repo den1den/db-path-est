@@ -21,23 +21,23 @@ public class AStartIteratorTest extends TestCase {
         aStart = new AStart(3, 5);
         it = aStart.iterator();
 
-        chckNext(new int[]{0}, 2);
-        chckNext(new int[]{1}, 3);
-        chckNext(new int[]{2}, 0);
+        check(new int[]{0}, 2);
+        check(new int[]{1}, 3);
+        check(new int[]{2}, 0);
         // First level done
         // Heuristics ordering: 1, 0, 2
 
         // Deplete node 1
-        chckNext(new int[]{1, 1}, 0);
-        chckNext(new int[]{1, 0}, 0);
-        chckNext(new int[]{1, 2}, 0);
+        check(new int[]{1, 1}, 0);
+        check(new int[]{1, 0}, 0);
+        check(new int[]{1, 2}, 0);
 
         // First get next one
-        chckNext(new int[]{0, 1}, 100);
+        check(new int[]{0, 1}, 100);
 
         // Get best heuristic values, namely continue with 0,1
-        chckNext(new int[]{0, 1, 1}, 0);
-        chckNext(new int[]{0, 1, 0}, 0);
+        check(new int[]{0, 1, 1}, 0);
+        check(new int[]{0, 1, 0}, 0);
     }
 
     @Test
@@ -45,29 +45,29 @@ public class AStartIteratorTest extends TestCase {
         aStart = new AStart(2, 5);
         it = aStart.iterator();
 
-        chckNext(new int[]{0}, 5);
-        chckNext(new int[]{1}, 1);
+        check(new int[]{0}, 5);
+        check(new int[]{1}, 1);
         // First level done
         // Heuristics ordering: 0, 1
 
         // Depth first
-        chckNext(new int[]{0, 0}, 80);
-        chckNext(new int[]{0, 0, 0}, 100);
-        chckNext(new int[]{0, 0, 0, 0}, 60);
+        check(new int[]{0, 0}, 80);
+        check(new int[]{0, 0, 0}, 100);
+        check(new int[]{0, 0, 0, 0}, 60);
         // First deplete parent, h=100
-        chckNext(new int[]{0, 0, 0, 1}, 60);
+        check(new int[]{0, 0, 0, 1}, 60);
         // Then deplete second best, h=80
-        chckNext(new int[]{0, 0, 1}, 0);
+        check(new int[]{0, 0, 1}, 0);
         // Then deplete h=60.
         // On tie, take the best heuristic ordering of most significant (last)
-        chckNext(new int[]{0, 0, 0, 0, 0}, 0);
-        chckNext(new int[]{0, 0, 0, 0, 1}, 0);
+        check(new int[]{0, 0, 0, 0, 0}, 0);
+        check(new int[]{0, 0, 0, 0, 1}, 0);
         // On tie, take the second best
-        chckNext(new int[]{0, 0, 0, 1, 0}, 0);
-        chckNext(new int[]{0, 0, 0, 1, 1}, 0);
+        check(new int[]{0, 0, 0, 1, 0}, 0);
+        check(new int[]{0, 0, 0, 1, 1}, 0);
         // On tie, continue with smallest getEstimation
-        chckNext(new int[]{1, 0}, 0);
-        chckNext(new int[]{1, 1}, 0);
+        check(new int[]{1, 0}, 0);
+        check(new int[]{1, 1}, 0);
     }
 
     @Test
@@ -94,14 +94,23 @@ public class AStartIteratorTest extends TestCase {
                 aStart.setHeuristic(0);
             }
             long t1 = System.currentTimeMillis();
-            System.out.println(String.format("LABELS = %s took %sms", LABELS, t1 - t0));
+            System.out.println(String.format("With %s labels, %s iterations took %sms", LABELS, N, t1 - t0));
             t0 = t1;
         }
     }
 
-    private void chckNext(int[] ints, int heuristic) {
+    private void check(int[] ints, int heuristic) {
         int[] result = it.next();
-        tstCmpLast2();
+
+        // Iterate
+        int iteration = 0;
+        for (Iterator<AStart.AStartIterator.Node> iterator = it.queue.iterator(); iterator.hasNext(); ) {
+            iteration++;
+            AStart.AStartIterator.Node n = iterator.next();
+            System.out.printf("iteration %s:  %s - %s%n", iteration, n.toString(), n.heuristic);
+        }
+        System.out.println();
+
         if (!Arrays.equals(ints, result)) {
             System.err.println(" real: " + Arrays.toString(result));
             System.err.println(" expt: " + Arrays.toString(ints));

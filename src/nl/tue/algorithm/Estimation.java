@@ -1,27 +1,55 @@
 package nl.tue.algorithm;
 
+import nl.tue.Utils;
+
+import java.util.List;
+
 /**
  * Created by dennis on 24-5-16.
  */
-public interface Estimation {
+public abstract class Estimation implements Comparable<Estimation> {
+    public final int joins;
+
+    public Estimation(int joins) {
+        this.joins = joins;
+    }
+
     /**
      * An notion of precision.
      *
      * @return The higher the better, with Double.MAX_VALUE being exact
      */
-    double getPrecision();
+    public abstract double getPrecision();
 
     /**
      * The estimate itself
      * @return number of tuples for this estimation
      */
-    int getTuples();
+    public abstract int getTuples();
+
+    @Override
+    public int compareTo(Estimation o) {
+        int compare = -Integer.compare(joins, o.joins);
+        if (compare != 0) {
+            return compare;
+        }
+        compare = Double.compare(getPrecision(), o.getPrecision());
+        return compare;
+    }
 
     /**
      * If this query is exact the exact (non null) query should be given
-     * Note: multiple constraints in Java Generics is not allowed
+     * Note: because multiple constraints in Java Generics is not allowed
      *
      * @return exact query of null
      */
-    int[] getQuery();
+    public abstract int[] getQuery();
+
+    /**
+     * {@see getQuery}
+     * @return hashable query representation
+     */
+    public List<Integer> getQueryObj() {
+        return Utils.toList(getQuery());
+    }
 }

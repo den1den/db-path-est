@@ -3,8 +3,9 @@ package nl.tue.algorithm.query;
 import java.util.Comparator;
 
 /**
- * Created by dennis on 21-5-16.
+ * Lexicographical label ordering
  */
+@Deprecated
 public class LabelSequence {
     private final int N_l;
 

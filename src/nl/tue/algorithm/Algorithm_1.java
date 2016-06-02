@@ -1,130 +1,74 @@
 package nl.tue.algorithm;
 
-import nl.tue.algorithm.pathindex.PathIndex;
-import nl.tue.algorithm.query.QueryTree;
+import nl.tue.Utils;
+import nl.tue.algorithm.Estimation;
+import nl.tue.algorithm.Estimator;
+import nl.tue.algorithm.query.QuerySplitter;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 /**
- * Split the query up using Dynamic Programming
+ * Basic Dynamic Programming, returning best result
  */
 public class Algorithm_1<E extends Estimation, R extends Estimator<E>> extends Algorithm<E, R> {
-
-    public Algorithm_1(R estimator) {
-        super(estimator);
+    public Algorithm_1(R inMemoryEstimator) {
+        super(inMemoryEstimator);
     }
 
     @Override
     protected int executeQuery(int[] query) {
-        DynamicProgram dynamicProgram = new DynamicProgram(query);
-        E best = dynamicProgram.getBest();
+        Collection<E> exactEstimations = this.inMemoryEstimator.retrieveAllExactEstimations();
+        HashMap<List<Integer>, E> cache = new HashMap<>(exactEstimations.size());
+        for (E e : exactEstimations) {
+            assert e.getPrecision() == Double.MAX_VALUE;
+            List<Integer> queryObj = e.getQueryObj();
+            cache.put(queryObj, e);
+        }
+        return dynamic(query, cache);
+    }
+
+    int dynamic(int[] query, HashMap<List<Integer>, E> cache){
+        E best = getBest(query, cache);
         return best.getTuples();
     }
 
-    class DynamicProgram {
-        final int[] query;
-        HashMap<PathIndex, E> cache; // start and end node -> D
-
-        DynamicProgram(int[] query) {
-            this.query = query;
-        }
-
-        E getBest() {
-            Collection<E> exactEstimations = inMemoryEstimator.retrieveAllExactEstimations();
-            cache = new HashMap<>(exactEstimations.size());
-            for (E e : exactEstimations) {
-                cache.put(new PathIndex(e.getQuery()), e);
-            }
-            return getBest(query);
-        }
-
-        /**
-         * This recursive call does not seem to terminate when subpaths need to be joined.
-         * @param query
-         * @return
-         */
-        E getBest(int[] query) {
-            E best = cache.get(new PathIndex(query));
-            if (best != null) {
-                return best;
-            }
-            // query is not known, split it in different ways
-            int index = 0;
-            while (canSplit(index, query.length)) {
-                int splitIndex = getSplitIndex(index, query.length);
-
-                int[] head = new int[splitIndex];
-                System.arraycopy(query, 0, head, 0, head.length);
-                int[] tail = new int[query.length - head.length];
-                System.arraycopy(query, head.length, tail, 0, tail.length);
-
-                // head and tail
-                E headEstimation = getBest(head);
-                E tailEstimation = getBest(tail);
-                E combined = inMemoryEstimator.combineEstimations(headEstimation, tailEstimation);
-                if (best == null) {
-                    best = combined;
-                } else if (combined.getPrecision() > best.getPrecision()) {
-                    best = combined;
-                }
-
-                index++;
-            }
-            if (best == null) {
-                throw new RuntimeException("Cannot split up a query into a smaller query, " +
-                        "and query estimate is not know. Subject: " + Arrays.toString(query));
-            }
+    /**
+     * This recursive call does not seem to terminate when subpaths need to be joined.
+     * @param query TODO: Could be a single object with range instead of int[]?
+     */
+    E getBest(int[] query, HashMap<List<Integer>, E> cache) {
+        List<Integer> queryObj = Utils.toList(query);
+        E best = cache.get(queryObj);
+        if (best != null) {
+            // Stopping criteria
             return best;
         }
 
-        int getSplitIndex(int index, final int length) {
-            final int HALF = length / 2 + length % 2;
-            if (index == 0) {
-                return HALF;
+        if(queryObj.size() <= 1){
+            // Cannot split further
+            throw new RuntimeException("Cannot split up a query into a smaller query " +
+                    "and query estimate is not know exactly. query = " + Arrays.toString(query));
+            // Could use guesstimate here?
+        }
+        QuerySplitter splitter = new QuerySplitter(query);
+
+        do{
+            int[][] next = splitter.next();
+            int[] head = next[0];
+            int[] tail = next[1];
+
+            E headEstimation = getBest(head, cache);
+            E tailEstimation = getBest(tail, cache);
+            E combined = inMemoryEstimator.concatEstimations(headEstimation, tailEstimation);
+            if (best == null || combined.compareTo(best) > 0) {
+                // Maximizing value
+                best = combined;
             }
-            int offset;
-            if (index % 2 == 0) {
-                if (length % 2 == 0) {
-                    offset = -(index + 1) / 2;
-                } else {
-                    offset = (index + 1) / 2;
-                }
-            } else {
-                if (length % 2 == 0) {
-                    offset = (index + 1) / 2;
-                } else {
-                    offset = -(index + 1) / 2;
-                }
-            }
-            return HALF + offset;
-        }
+        }while (splitter.hasNext());
 
-        boolean canSplit(int index, final int length) {
-            return index < length;
-        }
-    }
-
-    @Deprecated
-    private class D {
-        E estimation;
-        QueryTree plan;
-
-        D(E estimation, QueryTree plan) {
-            this.estimation = estimation;
-            this.plan = plan;
-        }
-
-        D(E estimation, int[] exactQuery) {
-            this.estimation = estimation;
-            this.plan = new QueryTree.Leaf(exactQuery);
-        }
-
-        D combine(D right) {
-            E cEstimation = inMemoryEstimator.combineEstimations(estimation, right.estimation);
-            QueryTree cPlan = new QueryTree(plan, right.plan);
-            return new D(cEstimation, cPlan);
-        }
+        return best;
     }
 }

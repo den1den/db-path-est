@@ -5,20 +5,33 @@ import nl.tue.algorithm.Estimation;
 /**
  * Created by Nathan on 5/24/2016.
  */
-public class PathSummary implements Estimation {
+public class PathSummary extends Estimation {
 
     private final PathIndex index;
     private final Summary summary;
     private final double precision;
 
+    /**
+     * Exact estimation
+     * @param index
+     * @param summary
+     */
     public PathSummary(PathIndex index, Summary summary) {
+        super(0);
         this.index = index;
         this.summary = summary;
         precision = Double.MAX_VALUE;
     }
 
-    public PathSummary(PathIndex index, Summary summary, double precision) {
-        this.index = index;
+    /**
+     * Combined estimation
+     * @param index
+     * @param summary
+     * @param precision
+     */
+    public PathSummary(PathIndex index, Summary summary, double precision, int JOINS) {
+        super(JOINS);
+        this.index = index; // Not needed?
         this.summary = summary;
         this.precision = precision;
     }
