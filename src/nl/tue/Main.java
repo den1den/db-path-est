@@ -14,6 +14,20 @@ import java.util.Scanner;
 
 public class Main {
 
+    // Subgraph approach:
+    // paramater: C \in (0,1) percentage of memory used for subgraph only. 1-C is used for scalingfacotrs
+    // 1. Devide complete graph into subset of nodes/edges.
+    // 2. Store complete graph on these nodes/edges.
+    // 2.1 Minimize graph -> packing
+    // 3. Store for each subquery a factor = (Subset/Real) to scale it with -> used for combinations
+    // On query:
+    // 1 unpack the stored subgraph
+    // 2 query the subgraph completely on full query
+    // 3 split up the query in subqueries that are in memory
+    // 4 get the scaling factor for each subquery
+    // 5 Combine scaling factor from subquries to get a final scaling factor
+    // 6 Multiple subquery result with scaling factor to get final result, different is not in memory
+
     public static void main(String[] args) throws IOException {
         String file = args[0];
         long maximalPathLength = Long.parseLong(args[1]);
