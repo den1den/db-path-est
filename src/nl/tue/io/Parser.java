@@ -28,7 +28,7 @@ public class Parser {
     public LinkedList<long[]> tuples = new LinkedList<>();
     public LinkedList<long[]> invertedTuples = new LinkedList<>();
     public LinkedList<long[]> combinedList = new LinkedList<>();
-
+    public LinkedList<long[]> pathList = new LinkedList<>();
     public void parse(String pathname) throws IOException {
         File f = new File(pathname);
         if (!f.isFile()) {
@@ -113,6 +113,36 @@ public class Parser {
             long temp[] = {num0, num1, num2};
             tuples.add(temp);
         }
+    }
+    public void writePathToFile(String  filename, String inputPath, int times) throws IOException {
+       char[] path = inputPath.toCharArray();
+        FileWriter fw = new FileWriter(filename,true);
+
+        int k = 0;
+        do {
+            int charIndex = 0;
+            for (int i = k*path.length; i <(k+1)*path.length; i++) {
+                int num1 = i + 1;
+                int num2 = Character.getNumericValue((path[charIndex]));
+                charIndex++;
+                int num3 = i + 2;
+                long[] longs = {num1, num2, num3};
+                pathList.add(longs);
+
+            }
+            k++;
+        } while (k < times);
+
+        for (long[] longArray: pathList
+                ) {
+            for (int i =0;i < longArray.length;i++)
+            {
+                fw.append(String.valueOf(longArray[i]) + " ");
+            }
+            fw.append(System.lineSeparator());
+
+        }
+        fw.close();
     }
 
     public void writeToFile(String filename) throws IOException {
