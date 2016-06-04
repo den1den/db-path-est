@@ -24,11 +24,7 @@ public class LabelSequence implements Iterable<int[]>{
         if(maxPathLength <= 0){
             throw new IllegalArgumentException("At least a path of length 1 is required");
         }
-        double maxIndex = (Math.pow(labels, maxPathLength + 1) - 1) / (labels - 1);
-        if(maxIndex > Integer.MAX_VALUE){
-            throw new ArithmeticException("labels, maxPathLength combo is to large for an integer");
-        }
-        this.MAX_INDEX = (int) maxIndex;
+        this.MAX_INDEX = max(labels, maxPathLength);
         this.LABELS = labels;
         this.MAX_PATH_LENGT = maxPathLength;
     }
@@ -110,15 +106,22 @@ public class LabelSequence implements Iterable<int[]>{
         return LABELS;
     }
 
-    public int getMaxIndex(int pathLength){
-        int[] max = new int[pathLength];
-        Arrays.fill(max, LABELS - 1);
-        return get(max);
+    public int getMaxIndex(){
+        return max(LABELS, MAX_PATH_LENGT);
     }
 
     @Override
     public Iterator<int[]> iterator() {
         return new LSIterator();
+    }
+
+    public static int max(int LABELS, int MAX_PATH_LENGT) {
+        double MAX = (Math.pow(LABELS, MAX_PATH_LENGT + 1) - 1) / (LABELS - 1);
+        MAX -= 1; // Excluding the root
+        if(MAX > Integer.MAX_VALUE){
+            throw new ArithmeticException(String.format("labels, maxPathLength combo is to large for an integer by %.1f%", 100 * MAX / Integer.MAX_VALUE));
+        }
+        return (int) MAX;
     }
 
     public class LSIterator implements Iterator<int[]> {

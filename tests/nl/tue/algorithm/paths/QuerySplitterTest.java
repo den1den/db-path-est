@@ -56,7 +56,7 @@ public class QuerySplitterTest {
             testQuery(1, null);
             testQuery(0, null);
             fail("Cannot split query of 0 or 1");
-        } catch (IllegalArgumentException e){
+        } catch (QuerySplitter.UnsplitableException e){
 
         }
     }

@@ -1,6 +1,7 @@
 package nl.tue.algorithm.astar;
 
 import nl.tue.Utils;
+import nl.tue.algorithm.paths.LabelSequence;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -12,6 +13,7 @@ import java.util.TreeSet;
  */
 public class AStart implements Iterable<int[]> {
     private final int LABELS;
+    private int maxDepth;
     private double heuristic = Double.NaN;
 
     /**
@@ -21,17 +23,13 @@ public class AStart implements Iterable<int[]> {
      * @param maxDepth
      */
     public AStart(int labels, int maxDepth) {
-        this.LABELS = labels;
-        //TODO: implement maxDepth
         assert labels > 0;
+        this.LABELS = labels;
+        this.maxDepth = maxDepth;
     }
 
     @Override
-    public Iterator<int[]> iterator() {
-        return new AStartIterator();
-    }
-
-    AStartIterator iteratorAStar() {
+    public AStartIterator iterator() {
         return new AStartIterator();
     }
 
@@ -51,12 +49,14 @@ public class AStart implements Iterable<int[]> {
     }
 
     class AStartIterator implements Iterator<int[]>, Comparator<AStartIterator.Node> {
-        final AStartIterator.Node ROOT = new AStartIterator.Node(null, new int[]{}, Double.MAX_VALUE);
+        final AStartIterator.Node ROOT = new AStartIterator.Node(new int[]{}, Double.MAX_VALUE);
         TreeSet<Node> queue;
         int[] interLabelPriorities;
         double[] interLabelHeuristics;
         Node currentParent;
         int[] currentQuery = null;
+        int returned = 0;
+        int max = LabelSequence.max(LABELS, maxDepth - 1);
 
         AStartIterator() {
             currentParent = ROOT;
@@ -70,7 +70,7 @@ public class AStart implements Iterable<int[]> {
 
         @Override
         public boolean hasNext() {
-            return true;
+            return returned < max;
         }
 
         @Override
@@ -83,7 +83,7 @@ public class AStart implements Iterable<int[]> {
 
             // Add a new child for the previous value
             double prevHeuristic = AStart.this.getHeuristic();
-            Node prevNode = new Node(currentParent, currentQuery, prevHeuristic);
+            Node prevNode = new Node(currentQuery, prevHeuristic);
             queue.add(prevNode);
 
             // Set the new parent node
@@ -106,6 +106,7 @@ public class AStart implements Iterable<int[]> {
             }
 
             currentQuery = currentParent.next();
+            returned++;
             return currentQuery;
         }
 
@@ -159,13 +160,11 @@ public class AStart implements Iterable<int[]> {
          * Already traversed query
          */
         class Node implements Iterator<int[]> {
-            final Node parent;
             final int[] subQuery;
             final double heuristic;
             private int nxtLabelIndex = 0;
 
-            private Node(Node parent, int[] subQuery, double heuristic) {
-                this.parent = parent;
+            private Node(int[] subQuery, double heuristic) {
                 this.subQuery = subQuery;
                 this.heuristic = heuristic;
                 if (Double.isNaN(heuristic)) {
@@ -175,7 +174,7 @@ public class AStart implements Iterable<int[]> {
 
             @Override
             public boolean hasNext() {
-                return nxtLabelIndex < interLabelPriorities.length;
+                return subQuery.length < maxDepth && nxtLabelIndex < interLabelPriorities.length;
             }
 
             @Override

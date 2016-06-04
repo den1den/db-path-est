@@ -12,7 +12,7 @@ import static org.junit.Assert.assertArrayEquals;
  * Created by dennis on 2-6-16.
  */
 public class PathSetTest extends TestCase {
-    LabelSequence S = new LabelSequence(15);
+    LabelSequence S = new LabelSequence(15, 4);
 
     @Test
     public void testAdd() throws Exception {
@@ -183,7 +183,7 @@ public class PathSetTest extends TestCase {
         }
         List<List<Integer>> generated2 = Utils.toList(generated);
 
-        LabelSequence ls = new LabelSequence(LABELS);
+        LabelSequence ls = new LabelSequence(LABELS, DEPTH);
         IntSet.PathSet pathSet = new IntSet.PathSet(ls);
         HashSet<List<Integer>> hashSet = new HashSet<>(ADDITIONS);
 

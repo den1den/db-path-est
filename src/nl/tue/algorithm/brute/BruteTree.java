@@ -53,7 +53,7 @@ public class BruteTree implements Estimator<PathResult> {
         int labels = p.getNLabels();
         AStart aStar = new AStart(labels, k);
         sequence = new LabelSequence(labels, k);
-        indexedResults = new int[sequence.getMaxIndex(k)];
+        indexedResults = new int[sequence.getMaxIndex()];
 
         DirectedBackEdgeGraph graph = new AdjacencyList(p);
         for (int[] path : aStar) {

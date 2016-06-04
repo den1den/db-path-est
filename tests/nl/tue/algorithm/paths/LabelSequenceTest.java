@@ -8,24 +8,36 @@ import org.junit.Test;
  * Created by dennis on 21-5-16.
  */
 public class LabelSequenceTest extends TestCase {
+    public void testMax() throws Exception {
+        assertEquals(2, LabelSequence.max(2, 1));
+        assertEquals(100, LabelSequence.max(100, 1));
+
+        assertEquals(2+4, LabelSequence.max(2, 2));
+        assertEquals(2+4+8, LabelSequence.max(2, 3));
+        assertEquals(2+4+8+16, LabelSequence.max(2, 4));
+
+        assertEquals(3+9, LabelSequence.max(3, 2));
+        assertEquals(3+9+27, LabelSequence.max(3, 3));
+    }
+
     public void testGetMaxIndex() throws Exception {
         for (int L = 1; L <= 8; L++) {
-            LabelSequence sequence = new LabelSequence(L);
+            LabelSequence sequence = new LabelSequence(L, 10);
             for (int p = 1; p <= 10; p++) {
-                sequence.getMaxIndex(p);
+                sequence.getMaxIndex();
             }
         }
         for (int L = 9; L <= 21; L++) {
-            LabelSequence sequence = new LabelSequence(L);
+            LabelSequence sequence = new LabelSequence(L, 7);
             for (int p = 1; p <= 7; p++) {
-                sequence.getMaxIndex(p);
+                sequence.getMaxIndex();
             }
         }
     }
 
-    LabelSequence labelSequence1 = new LabelSequence(1); // 0
-    LabelSequence labelSequence2 = new LabelSequence(2); // 0 1
-    LabelSequence labelSequence3 = new LabelSequence(3); // 0 1 2
+    LabelSequence labelSequence1 = new LabelSequence(1, 15); // 0
+    LabelSequence labelSequence2 = new LabelSequence(2, 15); // 0 1
+    LabelSequence labelSequence3 = new LabelSequence(3, 15); // 0 1 2
 
     @Test
     public void testGet() throws Exception {
