@@ -34,6 +34,11 @@ public class ComparisonResult {
      * @return
      */
     public double getAccuracy() {
+
+        if(this.result == 0 && this.estimation == 0) {
+            return 0;
+        }
+
         double result = this.result;
         double estimation = this.estimation;
 

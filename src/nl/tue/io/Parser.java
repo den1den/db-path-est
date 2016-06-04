@@ -44,29 +44,40 @@ public class Parser {
     public void parse(Readable source) throws IOException {
         Scanner scanner = new Scanner(source);
 
+        List<int[]> edges = new LinkedList<>();
+
         try {
             while (scanner.hasNextLong()) {
-                long src, label, dest;
+                int src, label, dest;
 
-                src = scanner.nextLong();
-                label = scanner.nextLong();
-                dest = scanner.nextLong();
-                foundTuple(src, label, dest);
+                src = scanner.nextInt();
+                label = scanner.nextInt();
+                dest = scanner.nextInt();
+                edges.add(new int[]{src, label, dest});
             }
-
-            Map<String, Integer> reversedMappings = new HashMap<>();
-
-            for (String mappingKey : this.edgeMappings.keySet()) {
-                int mappedTo = this.edgeMappings.get(mappingKey);
-
-                reversedMappings.put(mappingKey.replace("+", "-"), mappedTo + this.edgeMappings.size());
-            }
-
-            this.edgeMappings.putAll(reversedMappings);
 
         } catch (NoSuchElementException e) {
             throw new IOException("Expected an long in input file", e);
         }
+
+        parse(edges);
+    }
+
+    public void parse(List<int[]> edges) {
+
+        for(int[] edge : edges) {
+            foundTuple(edge[0], edge[1], edge[2]);
+        }
+
+        Map<String, Integer> reversedMappings = new HashMap<>();
+
+        for (String mappingKey : this.edgeMappings.keySet()) {
+            int mappedTo = this.edgeMappings.get(mappingKey);
+
+            reversedMappings.put(mappingKey.replace("+", "-"), mappedTo + this.edgeMappings.size());
+        }
+
+        this.edgeMappings.putAll(reversedMappings);
     }
 
     public void inverse(File file) throws IOException {

@@ -24,7 +24,7 @@ public class Algorithm_PS<E extends Estimation, R extends Estimator<E>> extends 
         HashMap<List<Integer>, E> cache = new HashMap<>(exactEstimations.size());
         for (E e : exactEstimations) {
             assert e.getPrecision() == Double.MAX_VALUE;
-            List<Integer> queryObj = e.getQueryObj();
+            List<Integer> queryObj = null; //e.getQueryObj();
             cache.put(queryObj, e);
         }
         return dynamic(query, cache);
@@ -64,10 +64,10 @@ public class Algorithm_PS<E extends Estimation, R extends Estimator<E>> extends 
             E headEstimation = getBest(head, cache);
             E tailEstimation = getBest(tail, cache);
             E combined = inMemoryEstimator.concatEstimations(headEstimation, tailEstimation);
-            if (best == null || combined.compareTo(best) > 0) {
+            /*if (best == null || combined.compareTo(best) > 0) {
                 // Maximizing value
                 best = combined;
-            }
+            }*/
         } while (splitter.hasNext());
 
         return best;

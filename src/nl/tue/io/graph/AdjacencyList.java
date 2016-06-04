@@ -26,7 +26,10 @@ public class AdjacencyList implements DirectedBackEdgeGraph {
     private final ZeroLengthPathStore zeroStore;
 
     public AdjacencyList(Parser parser) {
+        this(parser, true);
+    }
 
+    public AdjacencyList(Parser parser, boolean useEdgeMappings) {
         nodes = new HashMap<>();
         this.zeroStore = new ZeroLengthPathStore(ZERO_LENGTH_STORE);
         this.outgoingIndex = new HashMap<>();
@@ -49,11 +52,14 @@ public class AdjacencyList implements DirectedBackEdgeGraph {
                 nodes.put((int) tuple[2], emptyEdges(0, parser.getNLabels() - 1));
             }
 
-            Set<Integer> edgesForLabel = nodes.get((int) tuple[0]).get(parser.getEdgeMappings().get("+" + tuple[1]));
-            Set<Integer> backEdgesForLabel = nodes.get((int) tuple[2]).get(parser.getEdgeMappings().get("-" + tuple[1]));
+            int forwardEdge = useEdgeMappings ? parser.getEdgeMappings().get("+" + tuple[1]) : (int) tuple[1];
+            int backwardEdge = useEdgeMappings ? parser.getEdgeMappings().get("-" + tuple[1]) : (int) (tuple[1] + (parser.getNLabels() / 2));
 
-            this.outgoingIndex.get(parser.getEdgeMappings().get("+" + tuple[1])).add((int) tuple[0]);
-            this.outgoingIndex.get(parser.getEdgeMappings().get("-" + tuple[1])).add((int) tuple[2]);
+            Set<Integer> edgesForLabel = nodes.get((int) tuple[0]).get(forwardEdge);
+            Set<Integer> backEdgesForLabel = nodes.get((int) tuple[2]).get(backwardEdge);
+
+            this.outgoingIndex.get(forwardEdge).add((int) tuple[0]);
+            this.outgoingIndex.get(backwardEdge).add((int) tuple[2]);
 
             edgesForLabel.add((int) tuple[2]);
             backEdgesForLabel.add((int) tuple[0]);
@@ -92,7 +98,7 @@ public class AdjacencyList implements DirectedBackEdgeGraph {
         for (int nodeStart : this.outgoingIndex.get(path[0])) {
             List<Integer> ends = tracePath(nodeStart, path);
 
-            for(int nodeEnd : ends) {
+            for (int nodeEnd : ends) {
                 out.add(new NodePair(nodeStart, nodeEnd));
             }
         }
@@ -129,7 +135,7 @@ public class AdjacencyList implements DirectedBackEdgeGraph {
         if (path.length >= 2 && this.shortPathIndex.containsKey(new PathIndex(new int[]{path[0], path[1]}))) {
             Set<Integer> nodesAfterTwoLabels = this.shortPathIndex.get(new PathIndex(new int[]{path[0], path[1]})).get(node);
 
-            if(path.length == 2) {
+            if (path.length == 2) {
                 out = nodesAfterTwoLabels == null ? new ArrayList<>() : new ArrayList<>(nodesAfterTwoLabels);
 
                 return out;
