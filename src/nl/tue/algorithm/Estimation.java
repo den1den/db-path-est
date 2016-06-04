@@ -1,7 +1,7 @@
 package nl.tue.algorithm;
 
 /**
- * Created by dennis on 24-5-16.
+ * Estimation class used to provide an estimation to the dynamic programming approach
  */
 public abstract class Estimation {
 
@@ -18,4 +18,9 @@ public abstract class Estimation {
      */
     public abstract int getTuples();
 
+    /**
+     * The subject of the estimation
+     * @return a path query
+     */
+    public abstract int[] getQuery();
 }

@@ -20,7 +20,7 @@ public class AStartIteratorTest extends TestCase {
     @Test
     public void testNext3() throws Exception {
         aStart = new AStart(3, 5);
-        it = aStart.iterator();
+        it = aStart.iteratorAStar();
 
         check(new int[]{0}, 2);
         check(new int[]{1}, 3);
@@ -44,7 +44,7 @@ public class AStartIteratorTest extends TestCase {
     @Test
     public void testNext2() throws Exception {
         aStart = new AStart(2, 5);
-        it = aStart.iterator();
+        it = aStart.iteratorAStar();
 
         check(new int[]{0}, 5);
         check(new int[]{1}, 1);
@@ -74,7 +74,7 @@ public class AStartIteratorTest extends TestCase {
     @Test
     public void testDuplicates() {
         aStart = new AStart(5, 5);
-        it = aStart.iterator();
+        it = aStart.iteratorAStar();
         Set<int[]> rs = new HashSet<>();
         for (int i = 0; i < 1024 * 250; i++) {
             int[] r = it.next();

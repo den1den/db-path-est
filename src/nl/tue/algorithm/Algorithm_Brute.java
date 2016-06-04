@@ -14,12 +14,14 @@ public class Algorithm_Brute extends Algorithm<BruteTree> {
 
     @Override
     BruteTree build(Parser p, int maximalPathLength, long budget) {
-        throw new UnsupportedOperationException();
+        BruteTree bt = new BruteTree();
+        bt.buildSummary(p, maximalPathLength, budget);
+        return bt;
     }
 
     @Override
     public int query(int[] query) {
-        throw new UnsupportedOperationException();
+        return inMemory.exact(query);
     }
 
     @Override

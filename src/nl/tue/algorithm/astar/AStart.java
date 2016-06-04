@@ -27,7 +27,11 @@ public class AStart implements Iterable<int[]> {
     }
 
     @Override
-    public AStartIterator iterator() {
+    public Iterator<int[]> iterator() {
+        return new AStartIterator();
+    }
+
+    AStartIterator iteratorAStar() {
         return new AStartIterator();
     }
 

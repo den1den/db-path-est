@@ -9,9 +9,11 @@ public class PathResult extends Estimation {
     final static int BYTES = Integer.BYTES;
 
     final int tuples;
+    final int[] query;
 
-    public PathResult(int tuples) {
+    public PathResult(int tuples, int[] query) {
         this.tuples = tuples;
+        this.query = query;
     }
 
     @Override
@@ -22,5 +24,10 @@ public class PathResult extends Estimation {
     @Override
     public int getTuples() {
         return tuples;
+    }
+
+    @Override
+    public int[] getQuery() {
+        return query;
     }
 }

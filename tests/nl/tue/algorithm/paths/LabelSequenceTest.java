@@ -8,6 +8,21 @@ import org.junit.Test;
  * Created by dennis on 21-5-16.
  */
 public class LabelSequenceTest extends TestCase {
+    public void testGetMaxIndex() throws Exception {
+        for (int L = 1; L <= 8; L++) {
+            LabelSequence sequence = new LabelSequence(L);
+            for (int p = 1; p <= 10; p++) {
+                sequence.getMaxIndex(p);
+            }
+        }
+        for (int L = 9; L <= 21; L++) {
+            LabelSequence sequence = new LabelSequence(L);
+            for (int p = 1; p <= 7; p++) {
+                sequence.getMaxIndex(p);
+            }
+        }
+    }
+
     LabelSequence labelSequence1 = new LabelSequence(1); // 0
     LabelSequence labelSequence2 = new LabelSequence(2); // 0 1
     LabelSequence labelSequence3 = new LabelSequence(3); // 0 1 2
