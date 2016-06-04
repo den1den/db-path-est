@@ -25,7 +25,7 @@ public class Algorithm_Brute extends Algorithm<BruteTree> {
     }
 
     @Override
-    public long getBytesUsed() {
-        throw new UnsupportedOperationException();
+    protected long bytesOverhead() {
+        return 0;
     }
 }

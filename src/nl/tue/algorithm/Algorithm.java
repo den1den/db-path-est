@@ -20,4 +20,11 @@ public abstract class Algorithm<M extends MemoryConstrained> implements MemoryCo
     abstract M build(Parser p, int maximalPathLength, long budget);
 
     public abstract int query(int[] query);
+
+    @Override
+    public long getBytesUsed() {
+        return inMemory.getBytesUsed() + bytesOverhead();
+    }
+
+    protected abstract long bytesOverhead();
 }
