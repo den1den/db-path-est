@@ -10,6 +10,7 @@ import org.w3c.dom.Node;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -40,14 +41,14 @@ public class AdjacencyListTestOnBiblio {
 
     @Test
     public void testCitiesQuery() throws IOException {
-        Set<NodePair> nodes = list.solvePathQuery(Main.translateTextQueryToDomainQuery("+ 5", parser));
+        Collection<NodePair> nodes = list.solvePathQuery(Main.translateTextQueryToDomainQuery("+ 5", parser));
 
         Assert.assertEquals(366, nodes.size());
     }
 
     @Test
     public void testLongerPathQuery() throws IOException {
-        Set<NodePair> nodes = list.solvePathQuery(Main.translateTextQueryToDomainQuery("+ 5 + 0 + 3", parser));
+        Collection<NodePair> nodes = list.solvePathQuery(Main.translateTextQueryToDomainQuery("+ 5 + 0 + 3", parser));
 
         Assert.assertEquals(47, nodes.size());
     }
@@ -56,7 +57,7 @@ public class AdjacencyListTestOnBiblio {
     public void testIndex() throws IOException {
         list.solvePathQuery(Main.translateTextQueryToDomainQuery("+ 5 + 0", parser));
 
-        Set<NodePair> nodes = list.solvePathQuery(Main.translateTextQueryToDomainQuery("+ 5 + 0 + 3", parser));
+        Collection<NodePair> nodes = list.solvePathQuery(Main.translateTextQueryToDomainQuery("+ 5 + 0 + 3", parser));
 
         Assert.assertEquals(47, nodes.size());
     }
@@ -66,7 +67,7 @@ public class AdjacencyListTestOnBiblio {
         list.solvePathQuery(Main.translateTextQueryToDomainQuery("+ 5 + 0", parser));
         list.solvePathQuery(Main.translateTextQueryToDomainQuery("+ 4 + 1", parser));
 
-        Set<NodePair> nodes = list.solvePathQuery(Main.translateTextQueryToDomainQuery("- 5 + 0 + 4 + 1 - 1", parser));
+        Collection<NodePair> nodes = list.solvePathQuery(Main.translateTextQueryToDomainQuery("- 5 + 0 + 4 + 1 - 1", parser));
 
         Assert.assertEquals(561, nodes.size());
     }

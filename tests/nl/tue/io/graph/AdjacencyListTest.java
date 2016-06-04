@@ -10,6 +10,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -142,7 +143,7 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Set<NodePair> res = list.solvePathQuery(new int[] {p.getEdgeMappings().get("+1")});
+        Collection<NodePair> res = list.solvePathQuery(new int[] {p.getEdgeMappings().get("+1")});
 
         Assert.assertTrue(res.size() == 1);
         Assert.assertTrue(res.contains(new NodePair(1, 2)));
@@ -164,7 +165,7 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Set<NodePair> res = list.solvePathQuery(new int[] {p.getEdgeMappings().get("+1"),
+        Collection<NodePair> res = list.solvePathQuery(new int[] {p.getEdgeMappings().get("+1"),
                 p.getEdgeMappings().get("+1"), p.getEdgeMappings().get("+2")});
 
         Assert.assertTrue(res.size() == 1);
@@ -190,7 +191,7 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Set<NodePair> res = list.solvePathQuery(new int[] {p.getEdgeMappings().get("+3"),
+        Collection<NodePair> res = list.solvePathQuery(new int[] {p.getEdgeMappings().get("+3"),
                 p.getEdgeMappings().get("+2"), p.getEdgeMappings().get("+2")});
 
         Assert.assertTrue(res.size() == 2);
@@ -214,7 +215,7 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Set<NodePair> res = list.solvePathQuery(new int[]{p.getEdgeMappings().get("+1")});
+        Collection<NodePair> res = list.solvePathQuery(new int[]{p.getEdgeMappings().get("+1")});
 
         Assert.assertTrue(res.size() == 2);
 
@@ -240,7 +241,7 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Set<NodePair> res = list.solvePathQuery(new int[]{p.getEdgeMappings().get("+1"),
+        Collection<NodePair> res = list.solvePathQuery(new int[]{p.getEdgeMappings().get("+1"),
                 p.getEdgeMappings().get("+2"), p.getEdgeMappings().get("+1")});
 
         Assert.assertTrue(res.size() == 3);
@@ -266,7 +267,7 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Set<NodePair> res = list.solvePathQuery(new int[]{p.getEdgeMappings().get("+1"), p.getEdgeMappings().get("+1")});
+        Collection<NodePair> res = list.solvePathQuery(new int[]{p.getEdgeMappings().get("+1"), p.getEdgeMappings().get("+1")});
 
         Assert.assertTrue(res.size() == 3);
 
@@ -291,7 +292,7 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Set<NodePair> res = list.solvePathQuery(new int[]{p.getEdgeMappings().get("+2"),
+        Collection<NodePair> res = list.solvePathQuery(new int[]{p.getEdgeMappings().get("+2"),
                 p.getEdgeMappings().get("+1"), p.getEdgeMappings().get("+1")});
 
         Assert.assertTrue(res.size() == 0);
@@ -312,7 +313,7 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Set<NodePair> res = list.solvePathQuery(new int[]{p.getEdgeMappings().get("+1"), p.getEdgeMappings().get("-1")});
+        Collection<NodePair> res = list.solvePathQuery(new int[]{p.getEdgeMappings().get("+1"), p.getEdgeMappings().get("-1")});
 
         Assert.assertTrue(res.size() == 4);
 
@@ -340,7 +341,7 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Set<NodePair> res = list.solvePathQuery(new int[]{p.getEdgeMappings().get("+1"), p.getEdgeMappings().get("+1"),
+        Collection<NodePair> res = list.solvePathQuery(new int[]{p.getEdgeMappings().get("+1"), p.getEdgeMappings().get("+1"),
                 p.getEdgeMappings().get("+1"), p.getEdgeMappings().get("+1"), p.getEdgeMappings().get("+1")});
 
         Assert.assertTrue(res.size() == 5);
@@ -364,7 +365,7 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Set<NodePair> res = list.solvePathQuery(new int[]{p.getEdgeMappings().get("+1"), p.getEdgeMappings().get("+1")});
+        Collection<NodePair> res = list.solvePathQuery(new int[]{p.getEdgeMappings().get("+1"), p.getEdgeMappings().get("+1")});
 
         Assert.assertTrue(res.size() == 2);
 
@@ -388,7 +389,7 @@ public class AdjacencyListTest {
 
         AdjacencyList list = new AdjacencyList(p);
 
-        Set<NodePair> res = list.solvePathQuery(new int[]{p.getEdgeMappings().get("-1"), p.getEdgeMappings().get("-1"),
+        Collection<NodePair> res = list.solvePathQuery(new int[]{p.getEdgeMappings().get("-1"), p.getEdgeMappings().get("-1"),
                 p.getEdgeMappings().get("-1")});
 
         Assert.assertTrue(res.size() == 3);

@@ -1,5 +1,6 @@
 package nl.tue.io.graph;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -9,5 +10,5 @@ import java.util.Set;
  */
 public interface DirectedBackEdgeGraph {
 
-    Set<NodePair> solvePathQuery(int[] path);
+    Collection<NodePair> solvePathQuery(int[] path);
 }

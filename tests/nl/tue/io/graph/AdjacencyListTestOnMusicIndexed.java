@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -34,7 +35,7 @@ public class AdjacencyListTestOnMusicIndexed {
 
     @Test
     public void testLongTimePathQuery_3() throws IOException {
-        Set<NodePair> nodes = list.solvePathQuery(new int[]{5, 10, 1, 7});
+        Collection<NodePair> nodes = list.solvePathQuery(new int[]{5, 10, 1, 7});
 
         Assert.assertEquals(45006900, nodes.size());
     }

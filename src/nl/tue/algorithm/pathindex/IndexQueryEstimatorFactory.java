@@ -58,7 +58,7 @@ public class IndexQueryEstimatorFactory {
      * @return
      */
     public static PathSummary estimationForPath(DirectedBackEdgeGraph graph, int[] path, AStart astart) {
-        Set<NodePair> result = graph.solvePathQuery(path);
+        Collection<NodePair> result = graph.solvePathQuery(path);
 
         Set<Integer> distinctStart = new HashSet<>();
         Set<Integer> distinctEnd = new HashSet<>();
@@ -77,8 +77,6 @@ public class IndexQueryEstimatorFactory {
         } else {
             astart.setHeuristic(10);
         }
-
-        //System.out.println("Indexed path '" + index.getPath() + "'");
 
         return new PathSummary(index, summary);
     }

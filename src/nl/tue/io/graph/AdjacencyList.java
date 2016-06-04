@@ -78,12 +78,12 @@ public class AdjacencyList implements DirectedBackEdgeGraph {
         return edges;
     }
 
-    public Set<NodePair> solvePathQuery(int[] path) {
+    public Collection<NodePair> solvePathQuery(int[] path) {
         if (path.length <= 0) {
             throw new IllegalArgumentException(String.format("A path length of %d does not make any sense", path.length));
         }
 
-        Set<NodePair> out = new TreeSet<>();
+        List<NodePair> out = new ArrayList<>();
 
         if (this.zeroStore.isZeroPath(new PathIndex(path))) {
             return out;

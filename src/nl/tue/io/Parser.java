@@ -56,7 +56,7 @@ public class Parser {
 
             Map<String, Integer> reversedMappings = new HashMap<>();
 
-            for(String mappingKey : this.edgeMappings.keySet()) {
+            for (String mappingKey : this.edgeMappings.keySet()) {
                 int mappedTo = this.edgeMappings.get(mappingKey);
 
                 reversedMappings.put(mappingKey.replace("+", "-"), mappedTo + this.edgeMappings.size());
@@ -68,9 +68,11 @@ public class Parser {
             throw new IOException("Expected an long in input file", e);
         }
     }
+
     public void inverse(File file) throws IOException {
         inverse(new FileReader(file));
     }
+
     public void inverse(Readable source) throws IOException {
         Scanner scanner = new Scanner(source);
 
@@ -80,47 +82,44 @@ public class Parser {
 
                 src = scanner.nextLong();
                 label = scanner.nextLong();
-                label = -label; 
+                label = -label;
                 dest = scanner.nextLong();
-                invertedTuples.add(new long[]{dest, label, src});;
+                invertedTuples.add(new long[]{dest, label, src});
+                ;
             }
         } catch (NoSuchElementException e) {
             throw new IOException("Expected an long in input file", e);
         }
     }
-    public void GenerateGraph(int maxLabels, int nrOfNodes)
-    {
+
+    public void GenerateGraph(int maxLabels, int nrOfNodes) {
         tuples.clear();
         Random rand = new Random();
-            for (int i = 0; i < nrOfNodes; i++) {
-                long num0 = rand.nextInt(nrOfNodes) + 1;
-                long num1 = rand.nextInt(maxLabels) + 1;
-                long num2 = rand.nextInt(nrOfNodes) + 1;
-                long temp[] = {num0, num1, num2};
-                tuples.add(temp);
-            }
+        for (int i = 0; i < nrOfNodes; i++) {
+            long num0 = rand.nextInt(nrOfNodes) + 1;
+            long num1 = rand.nextInt(maxLabels) + 1;
+            long num2 = rand.nextInt(nrOfNodes) + 1;
+            long temp[] = {num0, num1, num2};
+            tuples.add(temp);
+        }
     }
-    public void writeToFile(String  filename) throws IOException {
+
+    public void writeToFile(String filename) throws IOException {
         FileWriter fw = new FileWriter(filename);
-        for (long[] longArray: tuples
-             ) {
-            for (int i =0;i < longArray.length;i++)
-            {
+        for (long[] longArray : tuples
+                ) {
+            for (int i = 0; i < longArray.length; i++) {
                 fw.append(String.valueOf(longArray[i]) + " ");
             }
             fw.append(System.lineSeparator());
 
         }
-        for (long[] longArray: invertedTuples
+        for (long[] longArray : invertedTuples
                 ) {
-            for (int i =0;i < longArray.length;i++)
-            {
-                if (longArray[i] != 0)
-                {
+            for (int i = 0; i < longArray.length; i++) {
+                if (longArray[i] != 0) {
                     fw.append(String.valueOf(longArray[i]) + " ");
-                }
-                else
-                {
+                } else {
                     fw.append("-" + String.valueOf(longArray[i]) + " ");
                 }
             }
@@ -136,23 +135,23 @@ public class Parser {
     }
 
     private void foundTuple(long src, long label, long dest) {
-        if(lowestSrc == -1 || src < lowestSrc){
+        if (lowestSrc == -1 || src < lowestSrc) {
             lowestSrc = src;
         }
-        if(highestSrc == -1 || src > highestSrc){
+        if (highestSrc == -1 || src > highestSrc) {
             highestSrc = src;
         }
-        if(lowestLabel == -1 || label < lowestLabel){
+        if (lowestLabel == -1 || label < lowestLabel) {
             lowestLabel = label;
         }
-        if(lowestDest == -1 || dest < lowestDest){
+        if (lowestDest == -1 || dest < lowestDest) {
             lowestDest = dest;
         }
-        if(highestDest == -1 || dest > highestDest){
+        if (highestDest == -1 || dest > highestDest) {
             highestDest = dest;
         }
 
-        if(!edgeMappings.containsKey("+" + label)) {
+        if (!edgeMappings.containsKey("+" + label)) {
             edgeMappings.put("+" + label, this.edgeMappings.size());
         }
 
@@ -190,7 +189,7 @@ public class Parser {
         return new ArrayList<>(ordered);
     }
 
-    public boolean labelFitsInByte(){
+    public boolean labelFitsInByte() {
         return this.edgeMappings.size() <= Byte.MAX_VALUE;
     }
 
