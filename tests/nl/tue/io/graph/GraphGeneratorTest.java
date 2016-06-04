@@ -23,7 +23,7 @@ public class GraphGeneratorTest {
     }
     @Test
     public void SaveGeneratedGraph() throws IOException {
-        p.GenerateGraph(5,1000000);
+        p.GenerateGraph(5,10);
         p.writeToFile(fileLocation);
     }
     @Test
@@ -32,6 +32,10 @@ public class GraphGeneratorTest {
         p.parse(newFile);
         p.inverse(newFile);
         p.writeToFile(fileLocation);
+    }
+    @Test
+        public void WritePathToFile() throws IOException {
+        p.writePathToFile("D:\\test.txt","4567890",2);
     }
 
 
