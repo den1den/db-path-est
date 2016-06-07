@@ -52,9 +52,9 @@ public class PathIndexQueryEstimatorTest {
 
         int[] query = Main.translateTextQueryToDomainQuery("+ 5 + 0 + 4 + 1 + 2", parser);
 
-        int res = estimator.getEstimation(query);
+        PathSummary res = estimator.getEstimation(query);
 
-        Assert.assertEquals(-1, res);
+        Assert.assertNull(res);
     }
 
 

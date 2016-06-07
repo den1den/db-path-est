@@ -1,6 +1,6 @@
 package nl.tue.algorithm.pathindex;
 
-import nl.tue.algorithm.Estimator;
+import nl.tue.algorithm.dynamicprogramming.DEstimator;
 import nl.tue.io.Parser;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * <p>
  * Created by Nathan on 5/24/2016.
  */
-public class IndexQueryEstimator implements Estimator<PathSummary> {
+public class IndexQueryEstimator implements DEstimator<PathSummary> {
 
     /**
      * If set to true debug information is printed by this class.
@@ -49,7 +49,6 @@ public class IndexQueryEstimator implements Estimator<PathSummary> {
      */
     private byte[] optimizedGraph;
 
-    @Override
     public void buildSummary(Parser p, int k, double b) {
 
         int maxNoOfPaths = (((int) Math.floor((b - OVERHEAD) / STORAGE_PER_PATH_ESTIMATE) * 2)/3)*2;
@@ -64,19 +63,20 @@ public class IndexQueryEstimator implements Estimator<PathSummary> {
         optimizedGraph = summaryToByteArray(fullSummary, (int) (b - OVERHEAD));
     }
 
-    public int getEstimation(int[] query) {
+    @Override
+    public PathSummary getEstimation(int[] query) {
         Map<PathIndex, Summary> pathIndexMap = indexFromOptimizedArray(optimizedGraph);
 
         PathIndex requested = new PathIndex(query);
 
-        if (pathIndexMap.containsKey(requested)) {
-            return pathIndexMap.get(requested).getTuples();
+        Summary summ = pathIndexMap.get(requested);
+        if (summ != null) {
+            return new PathSummary(requested, summ);
         } else {
-            return -1;
+            return null;
         }
     }
 
-    @Override
     public PathSummary concatEstimations(PathSummary left, PathSummary right) {
         int newTuples = (int)Math.min(((double)left.getTuples())*((double)right.getTuples()/(double)right.getSummary().getStart()),
                 ((double)right.getTuples())*((double)left.getTuples()/(double)left.getSummary().getEnd()));

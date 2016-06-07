@@ -2,8 +2,6 @@ package nl.tue.comparison;
 
 import nl.tue.Main;
 import nl.tue.algorithm.Algorithm;
-import nl.tue.algorithm.Estimation;
-import nl.tue.algorithm.Estimator;
 import nl.tue.algorithm.pathindex.PathIndex;
 import nl.tue.io.Parser;
 import nl.tue.io.graph.AdjacencyList;
@@ -29,7 +27,27 @@ public class TestEnvironment {
         this.name = name;
     }
 
-    public List<ComparisonResult> execute(Algorithm<? extends Estimation, ? extends Estimator<? extends Estimation>> algo) {
+    private static List<ComparisonResult>
+    executeComparisonsForPaths(List<int[]> paths, Algorithm method,
+                               DirectedBackEdgeGraph graph) {
+        List<ComparisonResult> res = new ArrayList<>();
+
+        for(int[] path : paths) {
+            int estimation = method.query(path);
+
+            int result = graph.solvePathQuery(path).size();
+
+            res.add(new ComparisonResult(new PathIndex(path), result, estimation));
+        }
+
+        return res;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<ComparisonResult> execute(Algorithm algo) {
         Parser parser = new Parser();
 
         try {
@@ -46,26 +64,5 @@ public class TestEnvironment {
         algo.buildSummary(parser, 5, graph.getNodes().keySet().size() * 8);
 
         return executeComparisonsForPaths(intArrQueries, algo, graph);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    private static List<ComparisonResult>
-    executeComparisonsForPaths(List<int[]> paths, Algorithm<? extends Estimation,
-            ? extends Estimator<? extends Estimation>> method,
-                               DirectedBackEdgeGraph graph) {
-        List<ComparisonResult> res = new ArrayList<>();
-
-        for(int[] path : paths) {
-            int estimation = method.query(path);
-
-            int result = graph.solvePathQuery(path).size();
-
-            res.add(new ComparisonResult(new PathIndex(path), result, estimation));
-        }
-
-        return res;
     }
 }

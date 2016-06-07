@@ -18,7 +18,59 @@ public class AStartIteratorTest extends TestCase {
     AStart.AStartIterator it;
 
     @Test
-    public void testNext3() throws Exception {
+    public void testIteratorSimple21() throws Exception {
+        aStart = new AStart(2, 1);
+        it = aStart.iterator();
+
+        check(new int[]{0}, 2);
+        check(new int[]{1}, 2);
+
+        assertFalse(it.hasNext());
+    }
+
+    @Test
+    public void testIteratorSimple22() throws Exception {
+        aStart = new AStart(2, 2);
+        it = aStart.iterator();
+
+        check(new int[]{0}, 2);
+        check(new int[]{1}, 2);
+
+        check(new int[]{0, 0}, 2);
+        check(new int[]{0, 1}, 2);
+
+        check(new int[]{1, 0}, 2);
+        check(new int[]{1, 1}, 2);
+
+        assertFalse(it.hasNext());
+    }
+
+    @Test
+    public void testIteratorSimple32() throws Exception {
+        aStart = new AStart(3, 2);
+        it = aStart.iterator();
+
+        check(new int[]{0}, 2);
+        check(new int[]{1}, 2);
+        check(new int[]{2}, 2);
+
+        check(new int[]{0, 0}, 2);
+        check(new int[]{0, 1}, 2);
+        check(new int[]{0, 2}, 2);
+
+        check(new int[]{1, 0}, 2);
+        check(new int[]{1, 1}, 2);
+        check(new int[]{1, 2}, 2);
+
+        check(new int[]{2, 0}, 2);
+        check(new int[]{2, 1}, 2);
+        check(new int[]{2, 2}, 2);
+
+        assertFalse(it.hasNext());
+    }
+
+    @Test
+    public void testNextHeuristic() throws Exception {
         aStart = new AStart(3, 5);
         it = aStart.iterator();
 
@@ -42,7 +94,7 @@ public class AStartIteratorTest extends TestCase {
     }
 
     @Test
-    public void testNext2() throws Exception {
+    public void testNextHeuristic2() throws Exception {
         aStart = new AStart(2, 5);
         it = aStart.iterator();
 
@@ -94,7 +146,7 @@ public class AStartIteratorTest extends TestCase {
             int[] last = new int[DEPTH];
             Arrays.fill(last, LABELS - 1);
 
-            final int MAX = new LabelSequence(LABELS).get(last);
+            final int MAX = new LabelSequence(LABELS, DEPTH).getMaxIndex();
             System.out.println(String.format("Depth %s, with %s labels is %s iterations ", DEPTH, LABELS, MAX));
             for (int[] ints : aStart) {
                 aStart.setHeuristic(0);
@@ -130,11 +182,25 @@ public class AStartIteratorTest extends TestCase {
 
     @Test
     public void testMaxDepth() {
-        AStart star = new AStart(2, 2);
+        AStart star = new AStart(2, 1);
 
         for(int[] path : star) {
-            star.setHeuristic(5);
-            Assert.assertTrue(path.length <= 2);
+            assertEquals(1, path.length);
+            star.setHeuristic(0);
+        }
+
+        star = new AStart(2, 10);
+
+        for (int[] path : star) {
+            Assert.assertTrue(path.length <= 10);
+            star.setHeuristic(0);
+        }
+
+        star = new AStart(10, 1);
+
+        for (int[] path : star) {
+            Assert.assertTrue(path.length <= 1);
+            star.setHeuristic(0);
         }
     }
 }

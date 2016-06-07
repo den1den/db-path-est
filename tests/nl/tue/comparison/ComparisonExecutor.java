@@ -1,16 +1,14 @@
 package nl.tue.comparison;
 
-import nl.tue.algorithm.*;
-import nl.tue.algorithm.pathindex.IndexQueryEstimator;
-import nl.tue.algorithm.pathindex.PathSummary;
-import nl.tue.algorithm.subgraph.SubgraphEstimator;
-import nl.tue.depricated.Algorithm_2;
+import junit.framework.TestCase;
+import nl.tue.algorithm.Algorithm;
+import nl.tue.algorithm.Algorithm_Brute;
+import nl.tue.algorithm.NaiveJoinAlgorithm;
+import nl.tue.algorithm.SubGraphAlgorithm;
 import nl.tue.io.graph.AdjacencyList;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.omg.CORBA.Environment;
 
 import java.io.File;
 import java.util.*;
@@ -20,7 +18,7 @@ import java.util.stream.Collectors;
  * Created by Nathan on 5/25/2016.
  */
 @RunWith(Parameterized.class)
-public class ComparisonExecutor {
+public class ComparisonExecutor extends TestCase {
 
     private static List<TestEnvironment> environments;
     private final TestEnvironment env;
@@ -64,31 +62,8 @@ public class ComparisonExecutor {
         this.env = env;
     }
 
-    @Test
-    public void testNaiveIndexAndJoin() {
-        Algorithm<PathSummary, IndexQueryEstimator> algo = new Algorithm_2(new IndexQueryEstimator());
-
-        reportSingleEnv(algo, env);
-    }
-
-    @Test
-    public void testAlgorithm_1() {
-        Algorithm<PathSummary, IndexQueryEstimator> algo = new Algorithm_PS<>(new IndexQueryEstimator());
-
-        reportSingleEnv(algo, this.env);
-    }
-
-    @Test
-    public void testSubGraph() {
-        Algorithm<PathSummary, SubgraphEstimator> algo = new SubGraphAlgorithm(new SubgraphEstimator());
-
-        reportSingleEnv(algo, this.env);
-    }
-
-
-
-    private static void executeAndReportTests(Algorithm<? extends Estimation, ? extends Estimator<? extends Estimation>> algo,
-                                       List<TestEnvironment> envs) {
+    private static void executeAndReportTests(Algorithm algo,
+                                              List<TestEnvironment> envs) {
         List<ComparisonResult> res = new ArrayList<>();
         Map<String, Double> envAcc = new HashMap<>();
 
@@ -115,7 +90,7 @@ public class ComparisonExecutor {
         System.out.println(String.format("Total average accuracy over all environment is: %f", accAverage));
     }
 
-    private static void reportSingleEnv(Algorithm<? extends Estimation, ? extends Estimator<? extends Estimation>> algo,
+    private static void reportSingleEnv(Algorithm algo,
                                         TestEnvironment env) {
         List<ComparisonResult> comparisonResults = env.execute(algo);
         double envAccuracy = computeAverage(comparisonResults.stream().
@@ -129,6 +104,23 @@ public class ComparisonExecutor {
         }
 
         System.out.println(String.format("\tAccuracy for environment: '%s' is %f", env.getName(), envAccuracy));
+    }
+
+    @Test
+    public void testAlgorithm_NaiveIndexAndJoin() {
+        Algorithm algo = new NaiveJoinAlgorithm();
+        reportSingleEnv(algo, env);
+    }
+
+    @Test
+    public void testAlgorithm_Brute() {
+        reportSingleEnv(new Algorithm_Brute(), this.env);
+    }
+
+    @Test
+    public void testSubGraph() {
+        Algorithm algo = new SubGraphAlgorithm();
+        reportSingleEnv(algo, this.env);
     }
 
     private static double computeAverage(List<Double> in) {

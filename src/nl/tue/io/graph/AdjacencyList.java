@@ -1,11 +1,10 @@
 package nl.tue.io.graph;
 
+import nl.tue.algorithm.PathResult;
 import nl.tue.algorithm.pathindex.PathIndex;
 import nl.tue.io.Parser;
 
-import javax.xml.soap.Node;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by Nathan on 5/19/2016.
@@ -165,6 +164,16 @@ public class AdjacencyList implements DirectedBackEdgeGraph {
 
     public Map<Integer, Map<Integer, Set<Integer>>> getNodes() {
         return nodes;
+    }
+
+    @Override
+    public PathResult getEstimation(int[] path) {
+        return new PathResult(solvePathQuery(path).size());
+    }
+
+    @Override
+    public long getBytesUsed() {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     private static class ZeroLengthPathStore {

@@ -1,9 +1,7 @@
-package nl.tue.depricated;
+package nl.tue.algorithm.dynamicprogramming;
 
 import nl.tue.Utils;
 import nl.tue.algorithm.Algorithm;
-import nl.tue.algorithm.Estimation;
-import nl.tue.algorithm.Estimator;
 import nl.tue.algorithm.paths.QuerySplitter;
 
 import java.util.Arrays;
@@ -12,16 +10,13 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Basic Dynamic Programming, returning best result
+ * Created by Dennis on 7-6-2016.
  */
-public class Algorithm_1<E extends Estimation, R extends Estimator<E>> extends Algorithm<E, R> {
-    public Algorithm_1(R inMemoryEstimator) {
-        super(inMemoryEstimator);
-    }
+public abstract class Algorithm_DynamicProgramming<E extends Estimation, R extends DEstimator<E>> extends Algorithm<R> {
 
     @Override
-    protected int executeQuery(int[] query) {
-        Collection<E> exactEstimations = this.inMemoryEstimator.retrieveAllExactEstimations();
+    public int query(int[] query) {
+        Collection<E> exactEstimations = this.inMemory.retrieveAllExactEstimations();
         HashMap<List<Integer>, E> cache = new HashMap<>(exactEstimations.size());
         for (E e : exactEstimations) {
             assert e.getPrecision() == Double.MAX_VALUE;
@@ -40,7 +35,7 @@ public class Algorithm_1<E extends Estimation, R extends Estimator<E>> extends A
      * This recursive call does not seem to terminate when subpaths need to be joined.
      * @param query TODO: Could be a single object with range instead of int[]?
      */
-    E getBest(int[] query, HashMap<List<Integer>, E> cache) {
+    protected E getBest(int[] query, HashMap<List<Integer>, E> cache) {
         List<Integer> queryObj = Utils.toList(query);
         E best = cache.get(queryObj);
         if (best != null) {
@@ -63,7 +58,7 @@ public class Algorithm_1<E extends Estimation, R extends Estimator<E>> extends A
 
             E headEstimation = getBest(head, cache);
             E tailEstimation = getBest(tail, cache);
-            E combined = inMemoryEstimator.concatEstimations(headEstimation, tailEstimation);
+            E combined = inMemory.concatEstimations(headEstimation, tailEstimation);
            /* if (best == null || combined.compareTo(best) > 0) {
                 // Maximizing value
                 best = combined;
@@ -71,5 +66,10 @@ public class Algorithm_1<E extends Estimation, R extends Estimator<E>> extends A
         }while (splitter.hasNext());
 
         return best;
+    }
+
+    @Override
+    protected long bytesOverhead() {
+        return 0;
     }
 }

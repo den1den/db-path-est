@@ -1,24 +1,24 @@
 package nl.tue.algorithm.subgraph;
 
-import nl.tue.algorithm.Estimator;
-import nl.tue.algorithm.pathindex.PathSummary;
+import nl.tue.MemoryConstrained;
 import nl.tue.io.Parser;
 import nl.tue.io.graph.AdjacencyList;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Nathan on 6/4/2016.
  */
-public class SubgraphEstimator implements Estimator<PathSummary> {
+public class SubgraphEstimator implements MemoryConstrained {
 
     private List<int[]> subgraph;
 
     /**
      * Builds a subgraph of the given graph and attempts to fit as much of it as possible into memory.
      */
-    @Override
     public void buildSummary(Parser p, int k, double b) {
         int maxEdges = (int)Math.ceil(b / 5);
 
@@ -60,22 +60,8 @@ public class SubgraphEstimator implements Estimator<PathSummary> {
     }
 
     @Override
-    public PathSummary concatEstimations(PathSummary left, PathSummary right) {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public int combineEstimations(List<PathSummary> sortedEs) {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public Collection<PathSummary> retrieveAllExactEstimations() {
-        throw new NotImplementedException();
-    }
-
-    @Override
     public long getBytesUsed() {
         return 0;
     }
+
 }

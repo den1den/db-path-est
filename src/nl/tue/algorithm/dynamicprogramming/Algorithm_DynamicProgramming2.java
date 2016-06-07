@@ -1,24 +1,20 @@
-package nl.tue.depricated;
+package nl.tue.algorithm.dynamicprogramming;
 
 import nl.tue.Utils;
-import nl.tue.algorithm.Estimation;
-import nl.tue.algorithm.Estimator;
 import nl.tue.algorithm.paths.QuerySplitter;
 
 import java.util.*;
 
 /**
- * Dynamic Programming, combining the best results
+ * Created by Dennis on 7-6-2016.
  */
-public class Algorithm_2<E extends Estimation, R extends Estimator<E>> extends Algorithm_1<E, R> {
-    public Algorithm_2(R inMemoryEstimator) {
-        super(inMemoryEstimator);
-    }
+public abstract class Algorithm_DynamicProgramming2<E extends Estimation, R extends DEstimator<E>> extends Algorithm_DynamicProgramming<E, R> {
 
     @Override
     int dynamic(int[] query, HashMap<List<Integer>, E> cache) {
         SortedSet<E> best1 = getBestsOfFirstLevel(query, cache);
-        return inMemoryEstimator.combineEstimations(new ArrayList<>(best1));
+        ArrayList<E> list = new ArrayList<>(best1);
+        return inMemory.combineEstimations(list);
     }
 
     TreeSet<E> getBestsOfFirstLevel(int[] query, HashMap<List<Integer>, E> cache) {
@@ -47,7 +43,7 @@ public class Algorithm_2<E extends Estimation, R extends Estimator<E>> extends A
 
             E headEstimation = getBest(head, cache);
             E tailEstimation = getBest(tail, cache);
-            E combined = inMemoryEstimator.concatEstimations(headEstimation, tailEstimation);
+            E combined = inMemory.concatEstimations(headEstimation, tailEstimation);
             bests.add(combined);
         }while (splitter.hasNext());
         return bests;
