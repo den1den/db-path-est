@@ -12,11 +12,11 @@ import static org.junit.Assert.assertArrayEquals;
  * Created by dennis on 2-6-16.
  */
 public class PathSetTest extends TestCase {
-    LabelSequence S = new LabelSequence(15, 4);
+    PathsOrdering S = new PathsOrdering(15, 4);
 
     @Test
     public void testAdd() throws Exception {
-        IntSet.PathSet ps = new IntSet.PathSet(S);
+        PathSet ps = new PathSet(S);
         assertTrue(ps.add(new int[]{0, 1, 4, 4}));
         assertTrue(ps.add(new int[]{0, 1, 4}));
         assertTrue(!ps.add(new int[]{0, 1, 4, 4}));
@@ -24,7 +24,7 @@ public class PathSetTest extends TestCase {
         assertTrue(!ps.add(new int[]{1, 1}));
         assertTrue(!ps.add(new int[]{0, 1, 4, 4}));
 
-        ps = new IntSet.PathSet(S);
+        ps = new PathSet(S);
         assertTrue(ps.add(new int[]{0}));
         assertTrue(ps.add(new int[]{0, 0}));
         assertTrue(!ps.add(new int[]{0, 0}));
@@ -32,7 +32,7 @@ public class PathSetTest extends TestCase {
 
     @Test
     public void testAdd3() throws Exception {
-        IntSet.PathSet ps = new IntSet.PathSet(S);
+        PathSet ps = new PathSet(S);
         assertTrue(ps.add(new int[]{1, 1}));
         assertFalse(ps.add(new int[]{1, 1}));
 
@@ -42,7 +42,7 @@ public class PathSetTest extends TestCase {
 
     @Test
     public void testIterator() throws Exception {
-        IntSet.PathSet ps = new IntSet.PathSet(S);
+        PathSet ps = new PathSet(S);
         Iterator<int[]> iterator = ps.iterator();
         assertFalse(iterator.hasNext());
 
@@ -68,9 +68,9 @@ public class PathSetTest extends TestCase {
 
     @Test
     public void testJoin() throws Exception {
-        IntSet.PathSet ps1 = new IntSet.PathSet(S);
+        PathSet ps1 = new PathSet(S);
         ps1.add(new int[]{2, 2});
-        IntSet.PathSet ps2 = new IntSet.PathSet(S);
+        PathSet ps2 = new PathSet(S);
         ps2.add(new int[]{2, 2});
         ps2.add(new int[]{8});
 
@@ -81,9 +81,9 @@ public class PathSetTest extends TestCase {
 
     @Test
     public void testIntersect() throws Exception {
-        IntSet.PathSet ps1 = new IntSet.PathSet(S);
+        PathSet ps1 = new PathSet(S);
         ps1.add(new int[]{2, 2});
-        IntSet.PathSet ps2 = new IntSet.PathSet(S);
+        PathSet ps2 = new PathSet(S);
         ps2.add(new int[]{2, 2});
         ps2.add(new int[]{8});
 
@@ -94,9 +94,9 @@ public class PathSetTest extends TestCase {
 
     @Test
     public void testSetMinus() throws Exception {
-        IntSet.PathSet ps1 = new IntSet.PathSet(S);
+        PathSet ps1 = new PathSet(S);
         ps1.add(new int[]{2, 2});
-        IntSet.PathSet ps2 = new IntSet.PathSet(S);
+        PathSet ps2 = new PathSet(S);
         ps2.add(new int[]{2, 2});
         ps2.add(new int[]{5});
 
@@ -183,8 +183,8 @@ public class PathSetTest extends TestCase {
         }
         List<List<Integer>> generated2 = Utils.toList(generated);
 
-        LabelSequence ls = new LabelSequence(LABELS, DEPTH);
-        IntSet.PathSet pathSet = new IntSet.PathSet(ls);
+        PathsOrdering ls = new PathsOrdering(LABELS, DEPTH);
+        PathSet pathSet = new PathSet(ls);
         HashSet<List<Integer>> hashSet = new HashSet<>(ADDITIONS);
 
         int added = 0;
@@ -209,7 +209,7 @@ public class PathSetTest extends TestCase {
         }
         List<List<Integer>> generated2 = Utils.toList(generated);
 
-        IntSet.PathSet pathSet = new IntSet.PathSet(S);
+        PathSet pathSet = new PathSet(S);
         HashSet<List<Integer>> hashSet = new HashSet<>(ADDITIONS);
 
         for (int i = 0; i < generated.length; i++) {
@@ -238,29 +238,29 @@ public class PathSetTest extends TestCase {
     }
 
     public void testToString() throws Exception {
-        IntSet.PathSet ps = new IntSet.PathSet(S);
+        PathSet ps = new PathSet(S);
         ps.add(new int[]{1, 1});
         System.out.println(ps.toString());
 
-        ps = new IntSet.PathSet(S);
+        ps = new PathSet(S);
         ps.add(new int[]{1, 2});
         System.out.println(ps.toString());
 
-        ps = new IntSet.PathSet(S);
+        ps = new PathSet(S);
         ps.add(new int[]{1, 3});
         System.out.println(ps.toString());
     }
 
     public void testToFullString() throws Exception {
-        IntSet.PathSet ps = new IntSet.PathSet(S);
+        PathSet ps = new PathSet(S);
         ps.add(new int[]{0});
         System.out.println(ps);
 
-        ps = new IntSet.PathSet(S);
+        ps = new PathSet(S);
         ps.add(new int[]{1, 2});
         System.out.println(ps);
 
-        ps = new IntSet.PathSet(S);
+        ps = new PathSet(S);
         ps.add(new int[]{1, 3});
         System.out.println(ps);
     }

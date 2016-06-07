@@ -2,7 +2,7 @@ package nl.tue.algorithm.dynamicprogramming;
 
 import nl.tue.Utils;
 import nl.tue.algorithm.Algorithm;
-import nl.tue.algorithm.paths.QuerySplitter;
+import nl.tue.algorithm.paths.PathSplitter;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -49,7 +49,7 @@ public abstract class Algorithm_DynamicProgramming<E extends Estimation, R exten
                     "and query estimate is not know exactly. query = " + Arrays.toString(query));
             // Could use guesstimate here?
         }
-        QuerySplitter splitter = new QuerySplitter(query);
+        PathSplitter splitter = new PathSplitter(query);
 
         do{
             int[][] next = splitter.next();

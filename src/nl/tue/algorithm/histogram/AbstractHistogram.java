@@ -1,7 +1,7 @@
 package nl.tue.algorithm.histogram;
 
 import nl.tue.MemoryConstrained;
-import nl.tue.algorithm.paths.LabelSequence;
+import nl.tue.algorithm.paths.PathsOrdering;
 
 import java.util.Arrays;
 
@@ -13,7 +13,7 @@ public abstract class AbstractHistogram<E> implements MemoryConstrained {
     /**
      * path -> integer
      */
-    LabelSequence labelSequence;
+    PathsOrdering pathsOrdering;
 
     /**
      * 0: x
@@ -29,8 +29,8 @@ public abstract class AbstractHistogram<E> implements MemoryConstrained {
      */
     E[] estimations;
 
-    public AbstractHistogram(LabelSequence labelSequence, int[] startRanges, E[] estimations) {
-        this.labelSequence = labelSequence;
+    public AbstractHistogram(PathsOrdering pathsOrdering, int[] startRanges, E[] estimations) {
+        this.pathsOrdering = pathsOrdering;
         this.startRanges = startRanges;
         this.estimations = estimations;
     }
@@ -42,7 +42,7 @@ public abstract class AbstractHistogram<E> implements MemoryConstrained {
      * @return null or the stored estimate
      */
     public E getEstimate(int[] path) {
-        int index = labelSequence.get(path);
+        int index = pathsOrdering.get(path);
         int Eindex = Arrays.binarySearch(this.startRanges, index);
         if (Eindex >= 0) {
             Eindex = Eindex + 1;

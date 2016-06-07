@@ -2,7 +2,7 @@ package nl.tue.algorithm.histogram;
 
 import nl.tue.Utils;
 import nl.tue.algorithm.PathResult;
-import nl.tue.algorithm.paths.LabelSequence;
+import nl.tue.algorithm.paths.PathsOrdering;
 
 import java.util.ArrayList;
 
@@ -11,8 +11,8 @@ import java.util.ArrayList;
  */
 public class BruteHistogram extends AbstractHistogram<PathResult> {
 
-    private BruteHistogram(LabelSequence labelSequence, ArrayList<Integer> startRanges, PathResult[] estimations) {
-        super(labelSequence, Utils.toArray(startRanges), estimations);
+    private BruteHistogram(PathsOrdering pathsOrdering, ArrayList<Integer> startRanges, PathResult[] estimations) {
+        super(pathsOrdering, Utils.toArray(startRanges), estimations);
     }
 
     @Override
@@ -25,8 +25,8 @@ public class BruteHistogram extends AbstractHistogram<PathResult> {
         }
 
         @Override
-        public BruteHistogram createH(LabelSequence labelSequence, ArrayList<Integer> startRanges, PathResult[] estimations) {
-            return new BruteHistogram(labelSequence, startRanges, estimations);
+        public BruteHistogram createH(PathsOrdering pathsOrdering, ArrayList<Integer> startRanges, PathResult[] estimations) {
+            return new BruteHistogram(pathsOrdering, startRanges, estimations);
         }
 
         @Override

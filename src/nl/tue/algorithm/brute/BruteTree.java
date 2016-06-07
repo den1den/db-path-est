@@ -2,7 +2,7 @@ package nl.tue.algorithm.brute;
 
 import nl.tue.MemoryConstrained;
 import nl.tue.algorithm.PathResult;
-import nl.tue.algorithm.paths.LabelSequence;
+import nl.tue.algorithm.paths.PathsOrdering;
 
 import java.util.List;
 
@@ -11,9 +11,9 @@ import java.util.List;
  */
 public class BruteTree implements MemoryConstrained {
     int[] indexedResults;
-    LabelSequence sequence;
+    PathsOrdering sequence;
 
-    public BruteTree(int[] indexedResults, LabelSequence sequence) {
+    public BruteTree(int[] indexedResults, PathsOrdering sequence) {
         this.indexedResults = indexedResults;
         this.sequence = sequence;
     }

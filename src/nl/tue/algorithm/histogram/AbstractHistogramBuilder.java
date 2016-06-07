@@ -1,7 +1,7 @@
 package nl.tue.algorithm.histogram;
 
 import nl.tue.algorithm.Estimator;
-import nl.tue.algorithm.paths.LabelSequence;
+import nl.tue.algorithm.paths.PathsOrdering;
 import nl.tue.algorithm.paths.PathsIterator;
 
 import java.util.ArrayList;
@@ -10,99 +10,134 @@ import java.util.TreeSet;
 
 public abstract class AbstractHistogramBuilder<E, H extends AbstractHistogram<E>> {
 
-    private LabelSequence labelSequence;
+    PathsOrdering pathsOrdering;
+    private TreeSet<HistogramRange<E>> ranges;
 
     public AbstractHistogramBuilder() {
     }
 
-    TreeSet<Range<E>> buildRanges(Estimator<E> graph, Joiner<E> joiner, PathsIterator pathsIterator) {
-        TreeSet<Range<E>> ranges = new TreeSet<>();
+    private HistogramRange<E> lower, higher;
+    private HistogramRange<E> prepareInsert(int newIndex){
+        HistogramRange<E> newRange = new HistogramRange<>(null, newIndex, newIndex);
+        HistogramRange<E> floor = ranges.floor(newRange);
+
+        assert floor != null;
+        assert floor.estimation == null; // Assume not already occupied
+        assert floor.has(newIndex);
+
+        if(newIndex == floor.startIndex){
+            // Move floor to right
+            ranges.remove(floor);
+            floor.startIndex++;
+            if(floor.startIndex <= floor.endIndex){
+                ranges.add(floor);
+                higher = floor;
+            } else {
+                higher = null;
+            }
+
+            lower = ranges.lower(floor);
+        } else {
+            assert floor.size() >= 2;
+            if (newIndex == floor.endIndex) {
+                // Move floor to left
+                floor.endIndex--;
+                assert floor.startIndex <= floor.endIndex;
+                higher = ranges.higher(floor);
+
+                lower = floor;
+            } else {
+                // In between, so split up
+                assert floor.size() >= 3;
+                assert floor.estimation == null;
+
+                higher = new HistogramRange<>(null, newIndex + 1, floor.endIndex);
+                ranges.add(higher);
+
+                floor.endIndex = newIndex - 1;
+                lower = floor;
+            }
+        }
+
+        return newRange;
+    }
+
+    TreeSet<HistogramRange<E>> buildRanges(Estimator<E> graph, Joiner<E> joiner, PathsIterator pathsIterator) {
+        ranges = new TreeSet<>();
         int MAX = Integer.MAX_VALUE;
-        ranges.add(new Range<>(null, 0, MAX));
+        ranges.add(new HistogramRange<>(null, 0, MAX));
 
         while (pathsIterator.hasNext()) {
             int[] path = pathsIterator.next();
 
+            // Create new range tuple
+            int index = pathsOrdering.get(path);
+            HistogramRange<E> newR = prepareInsert(index);
+
             // Create estimation
             E estimation = graph.getEstimation(path);
 
-
-            // Create new range tuple
-            int index = labelSequence.get(path);
-            Range<E> candidateRange = new Range<>(estimation, index, index);
-
-            // Get floor
-            Range<E> floor;
-            Range<E> hit = ranges.floor(candidateRange);
-            assert hit != null;
-            assert hit.estimation == null;
-
-            if (index == 0) {
-                floor = null;
-            } else if (hit.has(index - 1)) {
-                floor = null;
+            int leftTuples;
+            E leftEstimate;
+            if (lower != null) {
+                leftTuples = lower.size();
+                leftEstimate = lower.estimation;
             } else {
-                floor = ranges.lower(hit);
-                assert floor != null;
-                assert floor.endIndex == index - 1;
+                leftTuples = 0;
+                leftEstimate = null;
             }
 
-            // Get ceiling
-            Range<E> ceil;
-            if (index == MAX) {
-                ceil = null;
-            } else if (hit.has(index + 1)) {
-                ceil = null;
+            int rightTuples;
+            E rightEstimate;
+            if (higher != null) {
+                rightTuples = higher.size();
+                rightEstimate = higher.estimation;
             } else {
-                ceil = ranges.higher(hit);
-                assert ceil != null;
-                assert ceil.startIndex == index + 1;
+                rightTuples = 0;
+                rightEstimate = null;
             }
 
-            E join;
-            if (floor != null && ceil != null) {
-                join = joiner.join(floor.estimation, estimation, ceil.estimation);
-                if (join != null) {
-                    // Replace left + subject + right
-                    floor.estimation = join;
-                    floor.endIndex = ceil.endIndex;
-                    ranges.remove(ceil);
+            E newEstimation = joiner.calcJoin(leftTuples, leftEstimate, estimation, rightTuples, rightEstimate);
+            if(joiner.isJoinLeft() && joiner.isJoinRight()){
+                if(higher != null) {
+                    ranges.remove(higher);
+                    lower.endIndex = higher.endIndex;
+                } else {
+                    lower.endIndex = MAX;
                 }
-            } else if (floor != null) {
-                join = joiner.joinRight(floor.estimation, estimation);
-                if (join != null) {
-                    // Replace subject + right
-                    floor.estimation = join;
-                    floor.endIndex++;
+                lower.estimation = newEstimation;
+            } else if (joiner.isJoinLeft()){
+                lower.endIndex = index;
+                lower.estimation = newEstimation;
+            } else if (joiner.isJoinRight()){
+                if(higher != null){
+                    ranges.remove(higher);
+                    higher.startIndex = index;
+                    higher.estimation = newEstimation;
+                } else {
+                    // not possible?
+                    higher = new HistogramRange<>(estimation, index, MAX);
                 }
-            } else if (ceil != null) {
-                join = joiner.joinLeft(estimation, ceil.estimation);
-                if (join != null) {
-                    // Replace subject + left
-                    ceil.estimation = join;
-                    ceil.startIndex--;
-                }
+                ranges.add(higher);
             } else {
-                throw new RuntimeException();
-            }
-            if (join == null) {
-                ranges.add(candidateRange);
+                newR.estimation = newEstimation;
+                ranges.add(newR);
             }
         }
         return ranges;
     }
 
-    public H build(LabelSequence labelSequence, Estimator<E> graph, Joiner<E> joiner, PathsIterator pathsIterator) {
-        this.labelSequence = labelSequence;
-        TreeSet<Range<E>> ranges = buildRanges(graph, joiner, pathsIterator);
-        test(ranges);
+    public H build(PathsOrdering pathsOrdering, Estimator<E> graph, Joiner<E> joiner, PathsIterator pathsIterator) {
+        this.pathsOrdering = pathsOrdering;
+        TreeSet<HistogramRange<E>> ranges = buildRanges(graph, joiner, pathsIterator);
+        check(ranges);
 
         ArrayList<Integer> startRanges = new ArrayList<>(ranges.size() - 1);
         E[] estimations = createArray(ranges.size());
 
         int ix = 0;
-        Iterator<Range<E>> i = ranges.iterator();
-        Range<E> a = i.next();
+        Iterator<HistogramRange<E>> i = ranges.iterator();
+        HistogramRange<E> a = i.next();
         estimations[ix] = a.estimation;
 
         ix++;
@@ -114,19 +149,19 @@ public abstract class AbstractHistogramBuilder<E, H extends AbstractHistogram<E>
             ix++;
         }
 
-        return createH(labelSequence, startRanges, estimations);
+        return createH(pathsOrdering, startRanges, estimations);
     }
 
-    private void test(TreeSet<Range<E>> ranges) {
-        Iterator<Range<E>> i = ranges.iterator();
+    private void check(TreeSet<HistogramRange<E>> ranges) {
+        Iterator<HistogramRange<E>> i = ranges.iterator();
         assert i.hasNext();
 
-        Range<E> a = i.next();
+        HistogramRange<E> a = i.next();
         assert a.startIndex == 0;
         boolean lastWasEmty = a.estimation == null;
 
         while (i.hasNext()) {
-            Range<E> b = i.next();
+            HistogramRange<E> b = i.next();
             assert a.endIndex + 1 == b.startIndex;
             if (lastWasEmty) {
                 assert b.estimation != null;
@@ -137,28 +172,8 @@ public abstract class AbstractHistogramBuilder<E, H extends AbstractHistogram<E>
         }
     }
 
-    protected abstract H createH(LabelSequence labelSequence, ArrayList<Integer> startRanges, E[] estimations);
+    protected abstract H createH(PathsOrdering pathsOrdering, ArrayList<Integer> startRanges, E[] estimations);
 
     protected abstract E[] createArray(int length);
 
-    static class Range<Es> implements Comparable<Range> {
-        Es estimation;
-        int startIndex;
-        int endIndex;
-
-        private Range(Es estimation, int startIndex, int endIndex) {
-            this.estimation = estimation;
-            this.startIndex = startIndex;
-            this.endIndex = endIndex;
-        }
-
-        @Override
-        public int compareTo(Range o) {
-            return Integer.compare(startIndex, o.startIndex);
-        }
-
-        private boolean has(int index) {
-            return startIndex <= index && index <= endIndex;
-        }
-    }
 }
