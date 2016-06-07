@@ -1,7 +1,7 @@
 package nl.tue.algorithm.astar;
 
 import junit.framework.TestCase;
-import nl.tue.algorithm.paths.PathsOrdering;
+import nl.tue.algorithm.paths.PathsOrderingLexicographical;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -15,7 +15,7 @@ import java.util.Set;
  */
 public class AStartIteratorTest extends TestCase {
     AStart aStart;
-    AStart.AStartIterator it;
+    AStart.AStartOIterator it;
 
     @Test
     public void testIteratorSimple21() throws Exception {
@@ -146,7 +146,7 @@ public class AStartIteratorTest extends TestCase {
             int[] last = new int[DEPTH];
             Arrays.fill(last, LABELS - 1);
 
-            final int MAX = new PathsOrdering(LABELS, DEPTH).getMaxIndex();
+            final int MAX = new PathsOrderingLexicographical(LABELS, DEPTH).getMaxIndex();
             System.out.println(String.format("Depth %s, with %s labels is %s iterations ", DEPTH, LABELS, MAX));
             for (int[] ints : aStart) {
                 aStart.setHeuristic(0);
@@ -165,9 +165,9 @@ public class AStartIteratorTest extends TestCase {
 
         // Iterate
         int iteration = 0;
-        for (Iterator<AStart.AStartIterator.Node> iterator = it.queue.iterator(); iterator.hasNext(); ) {
+        for (Iterator<AStart.AStartOIterator.Node> iterator = it.queue.iterator(); iterator.hasNext(); ) {
             iteration++;
-            AStart.AStartIterator.Node n = iterator.next();
+            AStart.AStartOIterator.Node n = iterator.next();
             System.out.printf("iteration %s:  %s - %s%n", iteration, n.toString(), n.heuristic);
         }
         System.out.println();

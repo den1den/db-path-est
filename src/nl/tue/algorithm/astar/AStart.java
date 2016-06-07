@@ -2,7 +2,6 @@ package nl.tue.algorithm.astar;
 
 import nl.tue.Utils;
 import nl.tue.algorithm.paths.PathsOrdering;
-import nl.tue.algorithm.paths.PathsIterator;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -30,8 +29,8 @@ public class AStart implements Iterable<int[]> {
     }
 
     @Override
-    public AStartIterator iterator() {
-        return new AStartIterator();
+    public AStartOIterator iterator() {
+        return new AStartOIterator();
     }
 
     double getHeuristic() {
@@ -49,8 +48,8 @@ public class AStart implements Iterable<int[]> {
         this.heuristic = heuristic;
     }
 
-    public PathsIterator simpleIterator() {
-        return new AStartIterator() {
+    public Iterator<int[]> simpleIterator() {
+        return new AStartOIterator() {
             @Override
             public int[] next() {
                 int[] nxt = super.next();
@@ -60,17 +59,17 @@ public class AStart implements Iterable<int[]> {
         };
     }
 
-    class AStartIterator extends PathsIterator implements Comparator<AStartIterator.Node> {
-        final AStartIterator.Node ROOT = new AStartIterator.Node(new int[]{}, Double.MAX_VALUE);
+    class AStartOIterator implements Iterator<int[]>, Comparator<AStartOIterator.Node> {
+        final AStartOIterator.Node ROOT = new AStartOIterator.Node(new int[]{}, Double.MAX_VALUE);
         TreeSet<Node> queue;
         int[] interLabelPriorities;
         double[] interLabelHeuristics;
         Node currentParent;
         int[] currentQuery = null;
         int returned = 0;
-        int max = PathsOrdering.max(LABELS, maxDepth - 1);
+        int max = PathsOrdering.maxNumber(LABELS, maxDepth - 1);
 
-        AStartIterator() {
+        AStartOIterator() {
             currentParent = ROOT;
             interLabelPriorities = new int[LABELS];
             interLabelHeuristics = new double[LABELS];
@@ -166,11 +165,6 @@ public class AStart implements Iterable<int[]> {
                 }
             }
             return cmp;
-        }
-
-        @Override
-        public int getMax() {
-            return max;
         }
 
         /**
