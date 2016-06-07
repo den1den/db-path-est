@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * Created by Nathan on 5/25/2016.
  */
 @RunWith(Parameterized.class)
-public class ComparisonExecutor extends TestCase {
+public class ComparisonExecutor {
 
     private static List<TestEnvironment> environments;
     private final TestEnvironment env;
@@ -72,22 +72,6 @@ public class ComparisonExecutor extends TestCase {
         this.env = env;
     }
 
-    private static void reportSingleEnv(Algorithm algo,
-                                        TestEnvironment env) {
-        List<ComparisonResult> comparisonResults = env.execute(algo);
-        double envAccuracy = computeAverage(comparisonResults.stream().
-                map(ComparisonResult::getAccuracy).collect(Collectors.toList()));
-
-        System.out.println(String.format("%s:", env.getName()));
-
-        for(ComparisonResult compRes : comparisonResults) {
-            System.out.println(String.format("\t\tQuery '%s' Expected: %d Estimated: %d Accuracy: %f", compRes.getIndex().getPath(),
-                    compRes.getResult(), compRes.getEstimation(), compRes.getAccuracy()));
-        }
-
-        System.out.println(String.format("\tAccuracy for environment: '%s' is %f", env.getName(), envAccuracy));
-    }
-
     @Test
     public void testAlgorithm_NaiveIndexAndJoin() {
         Algorithm algo = new NaiveJoinAlgorithm();
@@ -100,9 +84,8 @@ public class ComparisonExecutor extends TestCase {
     }
 
     @Test
-    public void testSubGraph() {
-        Algorithm algo = new SubGraphAlgorithm();
-        reportSingleEnv(algo, this.env);
+    public void testAlgorithm_Subgraph() {
+        reportSingleEnv(new SubGraphAlgorithm(), this.env);
     }
 
     @Test
@@ -120,4 +103,19 @@ public class ComparisonExecutor extends TestCase {
        return percentageSum / ((double)in.size());
     }
 
+    private static void reportSingleEnv(Algorithm algo,
+                                        TestEnvironment env) {
+        List<ComparisonResult> comparisonResults = env.execute(algo);
+        double envAccuracy = computeAverage(comparisonResults.stream().
+                map(ComparisonResult::getAccuracy).collect(Collectors.toList()));
+
+        System.out.println(String.format("%s:", env.getName()));
+
+        for(ComparisonResult compRes : comparisonResults) {
+            System.out.println(String.format("\t\tQuery '%s' Expected: %d Estimated: %d Accuracy: %f", compRes.getIndex().getPath(),
+                    compRes.getResult(), compRes.getEstimation(), compRes.getAccuracy()));
+        }
+
+        System.out.println(String.format("\tAccuracy for environment: '%s' is %f", env.getName(), envAccuracy));
+    }
 }
