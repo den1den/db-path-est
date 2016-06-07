@@ -1,7 +1,7 @@
 package nl.tue.algorithm.dynamicprogramming;
 
 import nl.tue.Utils;
-import nl.tue.algorithm.paths.QuerySplitter;
+import nl.tue.algorithm.paths.PathSplitter;
 
 import java.util.*;
 
@@ -34,7 +34,7 @@ public abstract class Algorithm_DynamicProgramming2<E extends Estimation, R exte
             throw new RuntimeException("Cannot split up a query into a smaller query " +
                     "and query estimate is not know exactly. query = " + Arrays.toString(query));
         }
-        QuerySplitter splitter = new QuerySplitter(query);
+        PathSplitter splitter = new PathSplitter(query);
 
         do{
             int[][] next = splitter.next();

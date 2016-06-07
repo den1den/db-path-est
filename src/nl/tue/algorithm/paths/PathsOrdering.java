@@ -5,9 +5,9 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 /**
- * Lexicographical label ordering: path -> index, index -> path
+ * Some query ordering
  */
-public class LabelSequence implements Iterable<int[]> {
+public class PathsOrdering implements Iterable<int[]> {
     private final int LABELS;
     private final int MAX_PATH_LENGT;
     private final int MAX_INDEX;
@@ -17,7 +17,7 @@ public class LabelSequence implements Iterable<int[]> {
      *
      * @param labels number of labels
      */
-    public LabelSequence(int labels, int maxPathLength) {
+    public PathsOrdering(int labels, int maxPathLength) {
         if (labels <= 0) {
             throw new IllegalArgumentException("At least 1 label is required");
         }

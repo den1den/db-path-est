@@ -2,7 +2,7 @@ package nl.tue.algorithm;
 
 import nl.tue.algorithm.astar.AStart;
 import nl.tue.algorithm.brute.BruteTree;
-import nl.tue.algorithm.paths.LabelSequence;
+import nl.tue.algorithm.paths.PathsOrdering;
 import nl.tue.io.Parser;
 import nl.tue.io.graph.AdjacencyList;
 import nl.tue.io.graph.DirectedBackEdgeGraph;
@@ -21,7 +21,7 @@ public class Algorithm_Brute extends Algorithm<BruteTree> {
     protected BruteTree build(Parser p, int maximalPathLength, long budget) {
         int labels = p.getNLabels();
         AStart aStar = new AStart(labels, maximalPathLength);
-        LabelSequence sequence = new LabelSequence(labels, maximalPathLength);
+        PathsOrdering sequence = new PathsOrdering(labels, maximalPathLength);
         int[] indexedResults = new int[sequence.getMaxIndex()];
 
         DirectedBackEdgeGraph graph = new AdjacencyList(p);

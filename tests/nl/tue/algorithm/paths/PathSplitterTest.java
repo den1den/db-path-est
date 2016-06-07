@@ -8,7 +8,7 @@ import static junit.framework.TestCase.fail;
 /**
  * Created by Dennis on 31-5-2016.
  */
-public class QuerySplitterTest {
+public class PathSplitterTest {
     @Test
     public void testManualTraversal7() {
         // 4: **** ***
@@ -56,13 +56,13 @@ public class QuerySplitterTest {
             testQuery(1, null);
             testQuery(0, null);
             fail("Cannot split query of 0 or 1");
-        } catch (QuerySplitter.UnsplitableException e) {
+        } catch (PathSplitter.UnsplitableException e) {
 
         }
     }
 
     void testQuery(int length, int[] expecteds) {
-        QuerySplitter splitter = new QuerySplitter(new int[length]);
+        PathSplitter splitter = new PathSplitter(new int[length]);
 
         int i;
         for (i = 0; i < expecteds.length; i++) {

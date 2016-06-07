@@ -1,7 +1,7 @@
 package nl.tue.algorithm.astar;
 
 import nl.tue.Utils;
-import nl.tue.algorithm.paths.LabelSequence;
+import nl.tue.algorithm.paths.PathsOrdering;
 import nl.tue.algorithm.paths.PathsIterator;
 
 import java.util.Arrays;
@@ -68,7 +68,7 @@ public class AStart implements Iterable<int[]> {
         Node currentParent;
         int[] currentQuery = null;
         int returned = 0;
-        int max = LabelSequence.max(LABELS, maxDepth - 1);
+        int max = PathsOrdering.max(LABELS, maxDepth - 1);
 
         AStartIterator() {
             currentParent = ROOT;

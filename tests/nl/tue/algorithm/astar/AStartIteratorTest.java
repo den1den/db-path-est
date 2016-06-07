@@ -1,7 +1,7 @@
 package nl.tue.algorithm.astar;
 
 import junit.framework.TestCase;
-import nl.tue.algorithm.paths.LabelSequence;
+import nl.tue.algorithm.paths.PathsOrdering;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -146,7 +146,7 @@ public class AStartIteratorTest extends TestCase {
             int[] last = new int[DEPTH];
             Arrays.fill(last, LABELS - 1);
 
-            final int MAX = new LabelSequence(LABELS, DEPTH).getMaxIndex();
+            final int MAX = new PathsOrdering(LABELS, DEPTH).getMaxIndex();
             System.out.println(String.format("Depth %s, with %s labels is %s iterations ", DEPTH, LABELS, MAX));
             for (int[] ints : aStart) {
                 aStart.setHeuristic(0);

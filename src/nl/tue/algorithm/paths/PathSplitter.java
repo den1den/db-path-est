@@ -5,12 +5,12 @@ import java.util.Iterator;
 /**
  * Created by Dennis on 31-5-2016.
  */
-public class QuerySplitter implements Iterator<int[][]> {
+public class PathSplitter implements Iterator<int[][]> {
     final int[] QUERY;
     int index;
     final int HALF;
 
-    public QuerySplitter(int[] query) {
+    public PathSplitter(int[] query) {
         if(query.length <= 1){
             throw new UnsplitableException(query);
         }

@@ -9,7 +9,7 @@ import java.util.NoSuchElementException;
  */
 public class IntSet extends AbstractSet<Integer> {
     static final int BAG_SIZE = Integer.SIZE;
-    private int[] bags = new int[0];
+    protected int[] bags = new int[0];
     private int size = 0;
 
     private static int get(int bagIndex, int bitIndex) {
@@ -130,83 +130,6 @@ public class IntSet extends AbstractSet<Integer> {
     public void clear() {
         setCap(0);
         size = 0;
-    }
-
-    public static class PathSet extends AbstractSet<int[]> {
-        final LabelSequence labelSequence;
-        IntSet intSet = new IntSet();
-
-        public PathSet(LabelSequence labelSequence) {
-            this.labelSequence = labelSequence;
-        }
-
-        @Override
-        public void clear() {
-            intSet.clear();
-        }
-
-        @Override
-        public java.util.Iterator<int[]> iterator() {
-            final Iterator iterator = intSet.new Iterator();
-            return new java.util.Iterator<int[]>() {
-
-                @Override
-                public boolean hasNext() {
-                    return iterator.hasNext();
-                }
-
-                @Override
-                public int[] next() {
-                    int i = iterator.next();
-                    return labelSequence.get(i);
-                }
-            };
-        }
-
-        @Override
-        public int size() {
-            return intSet.size();
-        }
-
-        @Override
-        public boolean contains(Object o) {
-            int[] i = (int[]) o;
-            return intSet.contains(labelSequence.get(i));
-        }
-
-        @Override
-        public boolean add(int[] ints) {
-            int i = labelSequence.get(ints);
-            return intSet.add(i);
-        }
-
-        public void join(PathSet ls) {
-            assert labelSequence.getLabels() == ls.labelSequence.getLabels();
-            this.intSet.join(ls.intSet);
-        }
-
-        public void intersect(PathSet ls) {
-            assert labelSequence.getLabels() == ls.labelSequence.getLabels();
-            this.intSet.intersect(ls.intSet);
-        }
-
-        public void setMinus(PathSet ls) {
-            assert labelSequence.getLabels() == ls.labelSequence.getLabels();
-            this.intSet.setMinus(ls.intSet);
-        }
-
-        public String toString() {
-            StringBuilder sb = new StringBuilder(intSet.bags.length * BAG_SIZE);
-            sb.append(getClass().getSimpleName()).append('(');
-            for (java.util.Iterator<int[]> iterator = this.iterator(); iterator.hasNext(); ) {
-                int[] i = iterator.next();
-                sb.append(Arrays.toString(i));
-                if (iterator.hasNext()) {
-                    sb.append(", ");
-                }
-            }
-            return sb.append(')').toString();
-        }
     }
 
     class Iterator implements java.util.Iterator<Integer> {

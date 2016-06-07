@@ -1,10 +1,7 @@
 package nl.tue.io;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import java.io.*;
 import java.util.*;
-import java.util.function.LongToIntFunction;
 
 /**
  * Parses a file to a LinkedList of tuples (keeps duplicates)
@@ -29,6 +26,7 @@ public class Parser {
     public List<int[]> invertedTuples = new ArrayList<>();
     public List<int[]> combinedList = new ArrayList<>();
     public LinkedList<long[]> pathList = new LinkedList<>();
+
     public void parse(String pathname) throws IOException {
         File f = new File(pathname);
         if (!f.isFile()) {
@@ -103,15 +101,27 @@ public class Parser {
         }
     }
 
-    public void GenerateGraph(int maxLabels, int nrOfNodes) {
+    Random rand = new Random(423098423L);
+public void GenerateGraph(int maxLabels, int nrOfNodes, boolean addMoreRandom)
+    {
         tuples.clear();
-        Random rand = new Random();
-        for (int i = 0; i < nrOfNodes; i++) {
-            int num0 = rand.nextInt(nrOfNodes) + 1;
-            int num1 = rand.nextInt(maxLabels) + 1;
-            int num2 = rand.nextInt(nrOfNodes) + 1;
-            int temp[] = {num0, num1, num2};
-            tuples.add(temp);
+
+            for (int i = 0; i < nrOfNodes; i++) {
+                int num0 = i + 1;
+                int num1 = rand.nextInt(maxLabels) + 1;
+                int num2 = rand.nextInt(nrOfNodes) + 1;
+                int temp[] = {num0, num1, num2};
+                tuples.add(temp);
+            }
+        if (addMoreRandom)
+        {
+            for (int i = 0; i < nrOfNodes; i++) {
+                int num0 = rand.nextInt(nrOfNodes) + 1;
+                int num1 = rand.nextInt(maxLabels) + 1;
+                int num2 = rand.nextInt(nrOfNodes) + 1;
+                int temp[] = {num0, num1, num2};
+                tuples.add(temp);
+            }
         }
     }
     public void writePathToFile(String  filename, String inputPath, int times) throws IOException {

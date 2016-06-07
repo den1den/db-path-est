@@ -1,10 +1,7 @@
 package nl.tue.comparison;
 
 import junit.framework.TestCase;
-import nl.tue.algorithm.Algorithm;
-import nl.tue.algorithm.Algorithm_Brute;
-import nl.tue.algorithm.NaiveJoinAlgorithm;
-import nl.tue.algorithm.SubGraphAlgorithm;
+import nl.tue.algorithm.*;
 import nl.tue.io.graph.AdjacencyList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -89,6 +86,11 @@ public class ComparisonExecutor {
     @Test
     public void testAlgorithm_Subgraph() {
         reportSingleEnv(new SubGraphAlgorithm(), this.env);
+    }
+
+    @Test
+    public void testHisoGram(){
+        reportSingleEnv(new Algorithm_Histogram(), this.env);
     }
 
     private static double computeAverage(List<Double> in) {
