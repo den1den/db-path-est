@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * Created by Nathan on 5/25/2016.
  */
 @RunWith(Parameterized.class)
-public class ComparisonExecutor extends TestCase {
+public class ComparisonExecutor {
 
     private static List<TestEnvironment> environments;
     private final TestEnvironment env;
@@ -75,6 +75,32 @@ public class ComparisonExecutor extends TestCase {
         this.env = env;
     }
 
+    @Test
+    public void testAlgorithm_NaiveIndexAndJoin() {
+        Algorithm algo = new NaiveJoinAlgorithm();
+        reportSingleEnv(algo, env);
+    }
+
+    @Test
+    public void testAlgorithm_Brute() {
+        reportSingleEnv(new Algorithm_Brute(), this.env);
+    }
+
+    @Test
+    public void testAlgorithm_Subgraph() {
+        reportSingleEnv(new SubGraphAlgorithm(), this.env);
+    }
+
+    private static double computeAverage(List<Double> in) {
+        double percentageSum = 0;
+
+        for(double i : in) {
+            percentageSum += i;
+        }
+
+       return percentageSum / ((double)in.size());
+    }
+
     private static void reportSingleEnv(Algorithm algo,
                                         TestEnvironment env) {
         List<ComparisonResult> comparisonResults = env.execute(algo);
@@ -90,32 +116,4 @@ public class ComparisonExecutor extends TestCase {
 
         System.out.println(String.format("\tAccuracy for environment: '%s' is %f", env.getName(), envAccuracy));
     }
-
-    @Test
-    public void testAlgorithm_NaiveIndexAndJoin() {
-        Algorithm algo = new NaiveJoinAlgorithm();
-        reportSingleEnv(algo, env);
-    }
-
-    @Test
-    public void testAlgorithm_Brute() {
-        reportSingleEnv(new Algorithm_Brute(), this.env);
-    }
-
-    @Test
-    public void testSubGraph() {
-        Algorithm algo = new SubGraphAlgorithm();
-        reportSingleEnv(algo, this.env);
-    }
-
-    private static double computeAverage(List<Double> in) {
-        double percentageSum = 0;
-
-        for(double i : in) {
-            percentageSum += i;
-        }
-
-       return percentageSum / ((double)in.size());
-    }
-
 }
