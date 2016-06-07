@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * <p>
  * Created by Nathan on 5/24/2016.
  */
-public class IndexQueryEstimator implements Estimator<PathSummary> {
+public class IndexQueryEstimator extends Estimator<PathSummary> {
 
     /**
      * If set to true debug information is printed by this class.
@@ -76,7 +76,6 @@ public class IndexQueryEstimator implements Estimator<PathSummary> {
         }
     }
 
-    @Override
     public PathSummary concatEstimations(PathSummary left, PathSummary right) {
         int newTuples = (int)Math.min(((double)left.getTuples())*((double)right.getTuples()/(double)right.getSummary().getStart()),
                 ((double)right.getTuples())*((double)left.getTuples()/(double)left.getSummary().getEnd()));

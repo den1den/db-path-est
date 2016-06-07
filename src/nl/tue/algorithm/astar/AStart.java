@@ -2,6 +2,7 @@ package nl.tue.algorithm.astar;
 
 import nl.tue.Utils;
 import nl.tue.algorithm.paths.LabelSequence;
+import nl.tue.algorithm.paths.PathsIterator;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -48,7 +49,18 @@ public class AStart implements Iterable<int[]> {
         this.heuristic = heuristic;
     }
 
-    class AStartIterator implements Iterator<int[]>, Comparator<AStartIterator.Node> {
+    public PathsIterator simpleIterator() {
+        return new AStartIterator(){
+            @Override
+            public int[] next() {
+                int[] nxt = super.next();
+                setHeuristic(0);
+                return nxt;
+            }
+        };
+    }
+
+    class AStartIterator extends PathsIterator implements Comparator<AStartIterator.Node> {
         final AStartIterator.Node ROOT = new AStartIterator.Node(new int[]{}, Double.MAX_VALUE);
         TreeSet<Node> queue;
         int[] interLabelPriorities;
@@ -195,6 +207,11 @@ public class AStart implements Iterable<int[]> {
                 return Arrays.toString(subQuery);
             }
 
+        }
+
+        @Override
+        public int getMax() {
+            return max;
         }
     }
 }

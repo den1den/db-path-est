@@ -1,5 +1,8 @@
 package nl.tue.io.graph;
 
+import nl.tue.algorithm.Estimator;
+import nl.tue.algorithm.PathResult;
+
 import java.util.Set;
 
 /**
@@ -7,7 +10,7 @@ import java.util.Set;
  *
  * Created by Nathan on 5/21/2016.
  */
-public interface DirectedBackEdgeGraph {
+public interface DirectedBackEdgeGraph extends Estimator<PathResult>{
 
     Set<NodePair> solvePathQuery(int[] path);
 }

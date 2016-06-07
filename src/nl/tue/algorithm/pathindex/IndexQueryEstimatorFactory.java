@@ -53,7 +53,7 @@ public class IndexQueryEstimatorFactory {
     /**
      *
      * @param graph Graph used to compute the path summary.
-     * @param path Path for which a summary should be computed
+     * @param path StringPath for which a summary should be computed
      * @param astart Used to give a heuristic value to the path for which a summary just has been computed.
      * @return
      */

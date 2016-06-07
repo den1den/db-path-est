@@ -1,7 +1,6 @@
 package nl.tue.depricated;
 
 import nl.tue.Utils;
-import nl.tue.algorithm.Estimation;
 import nl.tue.algorithm.paths.QuerySplitter;
 
 import java.util.*;

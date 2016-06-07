@@ -1,7 +1,7 @@
 package nl.tue.algorithm.pathindex;
 
 import nl.tue.Utils;
-import nl.tue.algorithm.Estimation;
+import nl.tue.depricated.Estimation;
 
 import java.util.List;
 
@@ -48,22 +48,27 @@ public class PathSummary extends Estimation {
         return summary;
     }
 
-    @Override
+    /**
+         * An notion of precision.
+         *
+         * @return The higher the better, with Double.MAX_VALUE being exact
+         */
     public double getPrecision() {
         return Double.MAX_VALUE;
     }
 
-    @Override
+    /**
+         * The estimate itself
+         * @return number of tuples for this estimation
+         */
     public int getTuples() {
         return summary.getTuples();
     }
 
     /**
-     * If this query is exact the exact (non null) query should be given
-     * Note: because multiple constraints in Java Generics is not allowed
-     *
-     * @return exact query of null
-     */
+         * The subject of the estimation
+         * @return a path query
+         */
     public int[] getQuery() {
         return index.getPathAsIntArray();
     }

@@ -1,28 +1,31 @@
 package nl.tue.depricated;
 
-import nl.tue.MemoryConstrained;
-import nl.tue.algorithm.Estimation;
 import nl.tue.io.Parser;
 
 import java.util.Collection;
 import java.util.List;
 
 /**
- * Created by dennis on 24-5-16.
+ * Created by Dennis on 5-6-2016.
  */
-public interface Estimator<E extends Estimation> extends MemoryConstrained {
+@Deprecated
+public class Estimator<E> {
+    public <E extends Estimation> E concatEstimations(E headEstimation, E tailEstimation) {
+        return null;
+    }
 
-    E concatEstimations(E left, E right);
-    int combineEstimations(List<E> sortedEs);
+    public <E extends Estimation> Collection<E> retrieveAllExactEstimations() {
+        return null;
+    }
 
-    Collection<E> retrieveAllExactEstimations();
+    public void buildSummary(Parser p, int k, double b) {
 
-    /**
-     * Instructs the estimator to build a summary of the given graph for a certain k and b.
-     *
-     * @param p
-     * @param k The maximum path length of a getEstimation that should be estimated.
-     * @param b The amount of memory that this class is allowed to store.
-     */
-    void buildSummary(Parser p, int k, double b);
+    }
+
+    public int combineEstimations(List<E> sortedEs){
+        return 0;
+    }
+    public long getBytesUsed() {
+        return 0;
+    }
 }

@@ -1,5 +1,6 @@
 package nl.tue.io.graph;
 
+import nl.tue.algorithm.PathResult;
 import nl.tue.algorithm.pathindex.PathIndex;
 import nl.tue.io.Parser;
 
@@ -159,6 +160,11 @@ public class AdjacencyList implements DirectedBackEdgeGraph {
 
     public Map<Integer, Map<Integer, Set<Integer>>> getNodes() {
         return nodes;
+    }
+
+    @Override
+    public PathResult getEstimation(int[] path) {
+        return new PathResult(solvePathQuery(path).size());
     }
 
     private static class ZeroLengthPathStore {

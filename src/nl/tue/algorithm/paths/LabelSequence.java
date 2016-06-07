@@ -52,7 +52,7 @@ public class LabelSequence implements Iterable<int[]>{
 
     public int get(int[] path) {
         if (path.length == 0) {
-            throw new IllegalArgumentException("Path length cannot be zero");
+            throw new IllegalArgumentException("StringPath length cannot be zero");
         }
         if (this.LABELS == 1) {
             return path.length - 1;
