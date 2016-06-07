@@ -23,7 +23,7 @@ public class GraphGeneratorTest {
     }
     @Test
     public void SaveGeneratedGraph() throws IOException {
-        p.GenerateGraph(5,10);
+        p.GenerateGraph(5,10,false);
         p.writeToFile(fileLocation);
     }
     @Test
