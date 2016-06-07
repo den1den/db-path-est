@@ -103,15 +103,26 @@ public class Parser {
         }
     }
 
-    public void GenerateGraph(int maxLabels, int nrOfNodes) {
+public void GenerateGraph(int maxLabels, int nrOfNodes, boolean addMoreRandom)
+    {
         tuples.clear();
-        Random rand = new Random();
-        for (int i = 0; i < nrOfNodes; i++) {
-            int num0 = rand.nextInt(nrOfNodes) + 1;
-            int num1 = rand.nextInt(maxLabels) + 1;
-            int num2 = rand.nextInt(nrOfNodes) + 1;
-            int temp[] = {num0, num1, num2};
-            tuples.add(temp);
+
+            for (int i = 0; i < nrOfNodes; i++) {
+                long num0 = i + 1;
+                long num1 = rand.nextInt(maxLabels) + 1;
+                long num2 = rand.nextInt(nrOfNodes) + 1;
+                long temp[] = {num0, num1, num2};
+                tuples.add(temp);
+            }
+        if (addMoreRandom)
+        {
+            for (int i = 0; i < nrOfNodes; i++) {
+                long num0 = rand.nextInt(nrOfNodes) + 1;
+                long num1 = rand.nextInt(maxLabels) + 1;
+                long num2 = rand.nextInt(nrOfNodes) + 1;
+                long temp[] = {num0, num1, num2};
+                tuples.add(temp);
+            }
         }
     }
     public void writePathToFile(String  filename, String inputPath, int times) throws IOException {
