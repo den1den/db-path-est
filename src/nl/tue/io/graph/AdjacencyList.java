@@ -29,39 +29,49 @@ public class AdjacencyList implements DirectedBackEdgeGraph {
     }
 
     public AdjacencyList(Parser parser, boolean useEdgeMappings) {
+        this(parser, useEdgeMappings, parser.getNLabels());
+    }
+
+    public AdjacencyList(Parser parser, boolean useEdgeMappings, int labels) {
         nodes = new HashMap<>();
         this.zeroStore = new ZeroLengthPathStore(ZERO_LENGTH_STORE);
         this.outgoingIndex = new HashMap<>();
         this.shortPathIndex = new HashMap<>();
 
-        for (String rawLabel : parser.getEdgeMappings().keySet()) {
-            outgoingIndex.put(parser.getEdgeMappings().get(rawLabel), new HashSet<>());
+        if(useEdgeMappings) {
+            for (String rawLabel : parser.getEdgeMappings().keySet()) {
+                outgoingIndex.put(parser.getEdgeMappings().get(rawLabel), new HashSet<>());
+            }
+        } else {
+            for(int i = 0; i < labels; i++) {
+                outgoingIndex.put(i, new HashSet<>());
+            }
         }
 
-        for (long[] tuple : parser.tuples) {
+        for (int[] tuple : parser.tuples) {
             if (tuple.length != 3) {
                 System.err.println("While reading results from parser an unexpected tuple has been encountered");
                 continue;
             }
 
-            if (!nodes.containsKey((int) tuple[0])) {
-                nodes.put((int) tuple[0], emptyEdges(0, parser.getNLabels() - 1));
+            if (!nodes.containsKey(tuple[0])) {
+                nodes.put(tuple[0], emptyEdges(0, labels - 1));
             }
-            if (!nodes.containsKey((int) tuple[2])) {
-                nodes.put((int) tuple[2], emptyEdges(0, parser.getNLabels() - 1));
+            if (!nodes.containsKey(tuple[2])) {
+                nodes.put(tuple[2], emptyEdges(0, labels - 1));
             }
 
-            int forwardEdge = useEdgeMappings ? parser.getEdgeMappings().get("+" + tuple[1]) : (int) tuple[1];
-            int backwardEdge = useEdgeMappings ? parser.getEdgeMappings().get("-" + tuple[1]) : (int) (tuple[1] + (parser.getNLabels() / 2));
+            int forwardEdge = useEdgeMappings ? parser.getEdgeMappings().get("+" + tuple[1]) : tuple[1];
+            int backwardEdge = useEdgeMappings ? parser.getEdgeMappings().get("-" + tuple[1]) : tuple[1] + (labels / 2);
 
-            Set<Integer> edgesForLabel = nodes.get((int) tuple[0]).get(forwardEdge);
-            Set<Integer> backEdgesForLabel = nodes.get((int) tuple[2]).get(backwardEdge);
+            Set<Integer> edgesForLabel = nodes.get(tuple[0]).get(forwardEdge);
+            Set<Integer> backEdgesForLabel = nodes.get(tuple[2]).get(backwardEdge);
 
-            this.outgoingIndex.get(forwardEdge).add((int) tuple[0]);
-            this.outgoingIndex.get(backwardEdge).add((int) tuple[2]);
+            this.outgoingIndex.get(forwardEdge).add(tuple[0]);
+            this.outgoingIndex.get(backwardEdge).add(tuple[2]);
 
-            edgesForLabel.add((int) tuple[2]);
-            backEdgesForLabel.add((int) tuple[0]);
+            edgesForLabel.add(tuple[2]);
+            backEdgesForLabel.add(tuple[0]);
         }
     }
 

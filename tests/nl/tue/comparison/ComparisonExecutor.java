@@ -11,7 +11,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -50,6 +52,17 @@ public class ComparisonExecutor extends TestCase {
         TestEnvironment music = new TestEnvironment(musicQueries, musicFile, "Music");
 
         environments.add(music);
+
+        List<String> cineastQueries = Arrays.asList("+ 4 - 4 + 4 - 4 + 4", "+ 4 - 3 + 4 - 3 + 4", "+ 4 - 3 - 4 - 3 + 4",
+                "+ 1 - 3 + 4 - 3 + 4", "+ 4 - 4 + 4 - 4", "+ 3 - 3 + 3 - 3", "+ 1 - 4 + 4 - 3", "+ 1 - 3 + 4 - 3",
+                "+ 1 - 3 + 3 - 3", "+ 2 + 1 - 1", "+ 2 + 2 + 1", "+ 2 + 1 - 4", "+ 1 - 4 + 4", "+ 3 - 4 + 3", "+ 3 - 3 + 3",
+                "+ 4 - 4 + 4", "+ 2 + 1", "- 2 + 1", "- 3 + 3", "+ 3 - 3", "+ 3", "+ 4", "+ 2");
+
+        File cineastFile = new File(AdjacencyList.class.getClassLoader().getResource("cineasts.txt").getFile());
+
+        TestEnvironment cineasts = new TestEnvironment(cineastQueries, cineastFile, "Cineast");
+
+        environments.add(cineasts);
     }
 
     @Parameterized.Parameters
@@ -62,34 +75,6 @@ public class ComparisonExecutor extends TestCase {
         this.env = env;
     }
 
-    private static void executeAndReportTests(Algorithm algo,
-                                              List<TestEnvironment> envs) {
-        List<ComparisonResult> res = new ArrayList<>();
-        Map<String, Double> envAcc = new HashMap<>();
-
-        for(TestEnvironment env : envs) {
-            List<ComparisonResult> comparisonResults = env.execute(algo);
-            double envAccuracy = computeAverage(comparisonResults.stream().
-                    map(ComparisonResult::getAccuracy).collect(Collectors.toList()));
-
-            envAcc.put(env.getName(), envAccuracy);
-
-            res.addAll(comparisonResults);
-            System.out.println(String.format("%s:", env.getName()));
-
-            for(ComparisonResult compRes : comparisonResults) {
-                System.out.println(String.format("\t\tQuery '%s' Expected: %d Estimated: %d Accuracy %f", compRes.getIndex().getPath(),
-                        compRes.getResult(), compRes.getEstimation(), compRes.getAccuracy()));
-            }
-
-            System.out.println(String.format("\tAccuracy for environment: '%s' is %f", env.getName(), envAccuracy));
-        }
-
-       double accAverage = computeAverage(res.stream().map(ComparisonResult::getAccuracy).collect(Collectors.toList()));
-
-        System.out.println(String.format("Total average accuracy over all environment is: %f", accAverage));
-    }
-
     private static void reportSingleEnv(Algorithm algo,
                                         TestEnvironment env) {
         List<ComparisonResult> comparisonResults = env.execute(algo);
@@ -99,7 +84,7 @@ public class ComparisonExecutor extends TestCase {
         System.out.println(String.format("%s:", env.getName()));
 
         for(ComparisonResult compRes : comparisonResults) {
-            System.out.println(String.format("\t\tQuery '%s' Expected: %d Estimated: %d Accuracy %f", compRes.getIndex().getPath(),
+            System.out.println(String.format("\t\tQuery '%s' Expected: %d Estimated: %d Accuracy: %f", compRes.getIndex().getPath(),
                     compRes.getResult(), compRes.getEstimation(), compRes.getAccuracy()));
         }
 

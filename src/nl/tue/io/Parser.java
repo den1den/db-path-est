@@ -25,9 +25,9 @@ public class Parser {
      */
     private Map<String, Integer> edgeMappings = new HashMap<>();
 
-    public LinkedList<long[]> tuples = new LinkedList<>();
-    public LinkedList<long[]> invertedTuples = new LinkedList<>();
-    public LinkedList<long[]> combinedList = new LinkedList<>();
+    public List<int[]> tuples = new ArrayList<>();
+    public List<int[]> invertedTuples = new ArrayList<>();
+    public List<int[]> combinedList = new ArrayList<>();
     public LinkedList<long[]> pathList = new LinkedList<>();
     public void parse(String pathname) throws IOException {
         File f = new File(pathname);
@@ -89,13 +89,13 @@ public class Parser {
 
         try {
             while (scanner.hasNextLong()) {
-                long src, label, dest;
+                int src, label, dest;
 
-                src = scanner.nextLong();
-                label = scanner.nextLong();
+                src = scanner.nextInt();
+                label = scanner.nextInt();
                 label = -label;
-                dest = scanner.nextLong();
-                invertedTuples.add(new long[]{dest, label, src});
+                dest = scanner.nextInt();
+                invertedTuples.add(new int[]{dest, label, src});
                 ;
             }
         } catch (NoSuchElementException e) {
@@ -107,10 +107,10 @@ public class Parser {
         tuples.clear();
         Random rand = new Random();
         for (int i = 0; i < nrOfNodes; i++) {
-            long num0 = rand.nextInt(nrOfNodes) + 1;
-            long num1 = rand.nextInt(maxLabels) + 1;
-            long num2 = rand.nextInt(nrOfNodes) + 1;
-            long temp[] = {num0, num1, num2};
+            int num0 = rand.nextInt(nrOfNodes) + 1;
+            int num1 = rand.nextInt(maxLabels) + 1;
+            int num2 = rand.nextInt(nrOfNodes) + 1;
+            int temp[] = {num0, num1, num2};
             tuples.add(temp);
         }
     }
@@ -147,7 +147,7 @@ public class Parser {
 
     public void writeToFile(String filename) throws IOException {
         FileWriter fw = new FileWriter(filename);
-        for (long[] longArray : tuples
+        for (int[] longArray : tuples
                 ) {
             for (int i = 0; i < longArray.length; i++) {
                 fw.append(String.valueOf(longArray[i]) + " ");
@@ -155,7 +155,7 @@ public class Parser {
             fw.append(System.lineSeparator());
 
         }
-        for (long[] longArray : invertedTuples
+        for (int[] longArray : invertedTuples
                 ) {
             for (int i = 0; i < longArray.length; i++) {
                 if (longArray[i] != 0) {
@@ -175,7 +175,7 @@ public class Parser {
         return this.edgeMappings.size();
     }
 
-    private void foundTuple(long src, long label, long dest) {
+    private void foundTuple(int src, int label, int dest) {
         if (lowestSrc == -1 || src < lowestSrc) {
             lowestSrc = src;
         }
@@ -196,7 +196,7 @@ public class Parser {
             edgeMappings.put("+" + label, this.edgeMappings.size());
         }
 
-        tuples.add(new long[]{src, label, dest});
+        tuples.add(new int[]{src, label, dest});
     }
 
     public static final Comparator<long[]> CompSourceLabelDestination = new Comparator<long[]>() {
@@ -223,8 +223,8 @@ public class Parser {
         }
     };
 
-    public ArrayList<long[]> getOrderedUnique(Comparator<long[]> comparator) {
-        TreeSet<long[]> ordered = new TreeSet<>(comparator);
+    public ArrayList<int[]> getOrderedUnique(Comparator<int[]> comparator) {
+        TreeSet<int[]> ordered = new TreeSet<>(comparator);
         ordered.addAll(tuples);
 
         return new ArrayList<>(ordered);
