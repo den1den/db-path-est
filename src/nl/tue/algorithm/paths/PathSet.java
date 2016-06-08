@@ -7,10 +7,10 @@ import java.util.Arrays;
  * Created by Dennis on 7-6-2016.
  */
 public class PathSet extends AbstractSet<int[]> {
-    final PathsOrdering pathsOrdering;
+    final PathsOrderingLexicographical pathsOrdering;
     IntSet intSet = new IntSet();
 
-    public PathSet(PathsOrdering pathsOrdering) {
+    public PathSet(PathsOrderingLexicographical pathsOrdering) {
         this.pathsOrdering = pathsOrdering;
     }
 

@@ -2,7 +2,6 @@ package nl.tue.algorithm.histogram;
 
 import nl.tue.algorithm.Estimator;
 import nl.tue.algorithm.paths.PathsOrdering;
-import nl.tue.algorithm.paths.PathsIterator;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -11,12 +10,13 @@ import java.util.TreeSet;
 public abstract class AbstractHistogramBuilder<E, H extends AbstractHistogram<E>> {
 
     PathsOrdering pathsOrdering;
-    private TreeSet<HistogramRange<E>> ranges;
 
-    public AbstractHistogramBuilder() {
+    public AbstractHistogramBuilder(PathsOrdering pathsOrdering) {
+        this.pathsOrdering = pathsOrdering;
     }
 
-    private HistogramRange<E> lower, higher;
+    private TreeSet<HistogramRange<E>> ranges = null;
+    private HistogramRange<E> lower = null, higher = null;
     private HistogramRange<E> prepareInsert(int newIndex){
         HistogramRange<E> newRange = new HistogramRange<>(null, newIndex, newIndex);
         HistogramRange<E> floor = ranges.floor(newRange);
@@ -62,7 +62,7 @@ public abstract class AbstractHistogramBuilder<E, H extends AbstractHistogram<E>
         return newRange;
     }
 
-    TreeSet<HistogramRange<E>> buildRanges(Estimator<E> graph, Joiner<E> joiner, PathsIterator pathsIterator) {
+    TreeSet<HistogramRange<E>> buildRanges(Estimator<E> graph, Iterator<int[]> pathsIterator, Joiner<E> joiner) {
         ranges = new TreeSet<>();
         int MAX = Integer.MAX_VALUE;
         ranges.add(new HistogramRange<>(null, 0, MAX));
@@ -127,9 +127,8 @@ public abstract class AbstractHistogramBuilder<E, H extends AbstractHistogram<E>
         return ranges;
     }
 
-    public H build(PathsOrdering pathsOrdering, Estimator<E> graph, Joiner<E> joiner, PathsIterator pathsIterator) {
-        this.pathsOrdering = pathsOrdering;
-        TreeSet<HistogramRange<E>> ranges = buildRanges(graph, joiner, pathsIterator);
+    public H build(Estimator<E> graph, Iterator<int[]> pathsIterator, Joiner<E> joiner) {
+        TreeSet<HistogramRange<E>> ranges = buildRanges(graph, pathsIterator, joiner);
         check(ranges);
 
         ArrayList<Integer> startRanges = new ArrayList<>(ranges.size() - 1);

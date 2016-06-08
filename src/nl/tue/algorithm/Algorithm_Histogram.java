@@ -1,12 +1,11 @@
 package nl.tue.algorithm;
 
-import nl.tue.algorithm.astar.AStart;
 import nl.tue.algorithm.histogram.BruteHistogram;
 import nl.tue.algorithm.histogram.Joiner;
 import nl.tue.algorithm.paths.PathsOrdering;
+import nl.tue.algorithm.paths.PathsOrderingLexicographical;
 import nl.tue.io.Parser;
 import nl.tue.io.graph.AdjacencyList;
-import nl.tue.io.graph.DirectedBackEdgeGraph;
 
 /**
  * @author dennis
@@ -17,15 +16,11 @@ public class Algorithm_Histogram extends Algorithm<BruteHistogram> {
 
     @Override
     protected BruteHistogram build(Parser p, int maximalPathLength, long budget) {
-        BruteHistogram.BruteHistogramBuilder builder = new BruteHistogram.BruteHistogramBuilder();
         int labels = p.getNLabels();
-        AStart aStar = new AStart(labels, maximalPathLength);
-        PathsOrdering pathsOrdering = new PathsOrdering(labels, maximalPathLength);
-        int[] indexedResults = new int[pathsOrdering.getMaxIndex()];
-
-        DirectedBackEdgeGraph graph = new AdjacencyList(p);
-
-        return builder.build(pathsOrdering, graph, joiner, aStar.simpleIterator());
+        PathsOrdering pathsOrdering = new PathsOrderingLexicographical(labels, maximalPathLength);
+        BruteHistogram.BruteHistogramBuilder builder = new BruteHistogram.BruteHistogramBuilder(pathsOrdering);
+        AdjacencyList graph = new AdjacencyList(p);
+        return builder.build(graph, pathsOrdering.iterator(), joiner);
     }
 
     @Override

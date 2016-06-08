@@ -21,7 +21,9 @@ public class BruteHistogram extends AbstractHistogram<PathResult> {
     }
 
     public static class BruteHistogramBuilder extends AbstractHistogramBuilder<PathResult, BruteHistogram> {
-        public BruteHistogramBuilder() {
+
+        public BruteHistogramBuilder(PathsOrdering pathsOrdering) {
+            super(pathsOrdering);
         }
 
         @Override

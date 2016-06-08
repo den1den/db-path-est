@@ -8,31 +8,31 @@ import org.junit.Test;
  * Created by dennis on 21-5-16.
  */
 public class PathsOrderingTest extends TestCase {
-    PathsOrdering pathsOrdering1 = new PathsOrdering(1, 15); // 0
-    PathsOrdering pathsOrdering2 = new PathsOrdering(2, 15); // 0 1
-    PathsOrdering pathsOrdering3 = new PathsOrdering(3, 15); // 0 1 2
+    PathsOrderingLexicographical pathsOrdering1 = new PathsOrderingLexicographical(1, 15); // 0
+    PathsOrderingLexicographical pathsOrdering2 = new PathsOrderingLexicographical(2, 15); // 0 1
+    PathsOrderingLexicographical pathsOrdering3 = new PathsOrderingLexicographical(3, 15); // 0 1 2
 
     public void testMax() throws Exception {
-        assertEquals(2, PathsOrdering.max(2, 1));
-        assertEquals(100, PathsOrdering.max(100, 1));
+        assertEquals(2, PathsOrdering.maxNumber(2, 1));
+        assertEquals(100, PathsOrdering.maxNumber(100, 1));
 
-        assertEquals(2 + 4, PathsOrdering.max(2, 2));
-        assertEquals(2 + 4 + 8, PathsOrdering.max(2, 3));
-        assertEquals(2 + 4 + 8 + 16, PathsOrdering.max(2, 4));
+        assertEquals(2 + 4, PathsOrdering.maxNumber(2, 2));
+        assertEquals(2 + 4 + 8, PathsOrdering.maxNumber(2, 3));
+        assertEquals(2 + 4 + 8 + 16, PathsOrdering.maxNumber(2, 4));
 
-        assertEquals(3 + 9, PathsOrdering.max(3, 2));
-        assertEquals(3 + 9 + 27, PathsOrdering.max(3, 3));
+        assertEquals(3 + 9, PathsOrdering.maxNumber(3, 2));
+        assertEquals(3 + 9 + 27, PathsOrdering.maxNumber(3, 3));
     }
 
     public void testGetMaxIndex() throws Exception {
         for (int L = 1; L <= 8; L++) {
-            PathsOrdering sequence = new PathsOrdering(L, 10);
+            PathsOrdering sequence = new PathsOrderingLexicographical(L, 10);
             for (int p = 1; p <= 10; p++) {
                 sequence.getMaxIndex();
             }
         }
         for (int L = 9; L <= 21; L++) {
-            PathsOrdering sequence = new PathsOrdering(L, 7);
+            PathsOrdering sequence = new PathsOrderingLexicographical(L, 7);
             for (int p = 1; p <= 7; p++) {
                 sequence.getMaxIndex();
             }
