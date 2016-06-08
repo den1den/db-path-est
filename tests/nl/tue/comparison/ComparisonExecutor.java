@@ -2,6 +2,9 @@ package nl.tue.comparison;
 
 import junit.framework.TestCase;
 import nl.tue.algorithm.*;
+import nl.tue.algorithm.subgraph.SubGraphAlgorithm;
+import nl.tue.algorithm.subgraph.SubgraphHighKFactorAlgorithm;
+import nl.tue.algorithm.subgraph.SubgraphWithFactorsAlgorithm;
 import nl.tue.io.graph.AdjacencyList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -86,6 +89,16 @@ public class ComparisonExecutor {
     @Test
     public void testAlgorithm_Subgraph() {
         reportSingleEnv(new SubGraphAlgorithm(), this.env);
+    }
+
+    @Test
+    public void testAlgorithm_SubgraphWithFactors() {
+        reportSingleEnv(new SubgraphWithFactorsAlgorithm(), this.env);
+    }
+
+    @Test
+    public void testAlgorithm_SubgraphWithHighKFactors() {
+        reportSingleEnv(new SubgraphHighKFactorAlgorithm(), this.env);
     }
 
     @Test

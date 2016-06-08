@@ -1,26 +1,27 @@
-package nl.tue.algorithm.subgraph;
+package nl.tue.algorithm.subgraph.estimator;
 
 import nl.tue.MemoryConstrained;
+import nl.tue.algorithm.subgraph.SubgraphCompressor;
 import nl.tue.io.Parser;
 import nl.tue.io.graph.AdjacencyList;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
+ *
+ * TODO Dennis, subclass this to add a new approach.
+ *
  * Created by Nathan on 6/4/2016.
  */
 public class SubgraphEstimator implements MemoryConstrained {
 
     private static final int OVERHEAD = 16 * 2 + 4 + 1 + 4;
 
-    private byte[] storage;
+    protected byte[] storage;
 
-    private byte labels;
+    protected byte labels;
 
-    private int subgraphLength;
+    protected int subgraphLength;
 
     /**
      * Builds a subgraph of the given graph and attempts to fit as much of it as possible into memory.
@@ -69,10 +70,11 @@ public class SubgraphEstimator implements MemoryConstrained {
 
         AdjacencyList graph = new AdjacencyList(parser, false, this.labels);
 
-
         return graph.solvePathQuery(query).size();
 
     }
+
+
 
     @Override
     public long getBytesUsed() {

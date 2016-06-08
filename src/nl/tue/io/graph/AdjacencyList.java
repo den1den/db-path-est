@@ -17,6 +17,8 @@ public class AdjacencyList implements DirectedBackEdgeGraph {
 
     private final Map<Integer, Set<Integer>> outgoingIndex;
 
+    private final Map<Integer, Integer> edgeCount;
+
     /**
      * This should be easily queryable in the trace path method.
      */
@@ -37,6 +39,7 @@ public class AdjacencyList implements DirectedBackEdgeGraph {
         this.zeroStore = new ZeroLengthPathStore(ZERO_LENGTH_STORE);
         this.outgoingIndex = new HashMap<>();
         this.shortPathIndex = new HashMap<>();
+        this.edgeCount = new HashMap<>();
 
         if(useEdgeMappings) {
             for (String rawLabel : parser.getEdgeMappings().keySet()) {
@@ -66,6 +69,8 @@ public class AdjacencyList implements DirectedBackEdgeGraph {
 
             Set<Integer> edgesForLabel = nodes.get(tuple[0]).get(forwardEdge);
             Set<Integer> backEdgesForLabel = nodes.get(tuple[2]).get(backwardEdge);
+
+
 
             this.outgoingIndex.get(forwardEdge).add(tuple[0]);
             this.outgoingIndex.get(backwardEdge).add(tuple[2]);
@@ -228,5 +233,19 @@ public class AdjacencyList implements DirectedBackEdgeGraph {
 
             return false;
         }
+    }
+
+    public Map<Integer, Set<Integer>> getOutgoingIndex() {
+        return outgoingIndex;
+    }
+
+    public int totalEdges() {
+        int total = 0;
+
+        for(int key : this.outgoingIndex.keySet()) {
+            total += this.outgoingIndex.get(key).size();
+        }
+
+        return total;
     }
 }

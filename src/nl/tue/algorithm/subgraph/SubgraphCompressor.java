@@ -5,6 +5,7 @@ import com.sun.deploy.util.ArrayUtil;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -161,9 +162,6 @@ public class SubgraphCompressor {
             }
         }
 
-        System.out.println(String.format("Added %d edges which is more than the initial estimation of %d", added,
-                b / EDGE_LENGTH));
-
         byte[] out = new byte[added*EDGE_LENGTH];
 
         /**
@@ -173,5 +171,29 @@ public class SubgraphCompressor {
 
         return compress(out);
     }
+
+    public static byte[] doublesToByteArray(List<Double> doubles) {
+        byte[] out = new byte[doubles.size() * 8];
+
+        for(int i = 0; i < doubles.size(); i++) {
+            ByteBuffer.wrap(out, i*8, 8).putDouble(doubles.get(i));
+        }
+
+        return out;
+    }
+
+    public static List<Double> byteArrayToDoubles(byte[] bytes) {
+        List<Double> out = new ArrayList<>();
+
+        int doubles = bytes.length / 8;
+
+        for(int i = 0; i < doubles; i++) {
+            out.add(ByteBuffer.wrap(bytes, i*8, 8).getDouble());
+        }
+
+        return out;
+    }
+
+
 
 }

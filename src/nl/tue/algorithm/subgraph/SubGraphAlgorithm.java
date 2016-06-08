@@ -1,6 +1,7 @@
-package nl.tue.algorithm;
+package nl.tue.algorithm.subgraph;
 
-import nl.tue.algorithm.subgraph.SubgraphEstimator;
+import nl.tue.algorithm.Algorithm;
+import nl.tue.algorithm.subgraph.estimator.SubgraphEstimator;
 import nl.tue.io.Parser;
 
 /**

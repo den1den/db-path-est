@@ -180,6 +180,25 @@ public class SubgraphCompressorTest {
         }
     }
 
+    @Test
+    public void testDoubleCompression_1() {
+        List<Double> vals = new ArrayList<>();
+        vals.add(3.4);
+
+        Assert.assertEquals(vals, SubgraphCompressor.byteArrayToDoubles(SubgraphCompressor.doublesToByteArray(vals)));
+    }
+
+    @Test
+    public void testDoubleCompression_2() {
+        List<Double> vals = new ArrayList<>();
+        vals.add(3.4);
+        vals.add(32d);
+        vals.add(32.352);
+        vals.add(-56.2);
+
+        Assert.assertEquals(vals, SubgraphCompressor.byteArrayToDoubles(SubgraphCompressor.doublesToByteArray(vals)));
+    }
+
     private List<int[]> graphToEdgeList(AdjacencyList graph) {
         List<int[]> out = new ArrayList<>();
 
