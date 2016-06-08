@@ -108,33 +108,38 @@ public class PathSetTest extends TestCase {
     public void testSpeed() {
         Random r = new Random(4567865L);
         int ADDITIONS, MAX_VALUE;
+        double relDuration = 0;
 
         ADDITIONS = 10000000;
         MAX_VALUE = 1;
-        testSpeed(r, MAX_VALUE, ADDITIONS);
+        relDuration += testSpeed(r, MAX_VALUE, ADDITIONS);
 
         ADDITIONS = 10000000;
         MAX_VALUE = ADDITIONS / 10;
-        testSpeed(r, MAX_VALUE, ADDITIONS);
+        relDuration += testSpeed(r, MAX_VALUE, ADDITIONS);
 
         ADDITIONS = 10000000;
         MAX_VALUE = ADDITIONS / 2;
-        testSpeed(r, MAX_VALUE, ADDITIONS);
+        relDuration += testSpeed(r, MAX_VALUE, ADDITIONS);
 
         MAX_VALUE = ADDITIONS;
-        testSpeed(r, MAX_VALUE, ADDITIONS);
+        relDuration += testSpeed(r, MAX_VALUE, ADDITIONS);
 
         MAX_VALUE = ADDITIONS * 2;
-        testSpeed(r, MAX_VALUE, ADDITIONS);
+        relDuration += testSpeed(r, MAX_VALUE, ADDITIONS);
 
         MAX_VALUE = ADDITIONS * 10;
-        testSpeed(r, MAX_VALUE, ADDITIONS);
+        relDuration += testSpeed(r, MAX_VALUE, ADDITIONS);
 
         MAX_VALUE = Integer.MAX_VALUE;
-        testSpeed(r, MAX_VALUE, ADDITIONS);
+        relDuration += testSpeed(r, MAX_VALUE, ADDITIONS);
+
+        relDuration /= 7;
+
+        System.out.printf("%nAverage relative duration of PathSet compared to HashSet %.1f%%%n", relDuration * 100);
     }
 
-    void testSpeed(Random r, int MAX_VALUE, int additions) {
+    double testSpeed(Random r, int MAX_VALUE, int additions) {
         int[] generated = new int[additions];
         for (int g = 0; g < generated.length; g++) {
             generated[g] = r.nextInt(MAX_VALUE);
@@ -152,7 +157,8 @@ public class PathSetTest extends TestCase {
         }
         long t1 = System.currentTimeMillis();
 
-        System.out.printf("IntSet.PathSet took %sms over %.1f%% of %s additions%n", t1 - t0, (double) added / additions * 100, additions);
+        double time_opt = t1 - t0;
+        System.out.printf("IntSet.PathSet took %sms over %.1f%% of %s additions%n", time_opt, (double) added / additions * 100, additions);
 
         int added2 = 0;
         t0 = System.currentTimeMillis();
@@ -164,11 +170,14 @@ public class PathSetTest extends TestCase {
         }
         t1 = System.currentTimeMillis();
 
-        System.out.printf("HashSet took %sms over %.1f%% of %s additions%n", t1 - t0, 100 * (double) (added) / additions, additions);
+        double time_hash = t1 - t0;
+        System.out.printf("HashSet took %sms over %.1f%% of %s additions%n", time_hash, 100 * (double) (added) / additions, additions);
 
         assertEquals(hashSet.size(), added2);
         assertEquals(hashSet.size(), added);
         System.out.println();
+
+        return time_opt / time_hash;
     }
 
     public void testAdd2() {
