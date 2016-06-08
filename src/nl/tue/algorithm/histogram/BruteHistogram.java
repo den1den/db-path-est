@@ -11,8 +11,8 @@ import java.util.ArrayList;
  */
 public class BruteHistogram extends AbstractHistogram<PathResult> {
 
-    private BruteHistogram(PathsOrdering pathsOrdering, ArrayList<Integer> startRanges, PathResult[] estimations) {
-        super(pathsOrdering, Utils.toArray(startRanges), estimations);
+    public BruteHistogram(int[] startRanges, PathResult[] estimations) {
+        super(startRanges, estimations);
     }
 
     @Override
@@ -22,13 +22,13 @@ public class BruteHistogram extends AbstractHistogram<PathResult> {
 
     public static class BruteHistogramBuilder extends AbstractHistogramBuilder<PathResult, BruteHistogram> {
 
-        public BruteHistogramBuilder(PathsOrdering pathsOrdering) {
-            super(pathsOrdering);
+        public BruteHistogramBuilder(Joiner.AbstractJoiner<PathResult> joiner) {
+            super(joiner);
         }
 
         @Override
-        public BruteHistogram createH(PathsOrdering pathsOrdering, ArrayList<Integer> startRanges, PathResult[] estimations) {
-            return new BruteHistogram(pathsOrdering, startRanges, estimations);
+        protected BruteHistogram createH(ArrayList<Integer> startRanges, PathResult[] estimations) {
+            return null;
         }
 
         @Override

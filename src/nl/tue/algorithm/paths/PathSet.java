@@ -4,7 +4,7 @@ import java.util.AbstractSet;
 import java.util.Arrays;
 
 /**
- * Created by Dennis on 7-6-2016.
+ * Set of int[] optimized for paths
  */
 public class PathSet extends AbstractSet<int[]> {
     final PathsOrderingLexicographical pathsOrdering;

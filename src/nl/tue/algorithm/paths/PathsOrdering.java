@@ -1,9 +1,11 @@
 package nl.tue.algorithm.paths;
 
+import nl.tue.MemoryConstrained;
+
 /**
  * Created by Dennis on 7-6-2016.
  */
-public abstract class PathsOrdering implements Iterable<int[]> {
+public abstract class PathsOrdering implements Iterable<int[]>, MemoryConstrained {
     protected final int LABELS;
     protected final int MAX_INDEX;
 
@@ -32,4 +34,11 @@ public abstract class PathsOrdering implements Iterable<int[]> {
     abstract public int get(int[] path);
 
     abstract public int getMaxIndex();
+
+    public static final int BYTES = Integer.BYTES + Integer.BYTES;
+
+    @Override
+    public long getBytesUsed() {
+        return BYTES;
+    }
 }

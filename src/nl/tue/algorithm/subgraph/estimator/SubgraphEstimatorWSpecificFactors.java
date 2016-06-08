@@ -1,7 +1,7 @@
 package nl.tue.algorithm.subgraph.estimator;
 
 /**
- * Created by Dennis on 8-6-2016.
+ * Subgraph with specific factors datattype
  */
 public class SubgraphEstimatorWSpecificFactors extends SubgraphEstimator {
 }

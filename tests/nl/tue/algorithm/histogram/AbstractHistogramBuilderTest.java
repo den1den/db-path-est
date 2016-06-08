@@ -14,19 +14,22 @@ import java.util.TreeSet;
  */
 public class AbstractHistogramBuilderTest extends TestCase {
     static private final PathsOrdering pathsOrdering = new PathsOrderingLexicographical(15, 5);
-    static Joiner noJoiner = new Joiner() {
+    private final Joiner.AbstractJoiner<E> noJoiner = new Joiner.AbstractJoiner<E>() {
         @Override
-        public Object calcJoin(int leftTuples, Object leftEstimate, Object newEstimate, int rightTuples, Object rightEstimate) {
-            return null;
+        public E join(E estimate) {
+            this.joinLeft = false;
+            this.joinRight = false;
+            return estimate;
         }
     };
+
     AbstractHistogramBuilder<E, H> builder;
     private Estimator<E> graph;
 
     public AbstractHistogramBuilderTest() {
-        builder = new AbstractHistogramBuilder<E, H>(pathsOrdering) {
+        builder = new AbstractHistogramBuilder<E, H>(noJoiner) {
             @Override
-            protected H createH(PathsOrdering pathsOrdering, ArrayList<Integer> startRanges, E[] estimations) {
+            protected H createH(ArrayList<Integer> startRanges, E[] estimations) {
                 return null;
             }
 
@@ -50,8 +53,8 @@ public class AbstractHistogramBuilderTest extends TestCase {
 
     @Test
     public void testBuildRanges() throws Exception {
-        TreeSet<HistogramRange<E>> s = builder.buildRanges(graph, pathsOrdering.iterator(), noJoiner);
-        System.out.println(s);
+        H builded = builder.build(graph, pathsOrdering);
+        System.out.println(builded);
     }
 
     private static class E {
@@ -63,8 +66,8 @@ public class AbstractHistogramBuilderTest extends TestCase {
     }
 
     private class H extends AbstractHistogram<E> {
-        public H(PathsOrdering pathsOrdering, int[] startRanges, E[] estimations) {
-            super(pathsOrdering, startRanges, estimations);
+        public H(int[] startRanges, E[] estimations) {
+            super(startRanges, estimations);
         }
 
         @Override

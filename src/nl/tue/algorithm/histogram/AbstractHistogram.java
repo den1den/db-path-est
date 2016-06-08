@@ -9,19 +9,12 @@ import java.util.Arrays;
  * Created by Dennis on 4-6-2016.
  */
 public abstract class AbstractHistogram<E> implements MemoryConstrained {
-
-    /**
-     * path -> integer
-     */
-    PathsOrdering pathsOrdering;
-
     /**
      * 0: x
      * 1: y
      * ...
      */
     int[] startRanges;
-
     /**
      * Estimation of 0 to x-1
      * Estimation of x to y-1
@@ -29,21 +22,23 @@ public abstract class AbstractHistogram<E> implements MemoryConstrained {
      */
     E[] estimations;
 
-    public AbstractHistogram(PathsOrdering pathsOrdering, int[] startRanges, E[] estimations) {
-        this.pathsOrdering = pathsOrdering;
+    public AbstractHistogram(int[] startRanges, E[] estimations) {
         this.startRanges = startRanges;
         this.estimations = estimations;
     }
 
     /**
-     * Get an estimate from the histogram
-     *
-     * @param path the given path
-     * @return null or the stored estimate
+     * Get a stored estimate
+     * @param index the index of the path
+     * @return estimate
      */
-    public E getEstimate(int[] path) {
-        int index = pathsOrdering.get(path);
-        int Eindex = Arrays.binarySearch(this.startRanges, index);
+    public E getEstimate(int index) {
+        int EIndex = getEIndex(index, this.startRanges);
+        return estimations[EIndex];
+    }
+
+    private static int getEIndex(int index, int[] startRanges) {
+        int Eindex = Arrays.binarySearch(startRanges, index);
         if (Eindex >= 0) {
             Eindex = Eindex + 1;
         } else if (Eindex < -1) {
@@ -51,10 +46,37 @@ public abstract class AbstractHistogram<E> implements MemoryConstrained {
         } else {
             Eindex = 0;
         }
-        E e = estimations[Eindex];
-        return e;
+        return Eindex;
     }
 
     @Override
     public abstract long getBytesUsed();
+
+    /**
+     * AbstractHistogram<Short>
+     */
+    public static class Short implements MemoryConstrained{
+        private int[] startRanges;
+        private short[] estimations;
+
+        public Short(int[] startRanges, short[] estimations) {
+            this.startRanges = startRanges;
+            this.estimations = estimations;
+        }
+        /**
+         * Get a stored estimate
+         * @param index the index of the path
+         * @return estimate
+         */
+        public short getEstimate(int index) {
+            int EIndex = getEIndex(index, this.startRanges);
+            return estimations[EIndex];
+        }
+
+        @Override
+        public long getBytesUsed() {
+            return startRanges.length * Integer.BYTES + Integer.BYTES
+                    + estimations.length * Integer.BYTES + Integer.BYTES;
+        }
+    }
 }
