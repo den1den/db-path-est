@@ -14,7 +14,7 @@ import java.util.Random;
  * Created by Nathan on 6/7/2016.
  */
 public class RandomPathTestHitRate {
-    private static File file = new File(AdjacencyList.class.getClassLoader().getResource("biblio.txt").getFile());
+    private static File file = new File(AdjacencyList.class.getClassLoader().getResource("generatedmusicdata.txt").getFile());
 
     private static AdjacencyList list;
 
@@ -40,7 +40,7 @@ public class RandomPathTestHitRate {
 
         do {
 
-            int[] path = new int[5];
+            int[] path = new int[4];
 
             for (int i = 0; i < path.length; i++) {
                 path[i] = random.nextInt(parser.getNLabels());
@@ -80,7 +80,7 @@ public class RandomPathTestHitRate {
 
         do {
 
-            int[] path = new int[5];
+            int[] path = new int[4];
 
             for (int i = 0; i < path.length; i++) {
                 double randVal = random.nextDouble();
@@ -133,7 +133,7 @@ public class RandomPathTestHitRate {
 
         do {
 
-            int[] path = new int[5];
+            int[] path = new int[4];
 
             for (int i = 0; i < path.length; i++) {
                 double randVal = random.nextDouble();

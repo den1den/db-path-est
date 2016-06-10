@@ -1,5 +1,6 @@
 package nl.tue.algorithm.subgraph.estimator;
 
+import nl.tue.algorithm.pathindex.PathIndex;
 import nl.tue.algorithm.subgraph.SubgraphCompressor;
 import nl.tue.io.Parser;
 import nl.tue.io.graph.AdjacencyList;
@@ -29,19 +30,13 @@ public class SubgraphEstimatorsWithHighKFactors extends SubgraphEstimator {
     public void buildSummary(Parser p, int k, double b) {
         super.buildSummary(p, k, b - OVERHEAD);
 
-        byte[] compressed = new byte[subgraphLength];
-
-        System.arraycopy(storage, 0, compressed, 0, subgraphLength);
-
         this.k = (byte) k;
 
         int storageLeft = storage.length - subgraphLength;
 
-        Parser subgraphParser = new Parser();
+        Parser subgraphParser = super.parserFromStorage();
 
-        subgraphParser.parse(SubgraphCompressor.decompressSubgraph(compressed));
-
-        AdjacencyList subGraph = new AdjacencyList(subgraphParser);
+        AdjacencyList subGraph = new AdjacencyList(subgraphParser, false, labels);
 
         AdjacencyList graph = new AdjacencyList(p);
 
@@ -49,7 +44,7 @@ public class SubgraphEstimatorsWithHighKFactors extends SubgraphEstimator {
             List<Double> factorList = new ArrayList<>();
 
             factorList.add(p.tuples.size() / (double)subgraphParser.tuples.size());
-            factorList.add(factorList.get(0) * 1.2);
+            factorList.add(factorList.get(0) * 1.4);
 
             for (int i = 3; i <= k; i++) {
                 factorList.add(computeFactorForK(i, p.getNLabels(), graph, subGraph));
@@ -76,7 +71,7 @@ public class SubgraphEstimatorsWithHighKFactors extends SubgraphEstimator {
 
     }
 
-    private static double computeFactorForK(int k, int labels, AdjacencyList original, AdjacencyList subGraph) {
+    public static double computeFactorForK(int k, int labels, AdjacencyList original, AdjacencyList subGraph) {
         int labelSpace = original.getNodes().get(original.getNodes().keySet().iterator().next()).size();
         Random random = new Random();
 
@@ -99,48 +94,55 @@ public class SubgraphEstimatorsWithHighKFactors extends SubgraphEstimator {
 
         do {
 
-            int[] path = new int[5];
+            int[] path = new int[k];
 
             for (int i = 0; i < path.length; i++) {
                 double randVal = random.nextDouble();
 
-                int label = 0;
+                if(randVal < .66) {
 
-                for (int j = 0; j < labels; j++) {
-                    if (buckets.get(j) < randVal) {
-                        label = j;
-                    } else {
-                        label++;
-                        break;
-                    }
-                }
-
-                path[i] = label;
-
-
-                if (i != path.length - 1) {
                     randVal = random.nextDouble();
 
-                    i++;
+                    int label = 0;
 
-                    if (randVal < .33) {
-                        if (label < labels / 2) {
-                            path[i] = label + labels / 2;
+                    for (int j = 0; j < labels; j++) {
+                        if (buckets.get(j) < randVal) {
+                            label = j;
                         } else {
-                            path[i] = label - labels / 2;
+                            label++;
+                            break;
                         }
-
                     }
+
+                    path[i] = label;
+
+                    if(i != path.length - 1) {
+                        randVal = random.nextDouble();
+
+                        i++;
+
+                        if(randVal < .33) {
+                            if(label < labels/2) {
+                                path[i] = label + labels/2;
+                            } else {
+                                path[i] = label - labels/2;
+                            }
+
+                        }
+                    }
+
+                } else {
+                    path[i] = random.nextInt(labels);
                 }
             }
 
-            int subGraphRes = subGraph.solvePathQuery(path).size();
+            int subGraphRes = subGraph.solvePathQuery(path, 60).size();
 
             if (subGraphRes == 0) {
                 continue;
             }
 
-            int properRes = original.solvePathQuery(path).size();
+            int properRes = original.solvePathQuery(path, 60).size();
 
             if (properRes > 0) {
                 factors.add((double) properRes / (double) subGraphRes);

@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static nl.tue.algorithm.subgraph.estimator.SubgraphEstimatorsWithHighKFactors.computeFactorForK;
+
 /**
  * Created by Nathan on 6/7/2016.
  */
@@ -27,19 +29,13 @@ public class SubgraphEstimatorWithFactors extends SubgraphEstimator {
     public void buildSummary(Parser p, int k, double b) {
         super.buildSummary(p, k, b - OVERHEAD);
 
-        byte[] compressed = new byte[subgraphLength];
-
-        System.arraycopy(storage, 0, compressed, 0, subgraphLength);
-
         this.k = (byte) k;
 
         int storageLeft = storage.length - subgraphLength;
 
-        Parser subgraphParser = new Parser();
+        Parser subgraphParser = parserFromStorage();
 
-        subgraphParser.parse(SubgraphCompressor.decompressSubgraph(compressed));
-
-        AdjacencyList subGraph = new AdjacencyList(subgraphParser);
+        AdjacencyList subGraph = new AdjacencyList(subgraphParser, false, labels);
 
         AdjacencyList graph = new AdjacencyList(p);
 
@@ -71,85 +67,5 @@ public class SubgraphEstimatorWithFactors extends SubgraphEstimator {
 
     }
 
-    private static double computeFactorForK(int k, int labels, AdjacencyList original, AdjacencyList subGraph) {
-        int labelSpace = original.getNodes().get(original.getNodes().keySet().iterator().next()).size();
-        Random random = new Random();
-
-        List<Double> factors = new ArrayList<>();
-
-        int edgeCount = original.totalEdges();
-
-        List<Double> buckets = new ArrayList<>();
-
-        for(int i = 0; i < labels; i++) {
-            double fraction = (double)original.getOutgoingIndex().get(i).size() / edgeCount;
-
-            if(i == 0) {
-                buckets.add(fraction);
-            } else {
-
-                buckets.add(fraction + buckets.get(i - 1));
-            }
-        }
-
-        do {
-
-            int[] path = new int[5];
-
-            for (int i = 0; i < path.length; i++) {
-                double randVal = random.nextDouble();
-
-                int label = 0;
-
-                for(int j = 0; j < labels; j++) {
-                    if(buckets.get(j) < randVal) {
-                        label = j;
-                    } else {
-                        label++;
-                        break;
-                    }
-                }
-
-                path[i] = label;
-
-
-
-                if(i != path.length - 1) {
-                    randVal = random.nextDouble();
-
-                    i++;
-
-                    if(randVal < .33) {
-                        if(label < labels/2) {
-                            path[i] = label + labels/2;
-                        } else {
-                            path[i] = label - labels/2;
-                        }
-
-                    }
-                }
-            }
-
-            int subGraphRes = subGraph.solvePathQuery(path).size();
-
-            if(subGraphRes == 0) {
-                continue;
-            }
-
-            int properRes = original.solvePathQuery(path).size();
-
-            if (properRes > 0) {
-                factors.add((double) properRes / (double) subGraphRes);
-            }
-        } while (factors.size() < QUERY_LIMIT_FOR_FACTOR);
-
-        /**
-         * I know a double stream is weird but apparently it's the fault of the JDK developers.
-         *
-         * http://stackoverflow.com/questions/23106093/how-to-get-a-stream-from-a-float
-         */
-        return (factors.stream().mapToDouble(Double::doubleValue).sum() / (double) factors.size());
-
-    }
 
 }

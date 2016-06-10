@@ -9,12 +9,18 @@ import nl.tue.io.Parser;
  */
 public class SubGraphAlgorithm extends Algorithm<SubgraphEstimator> {
 
+    private final SubgraphEstimator estimator;
+
     public SubGraphAlgorithm() {
+        this.estimator = new SubgraphEstimator();
+    }
+
+    public SubGraphAlgorithm(SubgraphEstimator estimator) {
+        this.estimator = estimator;
     }
 
     @Override
     protected SubgraphEstimator build(Parser p, int maximalPathLength, long budget) {
-        SubgraphEstimator estimator = new SubgraphEstimator();
         estimator.buildSummary(p, maximalPathLength, budget);
         return estimator;
     }
@@ -26,6 +32,6 @@ public class SubGraphAlgorithm extends Algorithm<SubgraphEstimator> {
 
     @Override
     protected long bytesOverhead() {
-        return 0;
+        return this.estimator.getBytesUsed();
     }
 }

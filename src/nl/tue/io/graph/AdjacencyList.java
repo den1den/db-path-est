@@ -17,14 +17,16 @@ public class AdjacencyList implements DirectedBackEdgeGraph {
 
     private final Map<Integer, Set<Integer>> outgoingIndex;
 
-    private final Map<Integer, Integer> edgeCount;
-
     /**
      * This should be easily queryable in the trace path method.
      */
     private final Map<PathIndex, Map<Integer, Set<Integer>>> shortPathIndex;
 
     private final ZeroLengthPathStore zeroStore;
+
+    boolean useTiming = false;
+
+    public long terminateTime;
 
     public AdjacencyList(Parser parser) {
         this(parser, true);
@@ -39,14 +41,13 @@ public class AdjacencyList implements DirectedBackEdgeGraph {
         this.zeroStore = new ZeroLengthPathStore(ZERO_LENGTH_STORE);
         this.outgoingIndex = new HashMap<>();
         this.shortPathIndex = new HashMap<>();
-        this.edgeCount = new HashMap<>();
 
-        if(useEdgeMappings) {
+        if (useEdgeMappings) {
             for (String rawLabel : parser.getEdgeMappings().keySet()) {
                 outgoingIndex.put(parser.getEdgeMappings().get(rawLabel), new HashSet<>());
             }
         } else {
-            for(int i = 0; i < labels; i++) {
+            for (int i = 0; i < labels; i++) {
                 outgoingIndex.put(i, new HashSet<>());
             }
         }
@@ -69,7 +70,6 @@ public class AdjacencyList implements DirectedBackEdgeGraph {
 
             Set<Integer> edgesForLabel = nodes.get(tuple[0]).get(forwardEdge);
             Set<Integer> backEdgesForLabel = nodes.get(tuple[2]).get(backwardEdge);
-
 
 
             this.outgoingIndex.get(forwardEdge).add(tuple[0]);
@@ -98,12 +98,18 @@ public class AdjacencyList implements DirectedBackEdgeGraph {
         return edges;
     }
 
+    public Collection<NodePair> solvePathQuery(int[] path, int maxTime) {
+        this.useTiming = true;
+        this.terminateTime = System.currentTimeMillis() + maxTime * 1000;
+        return solvePathQuery(path);
+    }
+
     public Collection<NodePair> solvePathQuery(int[] path) {
         if (path.length <= 0) {
             throw new IllegalArgumentException(String.format("A path length of %d does not make any sense", path.length));
         }
 
-        List<NodePair> out = new ArrayList<>();
+        Collection<NodePair> out = new TreeSet<>();
 
         if (this.zeroStore.isZeroPath(new PathIndex(path))) {
             return out;
@@ -113,6 +119,12 @@ public class AdjacencyList implements DirectedBackEdgeGraph {
             List<Integer> ends = tracePath(nodeStart, path);
 
             for (int nodeEnd : ends) {
+
+                if(this.useTiming && System.currentTimeMillis() > this.terminateTime) {
+                    this.useTiming = false;
+                    return new ArrayList<>();
+                }
+
                 out.add(new NodePair(nodeStart, nodeEnd));
             }
         }
@@ -145,6 +157,11 @@ public class AdjacencyList implements DirectedBackEdgeGraph {
         List<Integer> out = new ArrayList<>();
 
         int start = path[0];
+
+        if(this.useTiming && System.currentTimeMillis() > this.terminateTime) {
+            this.useTiming = false;
+            return new ArrayList<>();
+        }
 
         if (path.length >= 2 && this.shortPathIndex.containsKey(new PathIndex(new int[]{path[0], path[1]}))) {
             Set<Integer> nodesAfterTwoLabels = this.shortPathIndex.get(new PathIndex(new int[]{path[0], path[1]})).get(node);
@@ -242,7 +259,7 @@ public class AdjacencyList implements DirectedBackEdgeGraph {
     public int totalEdges() {
         int total = 0;
 
-        for(int key : this.outgoingIndex.keySet()) {
+        for (int key : this.outgoingIndex.keySet()) {
             total += this.outgoingIndex.get(key).size();
         }
 

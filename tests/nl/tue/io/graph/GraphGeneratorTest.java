@@ -37,7 +37,13 @@ public class GraphGeneratorTest {
         public void WritePathToFile() throws IOException {
         p.writePathToFile("D:\\test.txt","4567890",2);
     }
-
+    @Test
+    public void MergeEdges() throws IOException {
+        File newFile = new File(fileLocation);
+        p.parse(newFile);
+        p.Merge();
+        p.writeToFile(fileLocation);
+    }
 
 
 }

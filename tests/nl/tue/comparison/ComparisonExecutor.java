@@ -4,13 +4,15 @@ import junit.framework.TestCase;
 import nl.tue.algorithm.*;
 import nl.tue.algorithm.subgraph.SubGraphAlgorithm;
 import nl.tue.algorithm.subgraph.SubgraphHighKFactorAlgorithm;
+import nl.tue.algorithm.subgraph.SubgraphWithEdgeFactorAlgorithm;
 import nl.tue.algorithm.subgraph.SubgraphWithFactorsAlgorithm;
 import nl.tue.io.graph.AdjacencyList;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,11 +24,27 @@ import java.util.stream.Collectors;
 @RunWith(Parameterized.class)
 public class ComparisonExecutor {
 
-    private static List<TestEnvironment> environments;
+    private static final String OUTPUT_FILE = "results.csv";
+
     private final TestEnvironment env;
 
-    public static void before() {
-        environments = new ArrayList<>();
+    @BeforeClass
+    public static void before() throws IOException {
+        File outputFile = new File(OUTPUT_FILE);
+
+        if(!outputFile.exists()) {
+            outputFile.createNewFile();
+            PrintWriter writer = new PrintWriter(outputFile);
+
+            writer.println("Method, Dataset, RelativeDistance");
+            writer.flush();
+            writer.close();
+        }
+    }
+
+    @Parameterized.Parameters
+    public static Object[] getParams() {
+        List<TestEnvironment> environments = new ArrayList<>();
 
         List<String> biblioQueries = Arrays.asList("+ 5 + 0 + 4 + 1 + 2", "+ 5 + 0 + 4 + 1 - 1", "+ 5 + 0 + 4 + 3",
                 "+ 5 + 0 + 1 + 2", "+ 0 + 4 + 1 + 2", "+ 5 + 0 - 4 + 1 + 2", "- 5 + 0 + 4 + 1 - 1",
@@ -63,11 +81,7 @@ public class ComparisonExecutor {
         TestEnvironment cineasts = new TestEnvironment(cineastQueries, cineastFile, "Cineast");
 
         environments.add(cineasts);
-    }
 
-    @Parameterized.Parameters
-    public static Object[] getParams() {
-        before();
         return environments.toArray();
     }
 
@@ -78,27 +92,32 @@ public class ComparisonExecutor {
     @Test
     public void testAlgorithm_NaiveIndexAndJoin() {
         Algorithm algo = new NaiveJoinAlgorithm();
-        reportSingleEnv(algo, env);
+        reportSingleEnv(algo, env, "NaiveIndex");
     }
 
     @Test
     public void testAlgorithm_Brute() {
-        reportSingleEnv(new Algorithm_Brute(), this.env);
+        reportSingleEnv(new Algorithm_Brute(), this.env, "Brute");
     }
 
     @Test
     public void testAlgorithm_Subgraph() {
-        reportSingleEnv(new SubGraphAlgorithm(), this.env);
+        reportSingleEnv(new SubGraphAlgorithm(), this.env, "Subgraph");
     }
 
     @Test
     public void testAlgorithm_SubgraphWithFactors() {
-        reportSingleEnv(new SubgraphWithFactorsAlgorithm(), this.env);
+        reportSingleEnv(new SubgraphWithFactorsAlgorithm(), this.env, "SubgraphKFactors");
     }
 
     @Test
     public void testAlgorithm_SubgraphWithHighKFactors() {
-        reportSingleEnv(new SubgraphHighKFactorAlgorithm(), this.env);
+        reportSingleEnv(new SubgraphHighKFactorAlgorithm(), this.env, "SubgraphHighK");
+    }
+
+    @Test
+    public void testAlgorithm_SubgraphWithEdgeBasedFactors() {
+        reportSingleEnv(new SubgraphWithEdgeFactorAlgorithm(), this.env, "SubgraphEdgeBased");
     }
 
     private static double computeAverage(List<Double> in) {
@@ -111,8 +130,8 @@ public class ComparisonExecutor {
        return percentageSum / ((double)in.size());
     }
 
-    private static void reportSingleEnv(Algorithm algo,
-                                        TestEnvironment env) {
+    public static void reportSingleEnv(Algorithm algo,
+                                        TestEnvironment env, String methodName) {
         List<ComparisonResult> comparisonResults = env.execute(algo);
         double envAccuracy = computeAverage(comparisonResults.stream().
                 map(ComparisonResult::getAccuracy).collect(Collectors.toList()));
@@ -125,5 +144,22 @@ public class ComparisonExecutor {
         }
 
         System.out.println(String.format("\tAccuracy for environment: '%s' is %f", env.getName(), envAccuracy));
+
+        try {
+            writeToFile(comparisonResults, env.getName(), methodName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void writeToFile(List<ComparisonResult> results, String envName, String methodName) throws IOException {
+        PrintWriter writer = new PrintWriter(new FileWriter(OUTPUT_FILE, true));
+
+        for(ComparisonResult res : results) {
+            writer.println(String.format("%s, %s, %f", methodName, envName, res.getAccuracy()));
+        }
+
+        writer.flush();
+        writer.close();
     }
 }
