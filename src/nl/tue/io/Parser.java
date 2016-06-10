@@ -26,7 +26,8 @@ public class Parser {
     public List<int[]> invertedTuples = new ArrayList<>();
     public List<int[]> combinedList = new ArrayList<>();
     public LinkedList<long[]> pathList = new LinkedList<>();
-
+    private HashMap<Integer, ArrayList<SomeDs>> incoming = new HashMap<>();
+    private HashMap<Integer, ArrayList<SomeDs>> outgoing = new HashMap<>();
     public void parse(String pathname) throws IOException {
         File f = new File(pathname);
         if (!f.isFile()) {
@@ -220,6 +221,103 @@ public void GenerateGraph(int maxLabels, int nrOfNodes, boolean addMoreRandom)
             cpt++;
         }
         tuples.addAll(newTobeAdded);
+    }
+      public int CountUniqueNodes() {
+        Set<Integer> unique = new HashSet<>();
+        for (Integer[] input :
+                tuples) {
+            unique.add(input[0]);
+            unique.add(input[2]);
+
+
+        }
+        return unique.size();
+    }
+    
+    public void MergeZwei(int number) {
+        ArrayList<SomeDs> nodesAndEdges = new ArrayList<>();
+        ArrayList<Integer> uniqueNodes = new ArrayList<>();
+
+        for (Integer[] input : tuples) {
+            if (!uniqueNodes.contains(input[0])) {
+                uniqueNodes.add(input[0]);
+            }
+            if (!uniqueNodes.contains(input[2])) {
+                uniqueNodes.add(input[2]);
+            }
+
+            nodesAndEdges.add(new SomeDs(input[0], input[1], input[2]));
+
+        }
+
+        Iterator<Integer> keySetIterator = uniqueNodes.iterator();
+
+        while (keySetIterator.hasNext()) {
+            int key = keySetIterator.next();
+            ArrayList<SomeDs> outg = new ArrayList<>();
+            ArrayList<SomeDs> incom = new ArrayList<>();
+            for (SomeDs ds : nodesAndEdges) {
+                if (ds.source == key) {
+                    outg.add(ds);
+                }
+                if (ds.target == key) {
+                    incom.add(ds);
+                }
+            }
+            outgoing.put(key, outg);
+            incoming.put(key, incom);
+
+        }
+
+
+        Random rnd = new Random();
+
+        while (uniqueNodes.size() > number) {
+            int firstIndex = rnd.nextInt(uniqueNodes.size() - 1);
+            int secondIndex = rnd.nextInt(uniqueNodes.size() - 1);
+
+            if (firstIndex != secondIndex) {
+
+                int one = uniqueNodes.get(firstIndex);
+                int two = uniqueNodes.get(secondIndex);
+                ArrayList<SomeDs> nodeIncoming = incoming.get(one);
+                ArrayList<SomeDs> nodeOutgoing = outgoing.get(one);
+                for (SomeDs temp : nodeIncoming) {
+                        temp.target = two;
+                        incoming.get(two).add(temp);
+                }
+                for (SomeDs temp : nodeOutgoing) {
+                        temp.source = two;
+                        outgoing.get(two).add(temp);
+                }
+
+                incoming.remove(one);
+                outgoing.remove(one);
+                uniqueNodes.remove(new Integer(one));
+
+            }
+
+
+        }
+        public void WriteHashmapToFile(String filename) throws IOException {
+
+        FileWriter fw = new FileWriter(filename);
+
+        for (List<SomeDs> longArray : incoming.values()) {
+
+            for (int i = 0; i < longArray.size(); i++) {
+
+                SomeDs edge = longArray.get(i);
+
+                String line = String.format("%d %d %d", edge.source, edge.label, edge.target);
+
+                fw.append(line);
+                fw.append(System.lineSeparator());
+            }
+        }
+
+        fw.close();
+    }
     }
     public int getNLabels() {
         return this.edgeMappings.size();
