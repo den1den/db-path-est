@@ -133,4 +133,8 @@ public class ComparisonExecutor {
 
         System.out.println(String.format("\tAccuracy for environment: '%s' is %f", env.getName(), envAccuracy));
     }
+
+    private static void writeToFile(List<ComparisonResult> results, String methodName) {
+
+    }
 }

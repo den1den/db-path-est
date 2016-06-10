@@ -181,21 +181,21 @@ public void GenerateGraph(int maxLabels, int nrOfNodes, boolean addMoreRandom)
         fw.close();
     }
      public void Merge() {
-        long source,label, target = 0;
+        int source,label, target = 0;
         int listCounter = 0;
-        List<long[]> newTobeAdded = new ArrayList<>();
+        List<int[]> newTobeAdded = new ArrayList<>();
         ArrayList<Integer> indexesTobeRemoved = new ArrayList<Integer>();
-        for (long[] input:
+        for (int[] input:
                 tuples ) {
             source = input[0];
             label = input[1];
             target = input[2];
 
             int counter = 0;
-            for (long[] comparison :
+            for (int[] comparison :
                     tuples) {
                 if (target == comparison[0] && label == comparison[1] && comparison[0] != comparison[2]) {
-                    long[] temp = {source,label,comparison[2]};
+                    int[] temp = {source,label,comparison[2]};
                     newTobeAdded.add(temp);
                     indexesTobeRemoved.add(counter);
                     indexesTobeRemoved.add(listCounter);
@@ -207,7 +207,7 @@ public void GenerateGraph(int maxLabels, int nrOfNodes, boolean addMoreRandom)
         }
 
         int cpt = 0;
-        Iterator<long[]> it = tuples.iterator();
+        Iterator<int[]> it = tuples.iterator();
         while(it.hasNext()){
             it.next();
             if(indexesTobeRemoved.contains(cpt)){
