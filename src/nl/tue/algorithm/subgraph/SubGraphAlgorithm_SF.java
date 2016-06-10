@@ -4,8 +4,8 @@ import nl.tue.algorithm.Algorithm;
 import nl.tue.algorithm.dynamicprogramming.DCombiner;
 import nl.tue.algorithm.dynamicprogramming.DInput;
 import nl.tue.algorithm.dynamicprogramming.DynamicProgrammingSearch;
-import nl.tue.algorithm.histogram.Histogram;
 import nl.tue.algorithm.histogram.AbstractHistogramBuilder;
+import nl.tue.algorithm.histogram.Histogram;
 import nl.tue.algorithm.histogram.JoinResult;
 import nl.tue.algorithm.histogram.Joiner;
 import nl.tue.algorithm.paths.PathsOrdering;
@@ -25,18 +25,25 @@ public class SubGraphAlgorithm_SF extends Algorithm<Histogram> implements DCombi
     private SubgraphEstimator estimator = new SubgraphEstimator();
     private PathsOrdering pathsOrdering;
     private Joiner<Double, JoinResult.NumberJoinResult> joiner;
+    private double sgSize;
 
-    public SubGraphAlgorithm_SF(Joiner<Double, JoinResult.NumberJoinResult> joiner) {
+    public SubGraphAlgorithm_SF(Joiner<Double, JoinResult.NumberJoinResult> joiner, double sgSize) {
         this.joiner = joiner;
+        assert sgSize >= 0 && sgSize <= 1;
+        this.sgSize = sgSize;
     }
 
     @Override
     protected Histogram build(Parser p, int maximalPathLength, long budget) {
         int labels = p.getNLabels();
-        estimator.buildSummary(p, maximalPathLength, budget);
-        AdjacencyList fullGraph = new AdjacencyList(p);
-
         pathsOrdering = new PathsOrderingLexicographical(labels, maximalPathLength);
+
+        long subGraphSize = (long) (budget * sgSize);
+        long histogramSize = budget - subGraphSize - pathsOrdering.getBytesUsed();
+
+        estimator.buildSummary(p, maximalPathLength, subGraphSize);
+        System.out.println(estimator.getClass().getSimpleName() + " build: " + estimator);
+        AdjacencyList fullGraph = new AdjacencyList(p);
 
         AbstractHistogramBuilder.Short builder = new AbstractHistogramBuilder.Short(joiner);
 
@@ -53,9 +60,16 @@ public class SubGraphAlgorithm_SF extends Algorithm<Histogram> implements DCombi
              */
             double storedShortVal = (double) subGraphResult / realGraphresult * Short.MAX_VALUE;
             builder.addEstimation(storedShortVal, nextIndex);
+
+            if (builder.estMemUsage() >= histogramSize) {
+                break;
+            }
         }
 
-        return builder.toHistogram();
+        System.out.print("Building histogram... ");
+        Histogram histogram = builder.toHistogram();
+        System.out.println(estimator.getClass().getSimpleName() + " build: " + estimator);
+        return histogram;
     }
 
     @Override

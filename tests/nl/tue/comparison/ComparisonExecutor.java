@@ -1,18 +1,21 @@
 package nl.tue.comparison;
 
-import junit.framework.TestCase;
-import nl.tue.algorithm.*;
-import nl.tue.algorithm.subgraph.SubGraphAlgorithm;
-import nl.tue.algorithm.subgraph.SubgraphHighKFactorAlgorithm;
-import nl.tue.algorithm.subgraph.SubgraphWithEdgeFactorAlgorithm;
-import nl.tue.algorithm.subgraph.SubgraphWithFactorsAlgorithm;
+import nl.tue.algorithm.Algorithm;
+import nl.tue.algorithm.Algorithm_Brute;
+import nl.tue.algorithm.NaiveJoinAlgorithm;
+import nl.tue.algorithm.histogram.JoinResult;
+import nl.tue.algorithm.histogram.Joiner;
+import nl.tue.algorithm.subgraph.*;
 import nl.tue.io.graph.AdjacencyList;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,11 +31,15 @@ public class ComparisonExecutor {
 
     private final TestEnvironment env;
 
+    public ComparisonExecutor(TestEnvironment env) {
+        this.env = env;
+    }
+
     @BeforeClass
     public static void before() throws IOException {
         File outputFile = new File(OUTPUT_FILE);
 
-        if(!outputFile.exists()) {
+        if (!outputFile.exists()) {
             outputFile.createNewFile();
             PrintWriter writer = new PrintWriter(outputFile);
 
@@ -49,7 +56,7 @@ public class ComparisonExecutor {
         List<String> biblioQueries = Arrays.asList("+ 5 + 0 + 4 + 1 + 2", "+ 5 + 0 + 4 + 1 - 1", "+ 5 + 0 + 4 + 3",
                 "+ 5 + 0 + 1 + 2", "+ 0 + 4 + 1 + 2", "+ 5 + 0 - 4 + 1 + 2", "- 5 + 0 + 4 + 1 - 1",
                 "- 5 + 0 - 4 + 3", "+ 0 - 4 + 1 + 2", "+ 5 + 0 + 1 + 2", "- 5 + 5 + 0", "+ 0 + 4 - 4",
-                "+ 0 + 1 + 2", "+ 0 + 1 + 2", "+ 0 - 4 + 1", "+ 0 + 4 + 1", "- 5 + 0 + 3","- 3 + 4 - 0",
+                "+ 0 + 1 + 2", "+ 0 + 1 + 2", "+ 0 - 4 + 1", "+ 0 + 4 + 1", "- 5 + 0 + 3", "- 3 + 4 - 0",
                 "- 3 - 4 - 0", "+ 5 + 5 + 4", "+ 5 + 0", "+ 0 - 4", "+ 0 + 1", "- 1 + 3", "+ 1 + 2",
                 "+ 3 + 1", "- 3 - 0");
 
@@ -85,8 +92,47 @@ public class ComparisonExecutor {
         return environments.toArray();
     }
 
-    public ComparisonExecutor(TestEnvironment env) {
-        this.env = env;
+    private static double computeAverage(List<Double> in) {
+        double percentageSum = 0;
+
+        for (double i : in) {
+            percentageSum += i;
+        }
+
+        return percentageSum / ((double) in.size());
+    }
+
+    public static void reportSingleEnv(Algorithm algo,
+                                       TestEnvironment env, String methodName) {
+        List<ComparisonResult> comparisonResults = env.execute(algo);
+        double envAccuracy = computeAverage(comparisonResults.stream().
+                map(ComparisonResult::getAccuracy).collect(Collectors.toList()));
+
+        System.out.println(String.format("%s:", env.getName()));
+
+        for (ComparisonResult compRes : comparisonResults) {
+            System.out.println(String.format("\t\tQuery '%s' Expected: %d Estimated: %d Accuracy: %f", compRes.getIndex().getPath(),
+                    compRes.getResult(), compRes.getEstimation(), compRes.getAccuracy()));
+        }
+
+        System.out.println(String.format("\tAccuracy for environment: '%s' is %f", env.getName(), envAccuracy));
+
+        try {
+            writeToFile(comparisonResults, env.getName(), methodName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void writeToFile(List<ComparisonResult> results, String envName, String methodName) throws IOException {
+        PrintWriter writer = new PrintWriter(new FileWriter(OUTPUT_FILE, true));
+
+        for (ComparisonResult res : results) {
+            writer.println(String.format("%s, %s, %f", methodName, envName, res.getAccuracy()));
+        }
+
+        writer.flush();
+        writer.close();
     }
 
     @Test
@@ -120,46 +166,10 @@ public class ComparisonExecutor {
         reportSingleEnv(new SubgraphWithEdgeFactorAlgorithm(), this.env, "SubgraphEdgeBased");
     }
 
-    private static double computeAverage(List<Double> in) {
-        double percentageSum = 0;
-
-        for(double i : in) {
-            percentageSum += i;
-        }
-
-       return percentageSum / ((double)in.size());
-    }
-
-    public static void reportSingleEnv(Algorithm algo,
-                                        TestEnvironment env, String methodName) {
-        List<ComparisonResult> comparisonResults = env.execute(algo);
-        double envAccuracy = computeAverage(comparisonResults.stream().
-                map(ComparisonResult::getAccuracy).collect(Collectors.toList()));
-
-        System.out.println(String.format("%s:", env.getName()));
-
-        for(ComparisonResult compRes : comparisonResults) {
-            System.out.println(String.format("\t\tQuery '%s' Expected: %d Estimated: %d Accuracy: %f", compRes.getIndex().getPath(),
-                    compRes.getResult(), compRes.getEstimation(), compRes.getAccuracy()));
-        }
-
-        System.out.println(String.format("\tAccuracy for environment: '%s' is %f", env.getName(), envAccuracy));
-
-        try {
-            writeToFile(comparisonResults, env.getName(), methodName);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static void writeToFile(List<ComparisonResult> results, String envName, String methodName) throws IOException {
-        PrintWriter writer = new PrintWriter(new FileWriter(OUTPUT_FILE, true));
-
-        for(ComparisonResult res : results) {
-            writer.println(String.format("%s, %s, %f", methodName, envName, res.getAccuracy()));
-        }
-
-        writer.flush();
-        writer.close();
+    @Test
+    public void testAlgorithm_SubgraphWithSpecificFactors() {
+        Joiner<Double, JoinResult.NumberJoinResult> baiscJoiner = new Joiner.BasicJoiner();
+        double subGraphSize = 0.9;
+        reportSingleEnv(new SubGraphAlgorithm_SF(baiscJoiner, subGraphSize), this.env, "SubgraphSF_basicJoiner_" + subGraphSize);
     }
 }

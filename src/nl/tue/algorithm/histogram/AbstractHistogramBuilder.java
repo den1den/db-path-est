@@ -3,9 +3,10 @@ package nl.tue.algorithm.histogram;
 import nl.tue.Utils;
 import nl.tue.algorithm.Estimator;
 import nl.tue.algorithm.paths.PathsOrdering;
-import nl.tue.algorithm.subgraph.SubGraphAlgorithm_SF;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -19,14 +20,12 @@ public abstract class AbstractHistogramBuilder<E, H, JR extends JoinResult<E>, J
     protected J joiner;
     protected JR result;
     int maxIndex = Integer.MAX_VALUE;
-
+    TreeSet<HistogramRange<E>> ranges = new TreeSet<>();
+    HistogramRange<E> lower = null, higher = null;
     public AbstractHistogramBuilder(J joiner) {
         this.joiner = joiner;
         ranges.add(new HistogramRange<>(null, 0, maxIndex));
     }
-
-    TreeSet<HistogramRange<E>> ranges = new TreeSet<>();
-    HistogramRange<E> lower = null, higher = null;
 
     HistogramRange<E> prepareInsert(int newIndex){
         HistogramRange<E> newRange = new HistogramRange<>(null, newIndex, newIndex);
@@ -175,6 +174,8 @@ public abstract class AbstractHistogramBuilder<E, H, JR extends JoinResult<E>, J
 
     protected abstract E[] createArray(int length);
 
+    public abstract long estMemUsage();
+
     /**
      * Histogram builder
      * You add Double estimations with `addEstimation` to this histogram builder
@@ -185,9 +186,8 @@ public abstract class AbstractHistogramBuilder<E, H, JR extends JoinResult<E>, J
 
         public Short(Joiner<Double, JoinResult.NumberJoinResult> joiner) {
             super(joiner);
+            this.result = new JoinResult.NumberJoinResult();
         }
-
-
 
         /**
          * Goes from Double ranges to short Histogram
@@ -229,6 +229,11 @@ public abstract class AbstractHistogramBuilder<E, H, JR extends JoinResult<E>, J
         @Override
         protected Double[] createArray(int length) {
             return new Double[length];
+        }
+
+        @Override
+        public long estMemUsage() {
+            return this.ranges.size() * (Integer.BYTES + java.lang.Short.BYTES * 2);
         }
     }
 }

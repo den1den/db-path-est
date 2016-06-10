@@ -10,10 +10,15 @@ public interface Joiner<E, R extends JoinResult<E>> extends MemoryConstrained{
 
     void calcJoint(R result, int leftTuples, E leftEstimate, E estimate, int rightTuples, E rightEstimate);
 
+    @Override
+    default long getBytesUsed() {
+        return 16L;
+    }
+
     /**
      * Created by Dennis on 8-6-2016.
      */
-    abstract class BasicJoiner implements Joiner<Double, JoinResult.NumberJoinResult> {
+    class BasicJoiner implements Joiner<Double, JoinResult.NumberJoinResult> {
 
         @Override
         public void calcJoint(JoinResult.NumberJoinResult result, int leftTuples, Double leftEstimate, Double estimate, int rightTuples, Double rightEstimate) {
@@ -28,10 +33,5 @@ public interface Joiner<E, R extends JoinResult<E>> extends MemoryConstrained{
 
             result.setWeightedAverage(leftTuples, leftEstimate, estimate, rightTuples, rightEstimate);
         }
-    }
-
-    @Override
-    default long getBytesUsed(){
-        return 16L;
     }
 }
