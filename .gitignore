@@ -56,3 +56,5 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 /src/nl/tue/visualization/StoredVizualization.java
+test.csv
+results.csv

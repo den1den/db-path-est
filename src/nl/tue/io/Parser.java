@@ -61,6 +61,10 @@ public class Parser {
         parse(edges);
     }
 
+    /**
+     * Used for reading in a graph to this Parser
+     * @param edges
+     */
     public void parse(List<int[]> edges) {
 
         for(int[] edge : edges) {
