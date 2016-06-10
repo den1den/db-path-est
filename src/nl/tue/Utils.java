@@ -50,4 +50,12 @@ public class Utils {
         }
         return r;
     }
+
+    public static short[] toArrayS(List<Short> shorts) {
+        short[] r = new short[shorts.size()];
+        for (int i = 0; i < r.length; i++) {
+            r[i] = shorts.get(i);
+        }
+        return r;
+    }
 }

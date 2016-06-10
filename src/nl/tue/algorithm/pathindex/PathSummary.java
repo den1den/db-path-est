@@ -1,14 +1,13 @@
 package nl.tue.algorithm.pathindex;
 
 import nl.tue.Utils;
-import nl.tue.algorithm.dynamicprogramming.Estimation;
 
 import java.util.List;
 
 /**
  * Created by Nathan on 5/24/2016.
  */
-public class PathSummary implements Estimation {
+public class PathSummary {
 
     public final int joins;
     private final PathIndex index;

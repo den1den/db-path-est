@@ -1,103 +1,37 @@
 package nl.tue.algorithm.histogram;
 
+import nl.tue.MemoryConstrained;
+
 /**
- * Created by Dennis on 8-6-2016.
+ * Decides on when to join two entries of a histogram
+ * @param <E> The class used for estimations of a query
  */
-public interface Joiner<E> {
-    void setRightEstimate(E rightEstimate);
+public interface Joiner<E, R extends JoinResult<E>> extends MemoryConstrained{
 
-    void setLeftTuples(int leftTuples);
-
-    void setLeftEstimate(E leftEstimate);
-
-    void setRightTuples(int rightTuples);
-
-    boolean isJoinLeft();
-
-    boolean isJoinRight();
-
-    E join(E estimate);
+    void calcJoint(R result, int leftTuples, E leftEstimate, E estimate, int rightTuples, E rightEstimate);
 
     /**
      * Created by Dennis on 8-6-2016.
      */
-    abstract class AbstractJoiner<E> implements Joiner<E> {
-        protected int leftTuples;
-        protected E leftEstimate;
-        protected int rightTuples;
-        protected E rightEstimate;
-
-        protected boolean joinLeft;
-        protected boolean joinRight;
-
+    abstract class BasicJoiner implements Joiner<Double, JoinResult.NumberJoinResult> {
 
         @Override
-        public void setRightEstimate(E rightEstimate) {
-            this.rightEstimate = rightEstimate;
-        }
-
-
-        @Override
-        public void setLeftTuples(int leftTuples) {
-            this.leftTuples = leftTuples;
-        }
-
-
-        @Override
-        public void setLeftEstimate(E leftEstimate) {
-            this.leftEstimate = leftEstimate;
-        }
-
-
-        @Override
-        public void setRightTuples(int rightTuples) {
-            this.rightTuples = rightTuples;
-        }
-
-        @Override
-        public boolean isJoinLeft() {
-            return joinLeft;
-        }
-
-
-        @Override
-        public boolean isJoinRight() {
-            return joinRight;
-        }
-
-    }
-
-    /**
-     * Created by Dennis on 8-6-2016.
-     */
-    abstract class SingleNumberJoiner extends AbstractJoiner<Double> {
-        protected double calcWeightedAverage(double estimate) {
-            double result;
-            if(joinLeft && joinRight){
-                result = (leftEstimate + estimate + rightEstimate) / (leftTuples + 1 + rightTuples);
-            } else if (joinLeft){
-                result = (leftEstimate + estimate) / (leftTuples + 1);
-            } else if (joinRight){
-                result = (rightEstimate + estimate) / (rightTuples + 1);
-            } else {
-                result = estimate;
-            }
-            return result;
-        }
-    }
-
-    class Basic extends SingleNumberJoiner {
-        @Override
-        public Double join(Double estimate) {
-            joinLeft = false;
-            joinRight = false;
+        public void calcJoint(JoinResult.NumberJoinResult result, int leftTuples, Double leftEstimate, Double estimate, int rightTuples, Double rightEstimate) {
+            result.joinLeft = false;
+            result.joinRight = false;
             if(leftEstimate != null){
-                joinLeft = Math.abs(leftEstimate - estimate) < 10;
+                result.joinLeft = Math.abs(leftEstimate - estimate) < 10;
             }
             if(rightEstimate != null){
-                joinRight = Math.abs(rightEstimate - estimate) < 10;
+                result.joinRight = Math.abs(rightEstimate - estimate) < 10;
             }
-            return calcWeightedAverage(estimate);
+
+            result.setWeightedAverage(leftTuples, leftEstimate, estimate, rightTuples, rightEstimate);
         }
+    }
+
+    @Override
+    default long getBytesUsed(){
+        return 16L;
     }
 }

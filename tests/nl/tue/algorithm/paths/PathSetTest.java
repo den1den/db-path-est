@@ -149,7 +149,7 @@ public class PathSetTest extends TestCase {
         long t0 = System.currentTimeMillis();
         IntSet pathSet = new IntSet();
         for (int i = 0; i < generated.length; i++) {
-            //System.out.println("Adding  " + IntSet.PathSet.toString(ls.get(generated[i]) % IntSet.PathSet.BAG_SIZE));
+            //System.out.println("Adding  " + IntSet.PathSet.toString(ls.getStored(generated[i]) % IntSet.PathSet.BAG_SIZE));
             if (pathSet.addInt(generated[i])) {
                 added++;
             }

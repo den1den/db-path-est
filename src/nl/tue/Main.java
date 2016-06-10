@@ -22,9 +22,9 @@ public class Main {
     // 1 unpack the stored subgraph
     // 2 query the subgraph completely on full query
     // 3 split up the query in subqueries that are in memory
-    // 4 get the scaling factor for each subquery
-    // 5 Combine scaling factor from subquries to get a final scaling factor
-    // 6 Multiple subquery result with scaling factor to get final result, different is not in memory
+    // 4 getStored the scaling factor for each subquery
+    // 5 Combine scaling factor from subquries to getStored a final scaling factor
+    // 6 Multiple subquery result with scaling factor to getStored final result, different is not in memory
 
     public static void main(String[] args) throws IOException {
         String file = args[0];

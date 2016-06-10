@@ -85,7 +85,7 @@ public class AStartIteratorTest extends TestCase {
         check(new int[]{1, 0}, 0);
         check(new int[]{1, 2}, 0);
 
-        // First get next one
+        // First getStored next one
         check(new int[]{0, 1}, 100);
 
         // Get best heuristic values, namely continue with 0,1

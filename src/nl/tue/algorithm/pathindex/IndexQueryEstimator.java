@@ -1,6 +1,6 @@
 package nl.tue.algorithm.pathindex;
 
-import nl.tue.algorithm.dynamicprogramming.DEstimator;
+import nl.tue.MemoryConstrained;
 import nl.tue.io.Parser;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * <p>
  * Created by Nathan on 5/24/2016.
  */
-public class IndexQueryEstimator implements DEstimator<PathSummary> {
+public class IndexQueryEstimator implements MemoryConstrained {
 
     /**
      * If set to true debug information is printed by this class.
@@ -63,7 +63,6 @@ public class IndexQueryEstimator implements DEstimator<PathSummary> {
         optimizedGraph = summaryToByteArray(fullSummary, (int) (b - OVERHEAD));
     }
 
-    @Override
     public PathSummary getEstimation(int[] query) {
         Map<PathIndex, Summary> pathIndexMap = indexFromOptimizedArray(optimizedGraph);
 
@@ -91,7 +90,6 @@ public class IndexQueryEstimator implements DEstimator<PathSummary> {
         return new PathSummary(newPathIndex, newSummary, precission, joins);
     }
 
-    @Override
     public int combineEstimations(List<PathSummary> sortedEs) {
         //FIXME: Has to be revisioned
         final double totalP = sortedEs.stream().mapToDouble(PathSummary::getPrecision).sum();
@@ -101,7 +99,6 @@ public class IndexQueryEstimator implements DEstimator<PathSummary> {
         return (int) Math.round(finalEstimate);
     }
 
-    @Override
     public Collection<PathSummary> retrieveAllExactEstimations() {
 
         Map<PathIndex, Summary> pathIndexSummaryMap = indexFromOptimizedArray(optimizedGraph);
@@ -243,4 +240,7 @@ public class IndexQueryEstimator implements DEstimator<PathSummary> {
         return res;
     }
 
+    public int compare(PathSummary o1, PathSummary o2) {
+        return Double.compare(o1.getPrecision(), o2.getPrecision());
+    }
 }

@@ -3,29 +3,32 @@ package nl.tue.algorithm.histogram;
 import nl.tue.Utils;
 import nl.tue.algorithm.Estimator;
 import nl.tue.algorithm.paths.PathsOrdering;
+import nl.tue.algorithm.subgraph.SubGraphAlgorithm_SF;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.TreeSet;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @param <E> Intermediate guessing class
- * @param <H> Actual output
+ * @param <H> Histogram output
+ * @param <JR> JoinResult class
+ * @param <J> Joiner class
  */
-public abstract class AbstractHistogramBuilder<E, H> {
+public abstract class AbstractHistogramBuilder<E, H, JR extends JoinResult<E>, J extends Joiner<E, JR>> {
 
-    private Joiner.AbstractJoiner<E> joiner;
-    private int maxIndex = Integer.MAX_VALUE;
+    protected J joiner;
+    protected JR result;
+    int maxIndex = Integer.MAX_VALUE;
 
-    public AbstractHistogramBuilder(Joiner.AbstractJoiner<E> joiner) {
+    public AbstractHistogramBuilder(J joiner) {
         this.joiner = joiner;
         ranges.add(new HistogramRange<>(null, 0, maxIndex));
     }
 
-    private TreeSet<HistogramRange<E>> ranges = new TreeSet<>();
-    private HistogramRange<E> lower = null, higher = null;
+    TreeSet<HistogramRange<E>> ranges = new TreeSet<>();
+    HistogramRange<E> lower = null, higher = null;
 
-    private HistogramRange<E> prepareInsert(int newIndex){
+    HistogramRange<E> prepareInsert(int newIndex){
         HistogramRange<E> newRange = new HistogramRange<>(null, newIndex, newIndex);
         HistogramRange<E> floor = ranges.floor(newRange);
 
@@ -74,24 +77,29 @@ public abstract class AbstractHistogramBuilder<E, H> {
         // Create new range tuple
         HistogramRange<E> newR = prepareInsert(index);
 
+        int leftTuples;
+        E leftEstimate;
         if (lower != null) {
-            joiner.setLeftTuples(lower.size());
-            joiner.setLeftEstimate(lower.estimation);
+            leftTuples = lower.size();
+            leftEstimate = lower.estimation;
         } else {
-            joiner.setLeftTuples(0);
-            joiner.setLeftEstimate(null);
+            leftTuples = 0;
+            leftEstimate = null;
         }
 
+        int rightTuples;
+        E rightEstimate;
         if (higher != null) {
-            joiner.setRightTuples(higher.size());
-            joiner.setRightEstimate(higher.estimation);
+            rightTuples = higher.size();
+            rightEstimate = higher.estimation;
         } else {
-            joiner.setRightTuples(0);
-            joiner.setRightEstimate(null);
+            rightTuples = 0;
+            rightEstimate = null;
         }
 
-        E newEstimation = joiner.join(estimation);
-        if(joiner.isJoinLeft() && joiner.isJoinRight()){
+        joiner.calcJoint(result, leftTuples, leftEstimate, estimation, rightTuples, rightEstimate);
+        E newEstimation = result.newEstimate;
+        if(result.isJoinLeft() && result.isJoinRight()){
             if(higher != null) {
                 ranges.remove(higher);
                 lower.endIndex = higher.endIndex;
@@ -99,10 +107,10 @@ public abstract class AbstractHistogramBuilder<E, H> {
                 lower.endIndex = maxIndex;
             }
             lower.estimation = newEstimation;
-        } else if (joiner.isJoinLeft()){
+        } else if (result.isJoinLeft()){
             lower.endIndex = index;
             lower.estimation = newEstimation;
-        } else if (joiner.isJoinRight()){
+        } else if (result.isJoinRight()){
             if(higher != null){
                 ranges.remove(higher);
                 higher.startIndex = index;
@@ -130,32 +138,17 @@ public abstract class AbstractHistogramBuilder<E, H> {
             int[] next = pathsIterator.next();
             int nextIndex = serializer.get(next);
             E estimation = graph.getEstimation(next);
+
             addEstimation(estimation, nextIndex);
         }
-        return build();
+        return toHistogram();
     }
 
-    public H build() {
+    public H toHistogram() {
         check(ranges);
-
-        ArrayList<Integer> startRanges = new ArrayList<>(ranges.size() - 1);
-        E[] estimations = createArray(ranges.size());
-
-        int ix = 0;
-        Iterator<HistogramRange<E>> i = ranges.iterator();
-        HistogramRange<E> a = i.next();
-        estimations[ix] = a.estimation;
-
-        ix++;
-        while (i.hasNext()) {
-            a = i.next();
-            estimations[ix] = a.estimation;
-            startRanges.add(a.startIndex);
-
-            ix++;
-        }
-
-        return createH(startRanges, estimations);
+        ArrayList<HistogramRange<E>> estimatedRanges = new ArrayList<>(ranges.size() / 2);
+        estimatedRanges.addAll(ranges.stream().filter(r -> r.estimation != null).collect(Collectors.toList()));
+        return createH(estimatedRanges);
     }
 
     private void check(TreeSet<HistogramRange<E>> ranges) {
@@ -168,9 +161,9 @@ public abstract class AbstractHistogramBuilder<E, H> {
 
         while (i.hasNext()) {
             HistogramRange<E> b = i.next();
-            assert a.endIndex + 1 == b.startIndex;
+            assert a.endIndex + 1 == b.startIndex; // assert consecutive ranges
             if (lastWasEmty) {
-                assert b.estimation != null;
+                assert b.estimation != null; // assert no two consecutive empty ranges
             }
             lastWasEmty = b.estimation == null;
 
@@ -178,26 +171,59 @@ public abstract class AbstractHistogramBuilder<E, H> {
         }
     }
 
-    protected abstract H createH(ArrayList<Integer> startRanges, E[] estimations);
+    protected abstract H createH(ArrayList<HistogramRange<E>> estimatedRanges);
 
     protected abstract E[] createArray(int length);
 
-    public static class Short extends AbstractHistogramBuilder<Double, AbstractHistogram.Short>{
-        public Short(Joiner.SingleNumberJoiner joiner) {
+    /**
+     * Histogram builder
+     * You add Double estimations with `addEstimation` to this histogram builder
+     * It then builds `toHistogram` a Histogram of shorts
+     * @see AbstractHistogramBuilder#build(Estimator, PathsOrdering)
+     */
+    public static class Short extends AbstractHistogramBuilder<Double, Histogram, JoinResult.NumberJoinResult, Joiner<Double, JoinResult.NumberJoinResult>>{
+
+        public Short(Joiner<Double, JoinResult.NumberJoinResult> joiner) {
             super(joiner);
         }
 
+
+
+        /**
+         * Goes from Double ranges to short Histogram
+         * @param estimatedRanges
+         * @return
+         */
         @Override
-        protected AbstractHistogram.Short createH(ArrayList<Integer> startRanges, Double[] estimations) {
-            short[] estimations2 = new short[estimations.length];
-            for (int i = 0; i < estimations.length; i++) {
-                double est = estimations[i];
-                if(est < java.lang.Short.MIN_VALUE || est > java.lang.Short.MAX_VALUE){
-                    throw new ArithmeticException();
-                }
-                estimations2[i] = (short) est;
+        protected Histogram createH(ArrayList<HistogramRange<java.lang.Double>> estimatedRanges) {
+            ArrayList<Integer> startRanges = new ArrayList<>(estimatedRanges.size());
+            ArrayList<java.lang.Short> estimations = new ArrayList<>(estimatedRanges.size());
+            ArrayList<java.lang.Short> estimationLengths = new ArrayList<>(estimatedRanges.size());
+
+            int index = 0;
+            HistogramRange<Double> range;
+            int a, b;
+            while (index <= estimatedRanges.size() - 1) {
+                range = estimatedRanges.get(index);
+                a = range.startIndex;
+                b = range.endIndex;
+                int diff = b - a;
+                do {
+                    short actRange = (short) Math.min(diff, java.lang.Short.MAX_VALUE);
+                    startRanges.add(a);
+                    estimations.add(compressEstimation(range.estimation));
+                    estimationLengths.add(actRange);
+                    a += actRange;
+
+                    diff = b - a;
+                } while (diff > 0);
+                index++;
             }
-            return new AbstractHistogram.Short(Utils.toArray(startRanges), estimations2);
+            return new Histogram(Utils.toArray(startRanges), Utils.toArrayS(estimations), Utils.toArrayS(estimationLengths));
+        }
+
+        private java.lang.Short compressEstimation(Double estimation) {
+            return estimation.shortValue();
         }
 
         @Override

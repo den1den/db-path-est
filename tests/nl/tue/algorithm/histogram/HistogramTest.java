@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by Dennis on 4-6-2016.
  */
-public class AbstractHistogramTest extends TestCase {
+public class HistogramTest extends TestCase {
     public void testBinarySearch() throws Exception {
 
         List<Integer> l = Utils.toList(new int[]{0, 5, 10});

@@ -101,11 +101,6 @@ public class ComparisonExecutor {
         reportSingleEnv(new SubgraphHighKFactorAlgorithm(), this.env);
     }
 
-    @Test
-    public void testHisoGram(){
-        reportSingleEnv(new Algorithm_Histogram(), this.env);
-    }
-
     private static double computeAverage(List<Double> in) {
         double percentageSum = 0;
 
