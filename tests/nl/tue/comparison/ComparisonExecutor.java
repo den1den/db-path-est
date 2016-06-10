@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import nl.tue.algorithm.*;
 import nl.tue.algorithm.subgraph.SubGraphAlgorithm;
 import nl.tue.algorithm.subgraph.SubgraphHighKFactorAlgorithm;
+import nl.tue.algorithm.subgraph.SubgraphWithEdgeFactorAlgorithm;
 import nl.tue.algorithm.subgraph.SubgraphWithFactorsAlgorithm;
 import nl.tue.io.graph.AdjacencyList;
 import org.junit.Test;
@@ -22,11 +23,11 @@ import java.util.stream.Collectors;
 @RunWith(Parameterized.class)
 public class ComparisonExecutor {
 
-    private static List<TestEnvironment> environments;
     private final TestEnvironment env;
 
-    public static void before() {
-        environments = new ArrayList<>();
+    @Parameterized.Parameters
+    public static Object[] getParams() {
+        List<TestEnvironment> environments = new ArrayList<>();
 
         List<String> biblioQueries = Arrays.asList("+ 5 + 0 + 4 + 1 + 2", "+ 5 + 0 + 4 + 1 - 1", "+ 5 + 0 + 4 + 3",
                 "+ 5 + 0 + 1 + 2", "+ 0 + 4 + 1 + 2", "+ 5 + 0 - 4 + 1 + 2", "- 5 + 0 + 4 + 1 - 1",
@@ -63,11 +64,7 @@ public class ComparisonExecutor {
         TestEnvironment cineasts = new TestEnvironment(cineastQueries, cineastFile, "Cineast");
 
         environments.add(cineasts);
-    }
 
-    @Parameterized.Parameters
-    public static Object[] getParams() {
-        before();
         return environments.toArray();
     }
 
@@ -102,6 +99,11 @@ public class ComparisonExecutor {
     }
 
     @Test
+    public void testAlgorithm_SubgraphWithEdgeBasedFactors() {
+        reportSingleEnv(new SubgraphWithEdgeFactorAlgorithm(), this.env);
+    }
+
+    @Test
     public void testHisoGram(){
         reportSingleEnv(new Algorithm_Histogram(), this.env);
     }
@@ -116,7 +118,7 @@ public class ComparisonExecutor {
        return percentageSum / ((double)in.size());
     }
 
-    private static void reportSingleEnv(Algorithm algo,
+    public static void reportSingleEnv(Algorithm algo,
                                         TestEnvironment env) {
         List<ComparisonResult> comparisonResults = env.execute(algo);
         double envAccuracy = computeAverage(comparisonResults.stream().

@@ -29,19 +29,13 @@ public class SubgraphEstimatorWithFactors extends SubgraphEstimator {
     public void buildSummary(Parser p, int k, double b) {
         super.buildSummary(p, k, b - OVERHEAD);
 
-        byte[] compressed = new byte[subgraphLength];
-
-        System.arraycopy(storage, 0, compressed, 0, subgraphLength);
-
         this.k = (byte) k;
 
         int storageLeft = storage.length - subgraphLength;
 
-        Parser subgraphParser = new Parser();
+        Parser subgraphParser = parserFromStorage();
 
-        subgraphParser.parse(SubgraphCompressor.decompressSubgraph(compressed));
-
-        AdjacencyList subGraph = new AdjacencyList(subgraphParser);
+        AdjacencyList subGraph = new AdjacencyList(subgraphParser, false, labels);
 
         AdjacencyList graph = new AdjacencyList(p);
 

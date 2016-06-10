@@ -15,13 +15,23 @@ import java.util.*;
  */
 public class SubgraphEstimator implements MemoryConstrained {
 
-    private static final int OVERHEAD = 16 * 2 + 4 + 1 + 4;
+    private static final int OVERHEAD = 16 * 2 + 4 + 1 + 4 + 16 + 4;
 
     protected byte[] storage;
 
     protected byte labels;
 
     protected int subgraphLength;
+
+    private AcceptNode accepter;
+
+    public SubgraphEstimator() {
+        accepter = node -> node % 3 == 0 || node % 2 == 0;
+    }
+
+    public SubgraphEstimator(AcceptNode acceptor) {
+        this.accepter = acceptor;
+    }
 
     /**
      * Builds a subgraph of the given graph and attempts to fit as much of it as possible into memory.
@@ -36,7 +46,7 @@ public class SubgraphEstimator implements MemoryConstrained {
 
         outerloop:
         for (int node : graph.getNodes().keySet()) {
-            if (node % 3 == 0 || node % 2 == 0) {
+            if (accepter.acceptNode(node)) {
                 Map<Integer, Set<Integer>> integerSetMap = graph.getNodes().get(node);
 
                 for (int label : integerSetMap.keySet()) {
@@ -59,14 +69,20 @@ public class SubgraphEstimator implements MemoryConstrained {
 
     }
 
-    public int estimate(int[] query) {
-
+    protected Parser parserFromStorage() {
         byte[] compressed = new byte[subgraphLength];
 
         System.arraycopy(storage, 0, compressed, 0, subgraphLength);
 
         Parser parser = new Parser();
         parser.parse(SubgraphCompressor.decompressSubgraph(compressed));
+
+        return parser;
+    }
+
+    public int estimate(int[] query) {
+
+        Parser parser = parserFromStorage();
 
         AdjacencyList graph = new AdjacencyList(parser, false, this.labels);
 

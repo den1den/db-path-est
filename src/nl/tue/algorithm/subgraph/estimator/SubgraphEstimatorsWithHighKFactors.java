@@ -30,19 +30,13 @@ public class SubgraphEstimatorsWithHighKFactors extends SubgraphEstimator {
     public void buildSummary(Parser p, int k, double b) {
         super.buildSummary(p, k, b - OVERHEAD);
 
-        byte[] compressed = new byte[subgraphLength];
-
-        System.arraycopy(storage, 0, compressed, 0, subgraphLength);
-
         this.k = (byte) k;
 
         int storageLeft = storage.length - subgraphLength;
 
-        Parser subgraphParser = new Parser();
+        Parser subgraphParser = super.parserFromStorage();
 
-        subgraphParser.parse(SubgraphCompressor.decompressSubgraph(compressed));
-
-        AdjacencyList subGraph = new AdjacencyList(subgraphParser);
+        AdjacencyList subGraph = new AdjacencyList(subgraphParser, false, labels);
 
         AdjacencyList graph = new AdjacencyList(p);
 
@@ -50,7 +44,7 @@ public class SubgraphEstimatorsWithHighKFactors extends SubgraphEstimator {
             List<Double> factorList = new ArrayList<>();
 
             factorList.add(p.tuples.size() / (double)subgraphParser.tuples.size());
-            factorList.add(factorList.get(0) * 1.2);
+            factorList.add(factorList.get(0) * 1.4);
 
             for (int i = 3; i <= k; i++) {
                 factorList.add(computeFactorForK(i, p.getNLabels(), graph, subGraph));
