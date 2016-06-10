@@ -14,6 +14,7 @@ import nl.tue.algorithm.subgraph.estimator.SubgraphEstimator;
 import nl.tue.io.Parser;
 import nl.tue.io.graph.AdjacencyList;
 
+import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.List;
 
@@ -35,17 +36,19 @@ public class SubGraphAlgorithm_SF extends Algorithm<Histogram> implements DCombi
 
     @Override
     protected Histogram build(Parser p, int maximalPathLength, long budget) {
+        double t0 = System.currentTimeMillis();
         int labels = p.getNLabels();
         pathsOrdering = new PathsOrderingLexicographical(labels, maximalPathLength);
-
         long subGraphSize = (long) (budget * sgSize);
         long histogramSize = budget - subGraphSize - pathsOrdering.getBytesUsed();
 
         estimator.buildSummary(p, maximalPathLength, subGraphSize);
-        System.out.println(estimator.getClass().getSimpleName() + " build: " + estimator);
         AdjacencyList fullGraph = new AdjacencyList(p);
-
         AbstractHistogramBuilder.Short builder = new AbstractHistogramBuilder.Short(joiner);
+
+        double t1 = System.currentTimeMillis();
+        System.out.printf("Subgraph constructed in %.1f seconds%n", (t1 - t0) / 1000);
+        t0 = t1;
 
         Iterator<int[]> pathsIterator = pathsOrdering.iterator();
         while (pathsIterator.hasNext()){
@@ -64,11 +67,17 @@ public class SubGraphAlgorithm_SF extends Algorithm<Histogram> implements DCombi
             if (builder.estMemUsage() >= histogramSize) {
                 break;
             }
+            t1 = System.currentTimeMillis();
+            if(t1 - t0 > 2*1000){
+                //Takes more then 2 seconds
+                System.out.printf("Histogram building prematurely stopped at %.1f seconds%n", (t1 - t0) / 1000);
+                break;
+            }
         }
 
         System.out.print("Building histogram... ");
         Histogram histogram = builder.toHistogram();
-        System.out.println(estimator.getClass().getSimpleName() + " build: " + estimator);
+        System.out.printf("%s build: %s, with size: %d of %d%n", histogram.getClass().getSimpleName(), histogram, histogram.getBytesUsed(), histogramSize);
         return histogram;
     }
 
