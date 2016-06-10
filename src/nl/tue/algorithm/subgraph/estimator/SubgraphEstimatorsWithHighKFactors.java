@@ -43,7 +43,7 @@ public class SubgraphEstimatorsWithHighKFactors extends SubgraphEstimator {
         if (storageLeft > 8 * k) {
             List<Double> factorList = new ArrayList<>();
 
-            factorList.add(p.tuples.size() / (double)subgraphParser.tuples.size());
+            factorList.add((double)p.size() / subgraphParser.size());
             factorList.add(factorList.get(0) * 1.4);
 
             for (int i = 3; i <= k; i++) {

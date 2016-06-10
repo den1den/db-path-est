@@ -1,14 +1,14 @@
-package nl.tue.io;
+package nl.tue.io.generators;
+
+import nl.tue.io.TupleList;
 
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 
 /**
  * Created by Dennis on 10-6-2016.
  */
-public class TreeGenerated {
+public class TreeGenerator {
     int treeHeads;
     int maxDepth;
     double avgBranching;
@@ -22,15 +22,14 @@ public class TreeGenerated {
     Random random = new Random(5798435793L);
 
 
-
     /**
-     * @param treeHeads number of trees
-     * @param maxDepth the target maxDepth
+     * @param treeHeads    number of trees
+     * @param maxDepth     the target maxDepth
      * @param avgBranching avg branching factor
      * @param branchingStd deviation in branching factor
      * @param labelChances labelChances[i] = change to get label i, total = 1
      */
-    public TreeGenerated(int treeHeads, int maxDepth, double avgBranching, double branchingStd, double[] labelChances) {
+    public TreeGenerator(int treeHeads, int maxDepth, double avgBranching, double branchingStd, double[] labelChances) {
         this.treeHeads = treeHeads;
         this.maxDepth = maxDepth;
         this.avgBranching = avgBranching;
@@ -41,9 +40,9 @@ public class TreeGenerated {
 
     int NEXT_NODE = 0;
 
-    private List<int[]> edges = new LinkedList<>();
+    private TupleList edges = new TupleList();
 
-    public List<int[]> construct() {
+    public TupleList construct() {
         for (int _t = 0; _t < treeHeads; _t++) {
             int node = NEXT_NODE++;
             createChildren(node, 0);
@@ -52,11 +51,11 @@ public class TreeGenerated {
     }
 
     private void createChildren(int node, int depth) {
-        if(depth >= this.maxDepth){
+        if (depth >= this.maxDepth) {
             return;
         }
         double branchingFactor = Math.round((random.nextGaussian() + this.avgBranching) * this.branchingStd);
-        if(branchingFactor <= 0){
+        if (branchingFactor <= 0) {
             return;
         }
         for (int child = 0; child < branchingFactor; child++) {
@@ -74,17 +73,13 @@ public class TreeGenerated {
     }
 
     /**
-     *
      * @return 0 and labelChances.length - 1
      */
-    public int pickLabel()
-    {
+    public int pickLabel() {
         double r = random.nextDouble();
         int i;
-        for (i = 0; i < labelChances.length; i++)
-        {
-            if (r < labelChances[i])
-            {
+        for (i = 0; i < labelChances.length; i++) {
+            if (r < labelChances[i]) {
                 return i;
             }
             r -= labelChances[i];
@@ -92,7 +87,7 @@ public class TreeGenerated {
         return labelChances.length - 1;
     }
 
-    public int getNumberOfNodes(){
+    public int getNumberOfNodes() {
         return NEXT_NODE;
     }
 }

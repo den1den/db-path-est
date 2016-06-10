@@ -27,7 +27,7 @@ public class Main {
     // 6 Multiple subquery result with scaling factor to getStored final result, different is not in memory
 
     public static void main(String[] args) throws IOException {
-        String file = args[0];
+        File file = new File(args[0]);
         long maximalPathLength = Long.parseLong(args[1]);
         long budget = Long.parseLong(args[2]);
 

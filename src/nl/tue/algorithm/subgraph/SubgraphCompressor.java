@@ -1,6 +1,7 @@
 package nl.tue.algorithm.subgraph;
 
 import com.sun.deploy.util.ArrayUtil;
+import nl.tue.io.TupleList;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -115,10 +116,10 @@ public class SubgraphCompressor {
         return bos.toByteArray();
     }
 
-    public static List<int[]> decompressSubgraph(byte[] compressed) {
+    public static TupleList decompressSubgraph(byte[] compressed) {
         byte[] decompressed = decompress(compressed);
 
-        List<int[]> out = new ArrayList<>();
+        TupleList out = new TupleList();
 
         for(int i = 0; i < decompressed.length; i+=EDGE_LENGTH) {
             byte[] edge = new byte[EDGE_LENGTH];

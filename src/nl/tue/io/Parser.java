@@ -1,76 +1,50 @@
 package nl.tue.io;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 /**
  * Parses a file to a LinkedList of tuples (keeps duplicates)
  * Created by dennis on 17-5-16.
  */
-public class Parser {
-
-    public long lowestSrc = -1;
-    public long lowestLabel = -1;
-    public long lowestDest = -1;
-    public long highestSrc = -1;
-    public long highestDest = -1;
+public class Parser implements Iterable<int[]> {
+    /**
+     * Unprocessed original edge list
+     */
+    final private TupleList tuples = new TupleList();
 
     /**
-     * Map that contains the edge mapping which maps edges from the world to the application domain. Edges in the
+     * Map that contains the edge mapping which maps tuples from the world to the application domain. Edges in the
      * application domain start at 0, are consecutive and go up to n - 1. Where n is the number of unique labels. Back
-     * edges are assigned from n to 2n - 1. Where the back edge for a label l can be found by doing l + n.
+     * tuples are assigned from n to 2n - 1. Where the back edge for a label l can be found by doing l + n.
      */
     private Map<String, Integer> edgeMappings = new HashMap<>();
 
-    public List<int[]> tuples = new ArrayList<>();
     public List<int[]> invertedTuples = new ArrayList<>();
-    public List<int[]> combinedList = new ArrayList<>();
     public LinkedList<long[]> pathList = new LinkedList<>();
-    private HashMap<Integer, ArrayList<SomeDs>> incoming = new HashMap<>();
-    private HashMap<Integer, ArrayList<SomeDs>> outgoing = new HashMap<>();
-    public void parse(String pathname) throws IOException {
-        File f = new File(pathname);
-        if (!f.isFile()) {
-            throw new FileNotFoundException(f.getAbsolutePath());
-        }
-        parse(f);
+
+    private HashMap<Integer, ArrayList<Tuple>> incoming = new HashMap<>();
+    private HashMap<Integer, ArrayList<Tuple>> outgoing = new HashMap<>();
+
+    public void parse(String file) throws IOException {
+        parse(new File(file));
     }
+
 
     public void parse(File file) throws IOException {
-        parse(new FileReader(file));
-    }
-
-    public void parse(Readable source) throws IOException {
-        Scanner scanner = new Scanner(source);
-
-        List<int[]> edges = new LinkedList<>();
-
-        try {
-            while (scanner.hasNextLong()) {
-                int src, label, dest;
-
-                src = scanner.nextInt();
-                label = scanner.nextInt();
-                dest = scanner.nextInt();
-                edges.add(new int[]{src, label, dest});
-            }
-
-        } catch (NoSuchElementException e) {
-            throw new IOException("Expected an long in input file", e);
-        }
-
-        parse(edges);
+        parse(new TupleList(new FileReader(file)));
     }
 
     /**
      * Used for reading in a graph to this Parser
+     *
      * @param edges
      */
-    public void parse(List<int[]> edges) {
-
-        for(int[] edge : edges) {
-            foundTuple(edge[0], edge[1], edge[2]);
-        }
+    public void parse(TupleList edges) {
+        tuples.addAll(edges);
 
         Map<String, Integer> reversedMappings = new HashMap<>();
 
@@ -99,39 +73,16 @@ public class Parser {
                 label = -label;
                 dest = scanner.nextInt();
                 invertedTuples.add(new int[]{dest, label, src});
-                ;
             }
         } catch (NoSuchElementException e) {
             throw new IOException("Expected an long in input file", e);
         }
     }
 
-    Random rand = new Random(423098423L);
-public void GenerateGraph(int maxLabels, int nrOfNodes, boolean addMoreRandom)
-    {
-        tuples.clear();
-
-            for (int i = 0; i < nrOfNodes; i++) {
-                int num0 = i + 1;
-                int num1 = rand.nextInt(maxLabels) + 1;
-                int num2 = rand.nextInt(nrOfNodes) + 1;
-                int temp[] = {num0, num1, num2};
-                tuples.add(temp);
-            }
-        if (addMoreRandom)
-        {
-            for (int i = 0; i < nrOfNodes; i++) {
-                int num0 = rand.nextInt(nrOfNodes) + 1;
-                int num1 = rand.nextInt(maxLabels) + 1;
-                int num2 = rand.nextInt(nrOfNodes) + 1;
-                int temp[] = {num0, num1, num2};
-                tuples.add(temp);
-            }
-        }
-    }
-    public void writePathToFile(String  filename, String inputPath, int times) throws IOException {
-       char[] path = inputPath.toCharArray();
-        FileWriter fw = new FileWriter(filename,true);
+    public void writePathToFile(String filename, String inputPath, int times) throws IOException {
+        LinkedList<long[]> pathList = new LinkedList<>();
+        char[] path = inputPath.toCharArray();
+        FileWriter fw = new FileWriter(filename, true);
 
         int k = 0;
         do {
@@ -185,60 +136,17 @@ public void GenerateGraph(int maxLabels, int nrOfNodes, boolean addMoreRandom)
 
         fw.close();
     }
-     public void Merge() {
-        int source,label, target = 0;
-        int listCounter = 0;
-        List<int[]> newTobeAdded = new ArrayList<>();
-        ArrayList<Integer> indexesTobeRemoved = new ArrayList<Integer>();
-        for (int[] input:
-                tuples ) {
-            source = input[0];
-            label = input[1];
-            target = input[2];
 
-            int counter = 0;
-            for (int[] comparison :
-                    tuples) {
-                if (target == comparison[0] && label == comparison[1] && comparison[0] != comparison[2]) {
-                    int[] temp = {source,label,comparison[2]};
-                    newTobeAdded.add(temp);
-                    indexesTobeRemoved.add(counter);
-                    indexesTobeRemoved.add(listCounter);
-                }
+    // Count Unique Nodes is moved to TupleList.new Meta()
 
-                counter++;
-            }
-            listCounter++;
-        }
-
-        int cpt = 0;
-        Iterator<int[]> it = tuples.iterator();
-        while(it.hasNext()){
-            it.next();
-            if(indexesTobeRemoved.contains(cpt)){
-                it.remove();
-            }
-            cpt++;
-        }
-        tuples.addAll(newTobeAdded);
-    }
-      public int CountUniqueNodes() {
-        Set<Integer> unique = new HashSet<>();
-        for (Integer[] input :
-                tuples) {
-            unique.add(input[0]);
-            unique.add(input[2]);
-
-
-        }
-        return unique.size();
-    }
-    
+    /**
+     * TODO: Adrian, move this to @see {@link nl.tue.io.converters.GraphStructureConverter}
+     */
     public void MergeZwei(int number) {
-        ArrayList<SomeDs> nodesAndEdges = new ArrayList<>();
+        ArrayList<Tuple> nodesAndEdges = new ArrayList<>();
         ArrayList<Integer> uniqueNodes = new ArrayList<>();
 
-        for (Integer[] input : tuples) {
+        for (int[] input : this) {
             if (!uniqueNodes.contains(input[0])) {
                 uniqueNodes.add(input[0]);
             }
@@ -246,7 +154,7 @@ public void GenerateGraph(int maxLabels, int nrOfNodes, boolean addMoreRandom)
                 uniqueNodes.add(input[2]);
             }
 
-            nodesAndEdges.add(new SomeDs(input[0], input[1], input[2]));
+            nodesAndEdges.add(new Tuple(input[0], input[1], input[2]));
 
         }
 
@@ -254,9 +162,9 @@ public void GenerateGraph(int maxLabels, int nrOfNodes, boolean addMoreRandom)
 
         while (keySetIterator.hasNext()) {
             int key = keySetIterator.next();
-            ArrayList<SomeDs> outg = new ArrayList<>();
-            ArrayList<SomeDs> incom = new ArrayList<>();
-            for (SomeDs ds : nodesAndEdges) {
+            ArrayList<Tuple> outg = new ArrayList<>();
+            ArrayList<Tuple> incom = new ArrayList<>();
+            for (Tuple ds : nodesAndEdges) {
                 if (ds.source == key) {
                     outg.add(ds);
                 }
@@ -280,15 +188,15 @@ public void GenerateGraph(int maxLabels, int nrOfNodes, boolean addMoreRandom)
 
                 int one = uniqueNodes.get(firstIndex);
                 int two = uniqueNodes.get(secondIndex);
-                ArrayList<SomeDs> nodeIncoming = incoming.get(one);
-                ArrayList<SomeDs> nodeOutgoing = outgoing.get(one);
-                for (SomeDs temp : nodeIncoming) {
-                        temp.target = two;
-                        incoming.get(two).add(temp);
+                ArrayList<Tuple> nodeIncoming = incoming.get(one);
+                ArrayList<Tuple> nodeOutgoing = outgoing.get(one);
+                for (Tuple temp : nodeIncoming) {
+                    temp.target = two;
+                    incoming.get(two).add(temp);
                 }
-                for (SomeDs temp : nodeOutgoing) {
-                        temp.source = two;
-                        outgoing.get(two).add(temp);
+                for (Tuple temp : nodeOutgoing) {
+                    temp.source = two;
+                    outgoing.get(two).add(temp);
                 }
 
                 incoming.remove(one);
@@ -297,17 +205,18 @@ public void GenerateGraph(int maxLabels, int nrOfNodes, boolean addMoreRandom)
 
             }
 
-
         }
-        public void WriteHashmapToFile(String filename) throws IOException {
+    }
+
+    public void WriteHashmapToFile(String filename) throws IOException {
 
         FileWriter fw = new FileWriter(filename);
 
-        for (List<SomeDs> longArray : incoming.values()) {
+        for (List<Tuple> longArray : incoming.values()) {
 
             for (int i = 0; i < longArray.size(); i++) {
 
-                SomeDs edge = longArray.get(i);
+                Tuple edge = longArray.get(i);
 
                 String line = String.format("%d %d %d", edge.source, edge.label, edge.target);
 
@@ -318,64 +227,9 @@ public void GenerateGraph(int maxLabels, int nrOfNodes, boolean addMoreRandom)
 
         fw.close();
     }
-    }
+
     public int getNLabels() {
         return this.edgeMappings.size();
-    }
-
-    private void foundTuple(int src, int label, int dest) {
-        if (lowestSrc == -1 || src < lowestSrc) {
-            lowestSrc = src;
-        }
-        if (highestSrc == -1 || src > highestSrc) {
-            highestSrc = src;
-        }
-        if (lowestLabel == -1 || label < lowestLabel) {
-            lowestLabel = label;
-        }
-        if (lowestDest == -1 || dest < lowestDest) {
-            lowestDest = dest;
-        }
-        if (highestDest == -1 || dest > highestDest) {
-            highestDest = dest;
-        }
-
-        if (!edgeMappings.containsKey("+" + label)) {
-            edgeMappings.put("+" + label, this.edgeMappings.size());
-        }
-
-        tuples.add(new int[]{src, label, dest});
-    }
-
-    public static final Comparator<long[]> CompSourceLabelDestination = new Comparator<long[]>() {
-        @Override
-        public int compare(long[] o1, long[] o2) {
-            int cmp = Long.compare(o1[0], o2[0]);
-            if (cmp != 0) return cmp;
-            cmp = Long.compare(o1[1], o2[1]);
-            if (cmp != 0) return cmp;
-            cmp = Long.compare(o1[2], o2[2]);
-            return cmp;
-        }
-    };
-
-    public static final Comparator<long[]> CompLabelSourceDestination = new Comparator<long[]>() {
-        @Override
-        public int compare(long[] o1, long[] o2) {
-            int cmp = Long.compare(o1[1], o2[1]);
-            if (cmp != 0) return cmp;
-            cmp = Long.compare(o1[0], o2[0]);
-            if (cmp != 0) return cmp;
-            cmp = Long.compare(o1[2], o2[2]);
-            return cmp;
-        }
-    };
-
-    public ArrayList<int[]> getOrderedUnique(Comparator<int[]> comparator) {
-        TreeSet<int[]> ordered = new TreeSet<>(comparator);
-        ordered.addAll(tuples);
-
-        return new ArrayList<>(ordered);
     }
 
     public boolean labelFitsInByte() {
@@ -386,11 +240,32 @@ public void GenerateGraph(int maxLabels, int nrOfNodes, boolean addMoreRandom)
         return this.edgeMappings.size() < Integer.MAX_VALUE - 8; // See ArrayList
     }
 
-    public int getNEdges() {
+    public Map<String, Integer> getEdgeMappings() {
+        return edgeMappings;
+    }
+
+    public int size() {
         return tuples.size();
     }
 
-    public Map<String, Integer> getEdgeMappings() {
-        return edgeMappings;
+    @Override
+    public Iterator<int[]> iterator() {
+        // No remove or add in the parser
+        final Iterator<int[]> delegate = tuples.iterator();
+        return new Iterator<int[]>() {
+            @Override
+            public boolean hasNext() {
+                return delegate.hasNext();
+            }
+
+            @Override
+            public int[] next() {
+                return delegate.next();
+            }
+        };
+    }
+
+    public int[] getTuple(int i) {
+        return tuples.get(i);
     }
 }
