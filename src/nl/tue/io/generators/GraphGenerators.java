@@ -1,6 +1,6 @@
 package nl.tue.io.generators;
 
-import nl.tue.io.RawTuples;
+import nl.tue.io.TupleList;
 
 import java.util.Random;
 
@@ -16,8 +16,8 @@ public class GraphGenerators {
      * @param addMoreRandom
      * @return
      */
-    public static RawTuples GenerateGraph(Random r, int maxLabels, int nrOfNodes, boolean addMoreRandom) {
-        RawTuples tuples = new RawTuples();
+    public static TupleList generateUniform(Random r, int maxLabels, int nrOfNodes, boolean addMoreRandom) {
+        TupleList tuples = new TupleList();
 
         for (int i = 0; i < nrOfNodes; i++) {
             int src = i + 1;

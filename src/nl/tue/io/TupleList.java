@@ -8,26 +8,35 @@ import java.util.stream.Collectors;
  * The rawest form of a edge list
  * A wrapper of <code>ArrayList<int[]> tuples</code>
  */
-public class RawTuples extends AbstractList<int[]>{
+public class TupleList extends AbstractList<int[]>{
 
     final ArrayList<int[]> tuples;
 
-    public RawTuples() {
+    public TupleList() {
         tuples = new ArrayList<>();
     }
 
-    public RawTuples(int initialCapacity) {
+    public TupleList(int initialCapacity) {
         tuples = new ArrayList<>(initialCapacity);
     }
 
-    public RawTuples(Collection<? extends int[]> c) {
+    public TupleList(Collection<? extends int[]> c) {
         checkAll(c);
         tuples = new ArrayList<>(c);
     }
 
-    public RawTuples(Readable source) {
+    public TupleList(Readable source) {
         this();
         readFromReadable(source);
+    }
+
+    public TupleList(File file) {
+        this();
+        try {
+            readFromReadable(new BufferedReader(new FileReader(file)));
+        } catch (IOException e) {
+            throw new Error(e);
+        }
     }
 
     private static void checkAll(Collection<? extends int[]> cs) {
@@ -78,44 +87,6 @@ public class RawTuples extends AbstractList<int[]>{
     }
 
     /**
-     * Perform a merge on this edge list
-     */
-    public void merge() {
-        int source, label, target;
-        int listCounter = 0;
-        List<int[]> newTobeAdded = new ArrayList<>();
-        ArrayList<Integer> indexesTobeRemoved = new ArrayList<>();
-        for (int[] input : this) {
-            source = input[0];
-            label = input[1];
-            target = input[2];
-
-            int counter = 0;
-            for (int[] comparison : this) {
-                if (target == comparison[0] && label == comparison[1] && comparison[0] != comparison[2]) {
-                    int[] temp = {source, label, comparison[2]};
-                    newTobeAdded.add(temp);
-                    indexesTobeRemoved.add(counter);
-                    indexesTobeRemoved.add(listCounter);
-                }
-                counter++;
-            }
-            listCounter++;
-        }
-
-        int cpt = 0;
-        Iterator<int[]> it = this.iterator();
-        while (it.hasNext()) {
-            it.next();
-            if (indexesTobeRemoved.contains(cpt)) {
-                it.remove();
-            }
-            cpt++;
-        }
-        addAll(newTobeAdded);
-    }
-
-    /**
      * Read from some readable object
      * @param readable
      */
@@ -128,16 +99,6 @@ public class RawTuples extends AbstractList<int[]>{
             label = scanner.nextInt();
             dest = scanner.nextInt();
             add(src, label, dest);
-        }
-    }
-
-    public void readFromFile(File file) {
-        try {
-            FileReader fileReader = new FileReader(file);
-            Readable readable = new BufferedReader(fileReader);
-            readFromReadable(readable);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -170,8 +131,8 @@ public class RawTuples extends AbstractList<int[]>{
         return tuples.size();
     }
 
-    public RawTuples deepCopy(){
-        RawTuples copy = new RawTuples(tuples.size());
+    public TupleList deepCopy(){
+        TupleList copy = new TupleList(tuples.size());
         copy.tuples.addAll(tuples.stream().map(t -> Arrays.copyOf(t, 3)).collect(Collectors.toList()));
         return copy;
     }
@@ -190,7 +151,7 @@ public class RawTuples extends AbstractList<int[]>{
 
         public Meta() {
             labels = new TreeSet<>();
-            for (int[] tuple : RawTuples.this){
+            for (int[] tuple : TupleList.this){
                 int src = tuple[0], label = tuple[1], dest = tuple[2];
                 limits(src, label, dest);
                 labels.add(label);
