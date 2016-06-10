@@ -29,7 +29,7 @@ public class SizeOfSubgraphComparison {
     public void testDefault() {
         SubGraphAlgorithm algo = new SubGraphAlgorithm();
 
-        ComparisonExecutor.reportSingleEnv(algo, environment);
+        ComparisonExecutor.reportSingleEnv(algo, environment, "Default");
     }
 
     @Test
@@ -37,7 +37,7 @@ public class SizeOfSubgraphComparison {
         SubGraphAlgorithm algo = new SubGraphAlgorithm(new SubgraphEstimator(node -> node % 2 ==0));
 
 
-        ComparisonExecutor.reportSingleEnv(algo, environment);
+        ComparisonExecutor.reportSingleEnv(algo, environment, "EverySecond");
     }
 
     @Test
@@ -45,7 +45,7 @@ public class SizeOfSubgraphComparison {
         SubGraphAlgorithm algo = new SubGraphAlgorithm(new SubgraphEstimator(node -> node % 4 ==0));
 
 
-        ComparisonExecutor.reportSingleEnv(algo, environment);
+        ComparisonExecutor.reportSingleEnv(algo, environment, "EveryFourth");
     }
 
     @Test
@@ -54,7 +54,7 @@ public class SizeOfSubgraphComparison {
         node % 5 == 0));
 
 
-        ComparisonExecutor.reportSingleEnv(algo, environment);
+        ComparisonExecutor.reportSingleEnv(algo, environment, "EverySecondThirdFifth");
     }
 
 

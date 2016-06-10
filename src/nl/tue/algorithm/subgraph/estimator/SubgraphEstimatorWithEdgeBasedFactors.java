@@ -41,8 +41,16 @@ public class SubgraphEstimatorWithEdgeBasedFactors extends SubgraphEstimator {
 
         List<Double> factors = edgeFactorsFromStorage();
 
-        for(int edge : query) {
-            res *= factors.get(edge);
+        if(query.length == 1) {
+            res *= factors.get(query[0]);
+        } else {
+            double sum = 1;
+            for(int label : query) {
+                res *= factors.get(label);
+                sum *= factors.get(label);
+            }
+
+            res /= sum;
         }
 
         return res;
