@@ -57,10 +57,10 @@ public class SubgraphCompressorTest {
 
         System.out.println(new SimpleDateFormat("mm-ss").format(Calendar.getInstance().getTime()) + " Started");
 
-        byte[] byteArr = new byte[parser.tuples.size() * 7];
+        byte[] byteArr = new byte[parser.size() * 7];
 
-        for (int i = 0; i < parser.tuples.size(); i++) {
-            byte[] edge = SubgraphCompressor.compressEdge(parser.tuples.get(i));
+        for (int i = 0; i < parser.size(); i++) {
+            byte[] edge = SubgraphCompressor.compressEdge(parser.getTuple(i));
 
             System.arraycopy(edge, 0, byteArr, i * 7, edge.length);
         }
@@ -85,10 +85,10 @@ public class SubgraphCompressorTest {
             newEdges.add(SubgraphCompressor.decompressEdge(edge));
         }
 
-        Assert.assertEquals(parser.tuples.size(), newEdges.size());
+        Assert.assertEquals(parser.size(), newEdges.size());
 
-        for (int i = 0; i < parser.tuples.size(); i++) {
-            Assert.assertArrayEquals(parser.tuples.get(i), newEdges.get(i));
+        for (int i = 0; i < parser.size(); i++) {
+            Assert.assertArrayEquals(parser.getTuple(i), newEdges.get(i));
         }
 
     }
@@ -101,25 +101,7 @@ public class SubgraphCompressorTest {
 
         AdjacencyList graph = new AdjacencyList(parser);
 
-        byte[] compressed = SubgraphCompressor.compressWithLimit(new Iterable<int[]>() {
-            @Override
-            public Iterator<int[]> iterator() {
-                return new Iterator<int[]>() {
-                    private int pos = 0;
-
-                    @Override
-                    public boolean hasNext() {
-                        return pos < parser.tuples.size();
-                    }
-
-                    @Override
-                    public int[] next() {
-                        return parser.tuples.get(pos++);
-
-                    }
-                };
-            }
-        }, graph.getNodes().keySet().size() * 8);
+        byte[] compressed = SubgraphCompressor.compressWithLimit(parser, graph.getNodes().keySet().size() * 8);
 
         Assert.assertTrue(compressed.length <= graph.getNodes().keySet().size() * 8);
     }
@@ -132,15 +114,15 @@ public class SubgraphCompressorTest {
 
         AdjacencyList graph = new AdjacencyList(parser);
 
-        byte[] compressed = SubgraphCompressor.compressWithLimit(parser.tuples, graph.getNodes().size() * 8);
+        byte[] compressed = SubgraphCompressor.compressWithLimit(parser, graph.getNodes().size() * 8);
 
         byte[] decompressed = SubgraphCompressor.decompress(compressed);
 
-        byte[] preCompress = new byte[parser.tuples.size() * 7];
+        byte[] preCompress = new byte[parser.size() * 7];
 
         int added = 0;
 
-        for (int[] tuple : parser.tuples) {
+        for (int[] tuple : parser) {
             byte[] comprEdge = SubgraphCompressor.compressEdge(tuple);
 
             System.arraycopy(comprEdge, 0, preCompress, added * 7, comprEdge.length);

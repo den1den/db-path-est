@@ -52,7 +52,7 @@ public class AdjacencyList implements DirectedBackEdgeGraph {
             }
         }
 
-        for (int[] tuple : parser.tuples) {
+        for (int[] tuple : parser) {
             if (tuple.length != 3) {
                 System.err.println("While reading results from parser an unexpected tuple has been encountered");
                 continue;

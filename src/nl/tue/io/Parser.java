@@ -10,11 +10,11 @@ import java.util.*;
  * Parses a file to a LinkedList of tuples (keeps duplicates)
  * Created by dennis on 17-5-16.
  */
-public class Parser {
+public class Parser implements Iterable<int[]> {
     /**
      * Unprocessed original edge list
      */
-    final RawTuples tuples = new RawTuples();
+    final private TupleList tuples = new TupleList();
 
     /**
      * Map that contains the edge mapping which maps tuples from the world to the application domain. Edges in the
@@ -25,12 +25,12 @@ public class Parser {
 
     public List<int[]> invertedTuples = new ArrayList<>();
 
-    public void parse(File file) throws IOException {
-        parse(new FileReader(file));
+    public void parse(String file) throws IOException {
+        parse(new File(file));
     }
 
-    public void parse(Readable source) throws IOException {
-        parse(new RawTuples(source));
+    public void parse(File file) throws IOException {
+        parse(new TupleList(new FileReader(file)));
     }
 
     /**
@@ -38,7 +38,7 @@ public class Parser {
      *
      * @param edges
      */
-    public void parse(RawTuples edges) {
+    public void parse(TupleList edges) {
         tuples.addAll(edges);
 
         Map<String, Integer> reversedMappings = new HashMap<>();
@@ -142,5 +142,30 @@ public class Parser {
 
     public Map<String, Integer> getEdgeMappings() {
         return edgeMappings;
+    }
+
+    public int size() {
+        return tuples.size();
+    }
+
+    @Override
+    public Iterator<int[]> iterator() {
+        // No remove or add in the parser
+        final Iterator<int[]> delegate = tuples.iterator();
+        return new Iterator<int[]>() {
+            @Override
+            public boolean hasNext() {
+                return delegate.hasNext();
+            }
+
+            @Override
+            public int[] next() {
+                return delegate.next();
+            }
+        };
+    }
+
+    public int[] getTuple(int i) {
+        return tuples.get(i);
     }
 }
