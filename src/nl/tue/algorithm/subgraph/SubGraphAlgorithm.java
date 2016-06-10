@@ -34,4 +34,9 @@ public class SubGraphAlgorithm extends Algorithm<SubgraphEstimator> {
     protected long bytesOverhead() {
         return this.estimator.getBytesUsed();
     }
+
+    @Override
+    public String getOutputName() {
+        return getClass().getSimpleName();
+    }
 }

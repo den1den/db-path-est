@@ -1,9 +1,7 @@
 package nl.tue.algorithm.subgraph;
 
 import nl.tue.algorithm.Algorithm;
-import nl.tue.algorithm.subgraph.estimator.SubgraphEstimator;
 import nl.tue.algorithm.subgraph.estimator.SubgraphEstimatorWithEdgeBasedFactors;
-import nl.tue.algorithm.subgraph.estimator.SubgraphEstimatorsWithHighKFactors;
 import nl.tue.io.Parser;
 
 /**
@@ -26,5 +24,10 @@ public class SubgraphWithEdgeFactorAlgorithm extends Algorithm<SubgraphEstimator
     @Override
     protected long bytesOverhead() {
         return 0;
+    }
+
+    @Override
+    public String getOutputName() {
+        return getClass().getSimpleName();
     }
 }

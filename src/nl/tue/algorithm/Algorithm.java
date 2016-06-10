@@ -27,4 +27,6 @@ public abstract class Algorithm<M extends MemoryConstrained> implements MemoryCo
     }
 
     protected abstract long bytesOverhead();
+
+    public abstract String getOutputName();
 }

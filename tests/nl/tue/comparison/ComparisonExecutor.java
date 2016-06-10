@@ -31,7 +31,7 @@ public class ComparisonExecutor {
      * Shoudl write:
      * graph_name, nodes, labels, build_time, query, query_time, algorithm_id, estimation_tuples, expected_tuples
      * Example:
-     * "biblio", 500, 5, 1480, "+ 1 - 5", 149, algorithm.getNameWithParam(), 50, 55
+     * "biblio", 500, 5, 1480, "+ 1 - 5", 149, algorithm.getOutputName(), 50, 55
      */
     private static final String OUTPUT_FILE = "results.csv";
 

@@ -14,7 +14,6 @@ import nl.tue.algorithm.subgraph.estimator.SubgraphEstimator;
 import nl.tue.io.Parser;
 import nl.tue.io.graph.AdjacencyList;
 
-import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.List;
 
@@ -90,6 +89,11 @@ public class SubGraphAlgorithm_SF extends Algorithm<Histogram> implements DCombi
     @Override
     protected long bytesOverhead() {
         return pathsOrdering.getBytesUsed() + estimator.getBytesUsed() + joiner.getBytesUsed() + 16L;
+    }
+
+    @Override
+    public String getOutputName() {
+        return this.getClass().getSimpleName() + "-" + inMemory.calcSize() + "-" + estimator.size();
     }
 
     @Override

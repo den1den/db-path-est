@@ -1,10 +1,8 @@
 package nl.tue.algorithm.histogram;
 
 import nl.tue.MemoryConstrained;
-import nl.tue.algorithm.dynamicprogramming.DInput;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * Histogram that stores short values for each path
@@ -66,6 +64,14 @@ public class Histogram implements MemoryConstrained {
     public long getBytesUsed() {
         return startRanges.length * Integer.BYTES + Integer.BYTES
                 + estimations.length * Integer.BYTES + Integer.BYTES;
+    }
+
+    public int calcSize() {
+        int total = 0;
+        for (int i = 0; i < estimationLengths.length; i++) {
+            total += estimationLengths[i];
+        }
+        return total;
     }
 
     public class HistogramEntry{

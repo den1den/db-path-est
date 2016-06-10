@@ -5,7 +5,10 @@ import nl.tue.algorithm.subgraph.SubgraphCompressor;
 import nl.tue.io.Parser;
 import nl.tue.io.graph.AdjacencyList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -97,4 +100,7 @@ public class SubgraphEstimator implements MemoryConstrained {
         return 0;
     }
 
+    public int size() {
+        return storage.length;
+    }
 }

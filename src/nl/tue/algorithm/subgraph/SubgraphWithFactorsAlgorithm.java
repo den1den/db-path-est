@@ -26,4 +26,9 @@ public class SubgraphWithFactorsAlgorithm extends Algorithm<SubgraphEstimatorWit
     protected long bytesOverhead() {
         return 0;
     }
+
+    @Override
+    public String getOutputName() {
+        return getClass().getSimpleName();
+    }
 }

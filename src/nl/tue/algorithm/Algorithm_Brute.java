@@ -43,4 +43,9 @@ public class Algorithm_Brute extends Algorithm<BruteTree> {
     protected long bytesOverhead() {
         return 0;
     }
+
+    @Override
+    public String getOutputName() {
+        return getClass().getSimpleName();
+    }
 }
