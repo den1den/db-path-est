@@ -15,7 +15,11 @@ public class Tuple {
     }
 
     public Tuple(int[] ints) {
-        assert ints.length == 3;
+
+        if(ints.length != 3) {
+            throw new IllegalArgumentException("int[] provided does not contain the required amount of items");
+        }
+
         this.source = ints[0];
         this.label = ints[1];
         this.target = ints[2];
@@ -44,6 +48,6 @@ public class Tuple {
 
     @Override
     public String toString() {
-        return String.format("Tuple(%d, %d, %d)", source, label, target);
+        return String.format("(%d, %d, %d)", source, label, target);
     }
 }

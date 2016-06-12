@@ -21,6 +21,10 @@ public class TestEnvironment {
     private final File file;
     private final String name;
 
+    private int nodes;
+    private int labels;
+    private int summaryTime;
+
     public TestEnvironment(List<String> queries, File file, String name) {
         this.queries = queries;
         this.file = file;
@@ -33,11 +37,15 @@ public class TestEnvironment {
         List<ComparisonResult> res = new ArrayList<>();
 
         for(int[] path : paths) {
+            long startTime = System.currentTimeMillis();
+
             int estimation = method.query(path);
+
+            int estimationTime = (int) (System.currentTimeMillis() - startTime);
 
             int result = graph.solvePathQuery(path).size();
 
-            res.add(new ComparisonResult(new PathIndex(path), result, estimation));
+            res.add(new ComparisonResult(new PathIndex(path), result, estimation, estimationTime));
         }
 
         return res;
@@ -45,6 +53,18 @@ public class TestEnvironment {
 
     public String getName() {
         return name;
+    }
+
+    public int getNodes() {
+        return nodes;
+    }
+
+    public int getLabels() {
+        return labels;
+    }
+
+    public int getSummaryTime() {
+        return summaryTime;
     }
 
     public List<ComparisonResult> execute(Algorithm algo) {
@@ -61,7 +81,14 @@ public class TestEnvironment {
 
         AdjacencyList graph = new AdjacencyList(parser);
 
+        this.nodes = graph.getNodes().size();
+        this.labels = parser.getNLabels()/2;
+
+        long startSummary = System.currentTimeMillis();
+
         algo.buildSummary(parser, 5, graph.getNodes().keySet().size() * 8);
+
+        this.summaryTime = (int) (System.currentTimeMillis() - startSummary);
 
         return executeComparisonsForPaths(intArrQueries, algo, graph);
     }

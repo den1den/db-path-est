@@ -14,7 +14,7 @@ public class Parser implements Iterable<int[]> {
     /**
      * Unprocessed original edge list
      */
-    final private TupleList tuples = new TupleList();
+     private TupleList tuples = new TupleList();
 
     /**
      * Map that contains the edge mapping which maps tuples from the world to the application domain. Edges in the
@@ -44,7 +44,15 @@ public class Parser implements Iterable<int[]> {
      * @param edges
      */
     public void parse(TupleList edges) {
-        tuples.addAll(edges);
+        tuples = new TupleList(edges.size());
+
+        for(int[] tuple : edges) {
+            tuples.add(tuple);
+
+            if(!this.edgeMappings.containsKey("+" + tuple[1])) {
+                this.edgeMappings.put("+" + tuple[1], this.edgeMappings.size());
+            }
+        }
 
         Map<String, Integer> reversedMappings = new HashMap<>();
 

@@ -49,7 +49,7 @@ public class ComparisonExecutor {
             outputFile.createNewFile();
             PrintWriter writer = new PrintWriter(outputFile);
 
-            writer.println("Method, Dataset, RelativeDistance");
+            writer.println("graph, nodes, labels, buildTime, query, queryTime, algoId, estimation, expected");
             writer.flush();
             writer.close();
         }
@@ -117,24 +117,27 @@ public class ComparisonExecutor {
         System.out.println(String.format("%s:", env.getName()));
 
         for (ComparisonResult compRes : comparisonResults) {
-            System.out.println(String.format("\t\tQuery '%s' Expected: %d Estimated: %d Accuracy: %f", compRes.getIndex().getPath(),
-                    compRes.getResult(), compRes.getEstimation(), compRes.getAccuracy()));
+            System.out.println(String.format("\t\tQuery '%s' Expected: %d Estimated: %d Accuracy: %f Time: %d", compRes.getIndex().getPath(),
+                    compRes.getResult(), compRes.getEstimation(), compRes.getAccuracy(), compRes.getQueryTime()));
         }
 
-        System.out.println(String.format("\tAccuracy for environment: '%s' is %f", env.getName(), envAccuracy));
+        System.out.println(String.format("\tAccuracy for environment: '%s' is %f Building the summmary took: %d",
+                env.getName(), envAccuracy, env.getSummaryTime()));
 
         try {
-            writeToFile(comparisonResults, env.getName(), methodName);
+            writeToFile(comparisonResults, env, methodName);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static void writeToFile(List<ComparisonResult> results, String envName, String methodName) throws IOException {
+    private static void writeToFile(List<ComparisonResult> results, TestEnvironment env, String methodName) throws IOException {
         PrintWriter writer = new PrintWriter(new FileWriter(OUTPUT_FILE, true));
 
         for (ComparisonResult res : results) {
-            writer.println(String.format("%s, %s, %f", methodName, envName, res.getAccuracy()));
+            writer.println(String.format("%s, %d, %d, %d, %s, %d, %s, %d, %d", env.getName(),  env.getNodes(),
+                    env.getLabels(), env.getSummaryTime(), res.getIndex().getPath(), res.getQueryTime(), methodName,
+                    res.getEstimation(), res.getResult()));
         }
 
         writer.flush();

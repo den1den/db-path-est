@@ -1,5 +1,6 @@
 package nl.tue.io.converters;
 
+import nl.tue.io.Tuple;
 import nl.tue.io.TupleList;
 import java.util.*;
 
@@ -61,7 +62,7 @@ public class GraphStructureConverter {
         ArrayList<Tuple> nodesAndEdges = new ArrayList<>();
         ArrayList<Integer> uniqueNodes = new ArrayList<>();
 
-        for (int[] input : this) {
+        for (int[] input : new int[][]{}) {
             if (!uniqueNodes.contains(input[0])) {
                 uniqueNodes.add(input[0]);
             }

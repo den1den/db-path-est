@@ -17,11 +17,6 @@ public class SubgraphEstimatorWithFactors extends SubgraphEstimator {
 
     private static final int OVERHEAD = 1;
 
-    /**
-     * The amount of queries executed to determine a factor.
-     */
-    private static final int QUERY_LIMIT_FOR_FACTOR = 2;
-
 
     private byte k;
 

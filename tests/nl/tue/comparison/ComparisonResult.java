@@ -10,11 +10,13 @@ public class ComparisonResult {
     private final PathIndex index;
     private final int result;
     private final int estimation;
+    private final int queryTime;
 
-    public ComparisonResult(PathIndex index, int result, int estimation) {
+    public ComparisonResult(PathIndex index, int result, int estimation, int queryTime) {
         this.index = index;
         this.result = result;
         this.estimation = estimation;
+        this.queryTime = queryTime;
     }
 
     public PathIndex getIndex() {
@@ -27,6 +29,10 @@ public class ComparisonResult {
 
     public int getEstimation() {
         return estimation;
+    }
+
+    public int getQueryTime() {
+        return queryTime;
     }
 
     /**

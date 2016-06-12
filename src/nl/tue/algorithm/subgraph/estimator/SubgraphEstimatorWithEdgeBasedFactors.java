@@ -39,21 +39,27 @@ public class SubgraphEstimatorWithEdgeBasedFactors extends SubgraphEstimator {
     public int estimate(int[] query) {
         int res = super.estimate(query);
 
-        List<Double> factors = edgeFactorsFromStorage();
+        int edgeRes = estimateWithAverage(query, res, edgeFactorsFromStorage());
+
+        return edgeRes;
+    }
+
+    public static int estimateWithAverage(int[] query, int baseRes, List<Double> factors) {
+
 
         if(query.length == 1) {
-            res *= factors.get(query[0]);
+            baseRes *= factors.get(query[0]);
         } else {
             double sum = 1;
             for(int label : query) {
-                res *= factors.get(label);
+                baseRes *= factors.get(label);
                 sum *= factors.get(label);
             }
 
-            res /= sum;
+            baseRes /= sum;
         }
 
-        return res;
+        return baseRes;
     }
 
     private void storeEdgeFactors(List<Double> factors) {
