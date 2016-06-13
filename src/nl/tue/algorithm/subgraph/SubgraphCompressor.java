@@ -140,7 +140,12 @@ public class SubgraphCompressor {
         int added = 0;
 
         for(int[] edge : provider) {
-            System.arraycopy(compressEdge(edge), 0, initial, added*7, 7);
+            byte[] bytes = compressEdge(edge);
+            int destPos = added * 7;
+            if(initial.length >= destPos + 7){
+                throw new ArrayIndexOutOfBoundsException("this fails?");
+            }
+            System.arraycopy(bytes, 0, initial, destPos, 7); // Why not use ByteBuffer?
             added++;
 
             if(added == initialEdgeCount) {
