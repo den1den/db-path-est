@@ -8,23 +8,22 @@ import nl.tue.io.Parser;
  * Created by Nathan on 6/8/2016.
  */
 public class SubgraphHighKFactorAlgorithm extends Algorithm<SubgraphEstimatorsWithHighKFactors> {
+    protected SubgraphEstimatorsWithHighKFactors withHighKFactors = null;
+
     @Override
-    protected SubgraphEstimatorsWithHighKFactors build(Parser p, int maximalPathLength, long budget) {
-        SubgraphEstimatorsWithHighKFactors algo = new SubgraphEstimatorsWithHighKFactors();
-
-        algo.buildSummary(p, maximalPathLength, budget);
-
-        return algo;
+    public void buildSummary(Parser p, int maximalPathLength, long budget) {
+        withHighKFactors = new SubgraphEstimatorsWithHighKFactors();
+        withHighKFactors.buildSummary(p, maximalPathLength, budget);
     }
 
     @Override
     public int query(int[] query) {
-        return inMemory.estimate(query);
+        return withHighKFactors.estimate(query);
     }
 
     @Override
-    protected long bytesOverhead() {
-        return 0;
+    public long getBytesUsed() {
+        return withHighKFactors.getBytesUsed();
     }
 
     @Override

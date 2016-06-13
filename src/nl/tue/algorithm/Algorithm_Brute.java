@@ -18,8 +18,10 @@ import nl.tue.io.graph.DirectedBackEdgeGraph;
  */
 public class Algorithm_Brute extends Algorithm<BruteTree> {
 
+    protected BruteTree fullTree = null;
+
     @Override
-    protected BruteTree build(Parser p, int maximalPathLength, long budget) {
+    public void buildSummary(Parser p, int maximalPathLength, long budget) {
         int labels = p.getNLabels();
         AStart aStar = new AStart(labels, maximalPathLength);
         PathsOrdering sequence = new PathsOrderingLexicographical(labels, maximalPathLength);
@@ -31,17 +33,17 @@ public class Algorithm_Brute extends Algorithm<BruteTree> {
             indexedResults[index] = graph.solvePathQuery(path).size();
             aStar.setHeuristic(0);
         }
-        return new BruteTree(indexedResults, sequence);
+        fullTree = new BruteTree(indexedResults, sequence);
     }
 
     @Override
     public int query(int[] query) {
-        return inMemory.exact(query);
+        return fullTree.exact(query);
     }
 
     @Override
-    protected long bytesOverhead() {
-        return 0;
+    public long getBytesUsed() {
+        return fullTree.getBytesUsed();
     }
 
     @Override

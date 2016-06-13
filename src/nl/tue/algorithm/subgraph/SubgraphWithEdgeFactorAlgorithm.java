@@ -8,22 +8,22 @@ import nl.tue.io.Parser;
  * Created by Nathan on 6/10/2016.
  */
 public class SubgraphWithEdgeFactorAlgorithm extends Algorithm<SubgraphEstimatorWithEdgeBasedFactors> {
-    @Override
-    protected SubgraphEstimatorWithEdgeBasedFactors build(Parser p, int maximalPathLength, long budget) {
-        SubgraphEstimatorWithEdgeBasedFactors esti = new SubgraphEstimatorWithEdgeBasedFactors();
-        esti.buildSummary(p, maximalPathLength, budget);
-        return esti;
+    protected SubgraphEstimatorWithEdgeBasedFactors withEdgeBasedFactors = null;
 
+    @Override
+    public void buildSummary(Parser p, int maximalPathLength, long budget) {
+        withEdgeBasedFactors = new SubgraphEstimatorWithEdgeBasedFactors();
+        withEdgeBasedFactors.buildSummary(p, maximalPathLength, budget);
     }
 
     @Override
     public int query(int[] query) {
-        return inMemory.estimate(query);
+        return withEdgeBasedFactors.estimate(query);
     }
 
     @Override
-    protected long bytesOverhead() {
-        return 0;
+    public long getBytesUsed() {
+        return withEdgeBasedFactors.getBytesUsed();
     }
 
     @Override

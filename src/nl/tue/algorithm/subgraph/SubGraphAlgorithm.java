@@ -20,18 +20,17 @@ public class SubGraphAlgorithm extends Algorithm<SubgraphEstimator> {
     }
 
     @Override
-    protected SubgraphEstimator build(Parser p, int maximalPathLength, long budget) {
+    public void buildSummary(Parser p, int maximalPathLength, long budget) {
         estimator.buildSummary(p, maximalPathLength, budget);
-        return estimator;
     }
 
     @Override
     public int query(int[] query) {
-        return inMemory.estimate(query);
+        return estimator.estimate(query);
     }
 
     @Override
-    protected long bytesOverhead() {
+    public long getBytesUsed() {
         return this.estimator.getBytesUsed();
     }
 

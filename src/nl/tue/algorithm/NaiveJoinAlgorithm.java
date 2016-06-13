@@ -14,16 +14,17 @@ import java.util.Collection;
  */
 public class NaiveJoinAlgorithm extends Algorithm<IndexQueryEstimator> {
 
+    protected IndexQueryEstimator indexQueryEstimator = null;
+
     @Override
-    protected IndexQueryEstimator build(Parser p, int maximalPathLength, long budget) {
-        IndexQueryEstimator estimator = new IndexQueryEstimator();
-        estimator.buildSummary(p, maximalPathLength, budget);
-        return estimator;
+    public void buildSummary(Parser p, int maximalPathLength, long budget) {
+        indexQueryEstimator = new IndexQueryEstimator();
+        indexQueryEstimator.buildSummary(p, maximalPathLength, budget);
     }
 
     @Override
     public int query(int[] query) {
-        Collection<PathSummary> pathSummaries = this.inMemory.retrieveAllExactEstimations();
+        Collection<PathSummary> pathSummaries = this.indexQueryEstimator.retrieveAllExactEstimations();
 
         PathIndex reqIndex = new PathIndex(query);
 
@@ -31,12 +32,12 @@ public class NaiveJoinAlgorithm extends Algorithm<IndexQueryEstimator> {
             return pathSummaries.stream().filter(pathSummary -> pathSummary.getIndex().
                     equals(reqIndex)).findFirst().get().getTuples();
         } else {
-            return this.inMemory.guesstimate(query);
+            return this.indexQueryEstimator.guesstimate(query);
         }
     }
 
     @Override
-    protected long bytesOverhead() {
+    public long getBytesUsed() {
         return 0;
     }
 

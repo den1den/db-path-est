@@ -8,25 +8,16 @@ import nl.tue.io.Parser;
  * @param <M> class used for whats in memory
  */
 public abstract class Algorithm<M extends MemoryConstrained> implements MemoryConstrained {
-    protected M inMemory = null;
 
     public Algorithm() {
     }
 
-    public void buildSummary(Parser p, int maximalPathLength, long budget) {
-        this.inMemory = build(p, maximalPathLength, budget);
-    }
-
-    protected abstract M build(Parser p, int maximalPathLength, long budget);
+    public abstract void buildSummary(Parser p, int maximalPathLength, long budget);
 
     public abstract int query(int[] query);
 
     @Override
-    public long getBytesUsed() {
-        return inMemory.getBytesUsed() + bytesOverhead();
-    }
-
-    protected abstract long bytesOverhead();
+    public abstract long getBytesUsed();
 
     public abstract String getOutputName();
 }

@@ -22,9 +22,14 @@ import java.util.List;
  * Created by Dennis on 8-6-2016.
  */
 public class SubGraphAlgorithm_SF extends Algorithm<Histogram> implements DCombiner<Short>,DInput<Short> {
-    private SubgraphEstimator estimator = new SubgraphEstimator();
+    protected Histogram histogram;
+    protected SubgraphEstimator subgraph;
     private PathsOrdering pathsOrdering;
     private Joiner<Double, JoinResult.NumberJoinResult> joiner;
+    /**
+     * Relative size of subgraph relative to the histogram
+     * Is only used for building the summery
+     */
     private double sgSize;
 
     public SubGraphAlgorithm_SF(Joiner<Double, JoinResult.NumberJoinResult> joiner, double sgSize) {
@@ -34,33 +39,43 @@ public class SubGraphAlgorithm_SF extends Algorithm<Histogram> implements DCombi
     }
 
     @Override
-    protected Histogram build(Parser p, int maximalPathLength, long budget) {
-        double t0 = System.currentTimeMillis();
+    public void buildSummary(Parser p, int maximalPathLength, long budget) {
         int labels = p.getNLabels();
         pathsOrdering = new PathsOrderingLexicographical(labels, maximalPathLength);
         long subGraphSize = (long) (budget * sgSize);
+
+        //Building subgraph
+        buildSubgraph(p, maximalPathLength, subGraphSize);
+
+        // Calculate size for histogram
         long histogramSize = budget - subGraphSize - pathsOrdering.getBytesUsed();
 
-        estimator.buildSummary(p, maximalPathLength, subGraphSize);
-        AdjacencyList fullGraph = new AdjacencyList(p);
+        buildHistogram(p, histogramSize);
+
+        System.out.printf("%s builded a summery with %.2f%% of %s bytes used",
+                getClass().getSimpleName(),
+                ((double)getBytesUsed())/budget*100,
+                budget);
+    }
+
+    private void buildHistogram(Parser p, long histogramSize) {
+        double t0;
+        double t1;
+        t0 = System.currentTimeMillis();
         AbstractHistogramBuilder.Short builder = new AbstractHistogramBuilder.Short(joiner);
-
-        double t1 = System.currentTimeMillis();
-        System.out.printf("Subgraph constructed in %.1f seconds%n", (t1 - t0) / 1000);
-        t0 = t1;
-
         Iterator<int[]> pathsIterator = pathsOrdering.iterator();
+        AdjacencyList fullGraph = new AdjacencyList(p);
         while (pathsIterator.hasNext()){
             int[] next = pathsIterator.next();
             int nextIndex = pathsOrdering.get(next);
 
-            int subGraphResult = estimator.estimate(next);
-            int realGraphresult = fullGraph.getEstimation(next).getTuples();
+            int subGraphResult = subgraph.estimate(next);
+            int actualResult = fullGraph.getEstimation(next).getTuples();
 
             /**
              * Stored value is between 0 and Short.MAX_VALUE
              */
-            double storedShortVal = (double) subGraphResult / realGraphresult * Short.MAX_VALUE;
+            double storedShortVal = (double) subGraphResult / actualResult * Short.MAX_VALUE;
             builder.addEstimation(storedShortVal, nextIndex);
 
             if (builder.estMemUsage() >= histogramSize) {
@@ -73,11 +88,19 @@ public class SubGraphAlgorithm_SF extends Algorithm<Histogram> implements DCombi
                 break;
             }
         }
+        histogram = builder.toHistogram();
+        t1 = System.currentTimeMillis();
+        System.out.printf("Histogram build in %s seconds, with size: %d of %d%n", (t1 - t0)/1000, histogram.getBytesUsed(), histogramSize);
+    }
 
-        System.out.print("Building histogram... ");
-        Histogram histogram = builder.toHistogram();
-        System.out.printf("%s build: %s, with size: %d of %d%n", histogram.getClass().getSimpleName(), histogram, histogram.getBytesUsed(), histogramSize);
-        return histogram;
+    private void buildSubgraph(Parser p, int maximalPathLength, long subGraphSize) {
+        double t0;
+        double t1;
+        t0 = System.currentTimeMillis();
+        subgraph = new SubgraphEstimator();
+        subgraph.buildSummary(p, maximalPathLength, subGraphSize);
+        t1 = System.currentTimeMillis();
+        System.out.printf("Subgraph constructed in %.1f seconds%n", (t1 - t0) / 1000);
     }
 
     @Override
@@ -87,13 +110,13 @@ public class SubGraphAlgorithm_SF extends Algorithm<Histogram> implements DCombi
     }
 
     @Override
-    protected long bytesOverhead() {
-        return pathsOrdering.getBytesUsed() + estimator.getBytesUsed() + joiner.getBytesUsed() + 16L;
+    public long getBytesUsed() {
+        return histogram.getBytesUsed() + subgraph.getBytesUsed() + pathsOrdering.getBytesUsed() + joiner.getBytesUsed() + 16L;
     }
 
     @Override
     public String getOutputName() {
-        return this.getClass().getSimpleName() + "-" + inMemory.calcSize() + "-" + estimator.size();
+        return this.getClass().getSimpleName() + "-" + histogram.calcSize() + "-" + subgraph.size();
     }
 
     @Override
@@ -118,6 +141,18 @@ public class SubGraphAlgorithm_SF extends Algorithm<Histogram> implements DCombi
     @Override
     public Short getStored(int[] query) {
         int qIndex = pathsOrdering.get(query);
-        return inMemory.getEstimate(qIndex);
+        return histogram.getEstimate(qIndex);
+    }
+
+    public SubgraphEstimator getSubgraph() {
+        return subgraph;
+    }
+
+    public PathsOrdering getPathsOrdering() {
+        return pathsOrdering;
+    }
+
+    public Histogram getHistogram() {
+        return histogram;
     }
 }
