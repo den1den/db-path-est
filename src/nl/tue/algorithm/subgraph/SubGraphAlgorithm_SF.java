@@ -40,6 +40,7 @@ public class SubGraphAlgorithm_SF extends Algorithm<Histogram> implements DCombi
 
     @Override
     public void buildSummary(Parser p, int maximalPathLength, long budget) {
+        double t0 = System.currentTimeMillis();
         int labels = p.getNLabels();
         pathsOrdering = new PathsOrderingLexicographical(labels, maximalPathLength);
         long subGraphSize = (long) (budget * sgSize);
@@ -52,9 +53,10 @@ public class SubGraphAlgorithm_SF extends Algorithm<Histogram> implements DCombi
 
         buildHistogram(p, histogramSize);
 
-        System.out.printf("%s builded a summery with %.2f%% of %s bytes used",
+        System.out.printf("%s build in %.2f seconds, and used %.2f%% of %s bytes%n",
                 getClass().getSimpleName(),
-                ((double)getBytesUsed())/budget*100,
+                (System.currentTimeMillis() - t0)/1000,
+                ((double) getBytesUsed()) / budget * 100,
                 budget);
     }
 
@@ -90,7 +92,11 @@ public class SubGraphAlgorithm_SF extends Algorithm<Histogram> implements DCombi
         }
         histogram = builder.toHistogram();
         t1 = System.currentTimeMillis();
-        System.out.printf("Histogram build in %s seconds, with size: %d of %d%n", (t1 - t0)/1000, histogram.getBytesUsed(), histogramSize);
+
+        System.out.printf("Histogram            build in %.2f seconds, and used %.2f%% of %s bytes%n",
+                (t1 - t0)/1000,
+                ((double) histogram.getBytesUsed()) / histogramSize * 100,
+                histogramSize);
     }
 
     private void buildSubgraph(Parser p, int maximalPathLength, long subGraphSize) {
@@ -100,7 +106,10 @@ public class SubGraphAlgorithm_SF extends Algorithm<Histogram> implements DCombi
         subgraph = new SubgraphEstimator();
         subgraph.buildSummary(p, maximalPathLength, subGraphSize);
         t1 = System.currentTimeMillis();
-        System.out.printf("Subgraph constructed in %.1f seconds%n", (t1 - t0) / 1000);
+        System.out.printf("Subgraph             build in %.1f seconds, and used %.2f%% of %s bytes.%n",
+                (t1 - t0) / 1000,
+                ((double) subgraph.getBytesUsed()) / subGraphSize * 100,
+                subGraphSize);
     }
 
     @Override

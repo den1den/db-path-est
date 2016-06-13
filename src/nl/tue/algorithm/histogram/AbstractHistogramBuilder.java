@@ -207,16 +207,17 @@ public abstract class AbstractHistogramBuilder<E, H, JR extends JoinResult<E>, J
                 range = estimatedRanges.get(index);
                 a = range.startIndex;
                 b = range.endIndex;
-                int diff = b - a;
+                int betweenAB = b - a + 1;
                 do {
-                    short actRange = (short) Math.min(diff, java.lang.Short.MAX_VALUE);
+                    short bucketSize = (short) Math.min(betweenAB, java.lang.Short.MAX_VALUE);
+                    // Add bucket
                     startRanges.add(a);
                     estimations.add(compressEstimation(range.estimation));
-                    estimationLengths.add(actRange);
-                    a += actRange;
+                    estimationLengths.add(bucketSize);
 
-                    diff = b - a;
-                } while (diff > 0);
+                    a += bucketSize;
+                    betweenAB = b - a;
+                } while (betweenAB > 0);
                 index++;
             }
             return new Histogram(Utils.toArray(startRanges), Utils.toArrayS(estimations), Utils.toArrayS(estimationLengths));

@@ -93,11 +93,9 @@ public class SubgraphEstimator implements MemoryConstrained {
 
     }
 
-
-
     @Override
     public long getBytesUsed() {
-        return 0;
+        return subgraphLength + OVERHEAD;
     }
 
     public int size() {

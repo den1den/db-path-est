@@ -32,12 +32,9 @@ public class SubGraphAlgorithm_SFTest extends TestCase {
         algorithm.buildSummary(biblio, 8, buget);
 
         Histogram histogram = algorithm.getHistogram();
-        double histogramBytesUsed = histogram.getBytesUsed();
-        double sgBytesUsed = algorithm.getSubgraph().getBytesUsed();
-        System.out.printf("Histogram used %.2f%%, Subgraph used %.2f%%%n", histogramBytesUsed / buget * 100, sgBytesUsed / buget * 100);
 
         //new AdjacencyList(algorithm.getSubgraph().parserFromStorage()).solvePathQuery(new int[]{1})
         String toTable = histogram.toCSVTable(algorithm.getPathsOrdering());
-        Utils.writeToFile("testHistogramBiblioCSV"+System.currentTimeMillis()+".csv", toTable);
+        //Utils.writeToFile("testHistogramBiblioCSV"+System.currentTimeMillis()+".csv", toTable);
     }
 }

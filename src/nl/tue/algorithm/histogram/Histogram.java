@@ -1,7 +1,9 @@
 package nl.tue.algorithm.histogram;
 
 import nl.tue.MemoryConstrained;
+import nl.tue.algorithm.paths.PathsOrdering;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 
 /**
@@ -9,22 +11,24 @@ import java.util.Arrays;
  */
 public class Histogram implements MemoryConstrained {
     /**
-     * startRanges[0] = x
-     * startRanges[1] = y
+     * startRanges[0] = x iff bucket 0 starts at index x
      * ...
+     * startRanges[i] = z iff bucket i starts at index z
      */
     private int[] startRanges;
 
     /**
-     * estimations[0] = Estimation of bucket x to x + estimationLengths[0]
-     * estimations[0] = Estimation of bucket y to y + estimationLengths[1]
+     * estimations[0] = Estimation of bucket x
      * ...
-     * estimations[i] = Estimation of bucket startRanges[i] to startRanges[i] + estimationLengths[i]
+     * estimations[i] = Estimation of bucket startRanges[i]
      */
     private short[] estimations;
 
     /**
      * Length of the buckets
+     * estimationLengths[0] = Size of bucket 0 s.t. bucket = (x, x + estimations[0] - 1)
+     * ...
+     * estimationLengths[i] = Size of bucket i s.t. bucket = (startRanges[i], startRanges[i] + estimations[i] - 1)
      */
     private short[] estimationLengths;
 
@@ -32,6 +36,9 @@ public class Histogram implements MemoryConstrained {
         this.startRanges = startRanges;
         this.estimations = estimations;
         this.estimationLengths = estimationLengths;
+        for (int i = 0; i < estimationLengths.length; i++) {
+            assert estimationLengths[i] >= 1;
+        }
     }
 
     /**
@@ -46,11 +53,11 @@ public class Histogram implements MemoryConstrained {
             return estimations[index];
         } else if (index < -1) {
             // Hit past a range
-            int lowRange = -index - 2;
-            int start = startRanges[lowRange];
-            int end = start + estimationLengths[lowRange];
-            if(queryIndex <= end){
-                return estimations[lowRange];
+            int bucketCandidate = -index - 2;
+            int bucketCandidateStart = startRanges[bucketCandidate];
+            int bucketCandidateEnd = bucketCandidateStart + estimationLengths[bucketCandidate];
+            if(queryIndex <= bucketCandidateEnd){
+                return estimations[bucketCandidate];
             } else {
                 return null;
             }
@@ -63,7 +70,8 @@ public class Histogram implements MemoryConstrained {
     @Override
     public long getBytesUsed() {
         return startRanges.length * Integer.BYTES + Integer.BYTES
-                + estimations.length * Integer.BYTES + Integer.BYTES;
+                + estimations.length * Short.BYTES + Integer.BYTES
+                + estimationLengths.length * Short.BYTES + Integer.BYTES;
     }
 
     public int calcSize() {
