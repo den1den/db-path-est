@@ -7,7 +7,7 @@ import nl.tue.io.Parser;
 /**
  * Created by Nathan on 6/8/2016.
  */
-public class SubgraphHighKFactorAlgorithm extends Algorithm<SubgraphEstimatorsWithHighKFactors> {
+public class SubgraphHighKFactorAlgorithm extends Algorithm {
     protected SubgraphEstimatorsWithHighKFactors withHighKFactors = null;
 
     @Override

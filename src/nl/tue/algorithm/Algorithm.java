@@ -5,9 +5,8 @@ import nl.tue.io.Parser;
 
 /**
  * Generic wrapper for the execution and memory management of the algorithm
- * @param <M> class used for whats in memory
  */
-public abstract class Algorithm<M extends MemoryConstrained> implements MemoryConstrained {
+public abstract class Algorithm implements MemoryConstrained {
 
     public Algorithm() {
     }

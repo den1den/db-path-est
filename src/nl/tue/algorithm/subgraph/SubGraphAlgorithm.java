@@ -7,7 +7,7 @@ import nl.tue.io.Parser;
 /**
  * Created by Nathan on 6/4/2016.
  */
-public class SubGraphAlgorithm extends Algorithm<SubgraphEstimator> {
+public class SubGraphAlgorithm extends Algorithm {
 
     private final SubgraphEstimator estimator;
 

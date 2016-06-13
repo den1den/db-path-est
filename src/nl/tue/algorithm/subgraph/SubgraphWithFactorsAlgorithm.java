@@ -7,7 +7,7 @@ import nl.tue.io.Parser;
 /**
  * Created by Nathan on 6/7/2016.
  */
-public class SubgraphWithFactorsAlgorithm extends Algorithm<SubgraphEstimatorWithFactors> {
+public class SubgraphWithFactorsAlgorithm extends Algorithm {
     protected SubgraphEstimatorWithFactors estimatorWithFactors = null;
 
     @Override

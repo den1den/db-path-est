@@ -21,7 +21,7 @@ public class SubgraphEstimatorWithFactors extends SubgraphEstimator {
     private byte k;
 
     @Override
-    public void buildSummary(Parser p, int k, double b) {
+    public void buildSummary(Parser p, int k, long b) {
         super.buildSummary(p, k, b - OVERHEAD);
 
         this.k = (byte) k;

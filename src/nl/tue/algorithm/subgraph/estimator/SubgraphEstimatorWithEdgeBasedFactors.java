@@ -15,7 +15,7 @@ public class SubgraphEstimatorWithEdgeBasedFactors extends SubgraphEstimator {
     private static final int OVERHEAD = 0;
 
     @Override
-    public void buildSummary(Parser p, int k, double b) {
+    public void buildSummary(Parser p, int k, long b) {
         super.buildSummary(p, k, b - OVERHEAD);
 
         Parser subgraphParser = parserFromStorage();

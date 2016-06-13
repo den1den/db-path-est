@@ -12,7 +12,7 @@ import java.util.Collection;
  * <p>
  * Created by Nathan on 5/27/2016.
  */
-public class NaiveJoinAlgorithm extends Algorithm<IndexQueryEstimator> {
+public class NaiveJoinAlgorithm extends Algorithm {
 
     protected IndexQueryEstimator indexQueryEstimator = null;
 

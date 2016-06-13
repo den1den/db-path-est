@@ -16,7 +16,7 @@ import nl.tue.io.graph.DirectedBackEdgeGraph;
  *
  * @author dennis
  */
-public class Algorithm_Brute extends Algorithm<BruteTree> {
+public class Algorithm_Brute extends Algorithm {
 
     protected BruteTree fullTree = null;
 
