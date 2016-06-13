@@ -117,6 +117,9 @@ public class SubgraphCompressor {
     }
 
     public static TupleList decompressSubgraph(byte[] compressed) {
+        if(compressed.length == 0){
+            return new TupleList();
+        }
         byte[] decompressed = decompress(compressed);
 
         TupleList out = new TupleList();

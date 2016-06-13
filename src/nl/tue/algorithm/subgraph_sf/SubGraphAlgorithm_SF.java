@@ -4,19 +4,12 @@ import nl.tue.algorithm.Algorithm;
 import nl.tue.algorithm.dynamicprogramming.DCombiner;
 import nl.tue.algorithm.dynamicprogramming.DInput;
 import nl.tue.algorithm.dynamicprogramming.DynamicProgrammingSearch;
-import nl.tue.algorithm.histogram.AbstractHistogramBuilder;
 import nl.tue.algorithm.histogram.HistogramOfShorts;
 import nl.tue.algorithm.histogram.JoinResult;
 import nl.tue.algorithm.histogram.Joiner;
 import nl.tue.algorithm.paths.PathsOrdering;
-import nl.tue.algorithm.paths.PathsOrderingLexicographical;
 import nl.tue.algorithm.subgraph.estimator.SubgraphEstimator;
 import nl.tue.io.Parser;
-import nl.tue.io.TupleList;
-import nl.tue.io.graph.AdjacencyList;
-
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Subgraph algorithm, with specific factors
@@ -76,7 +69,7 @@ public class SubGraphAlgorithm_SF extends Algorithm implements DCombiner<Short>,
 
     @Override
     public String getOutputName() {
-        return this.getClass().getSimpleName() + "-" + histogram.calcSize() + "-" + subgraph.size();
+        return this.getClass().getSimpleName() + "-" + histogram.calcNEstimations() + "-" + subgraph.size();
     }
 
     @Override

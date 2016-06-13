@@ -7,6 +7,7 @@ import nl.tue.algorithm.histogram.JoinResult;
 import nl.tue.algorithm.histogram.Joiner;
 import nl.tue.comparison.ComparisonExecutor;
 import nl.tue.io.Parser;
+import nl.tue.io.TupleList;
 import nl.tue.io.graph.AdjacencyList;
 
 import java.io.IOException;
@@ -27,31 +28,33 @@ public class SubGraphAlgorithm_SFTest extends TestCase {
         SubGraphAlgorithm_SF.STOPPING_TIME = 3;
     }
 
-    public void testCineastBiblioCSV() throws IOException {
+    public void testdeepBuildTestCSV() throws IOException {
         Joiner<Double, JoinResult.NumberJoinResult> baiscJoiner = new Joiner.BasicJoiner();
         SubGraphAlgorithm_SF algorithm = new SubGraphAlgorithm_SF(baiscJoiner);
 
-        final int NODES = 61774;
+        Parser p = cineast;
+        int NODES = 61774;
+        int LABELS = 4;
+
+        p = biblio;
+        NODES = 837;
+        LABELS = 6;
 
         int maxPathLength = 8;
-        SGA_SF_Builder builder = new SGA_SF_Builder(algorithm, cineast, maxPathLength);
+        SGA_SF_Builder builder = new SGA_SF_Builder(algorithm, p, maxPathLength, LABELS, NODES);
 
+        String testFileContents = SGA_SF_Builder.toCSVHeader();
         for (double timeLimit = 0.1; timeLimit <= 6.4; timeLimit *= 2){
             for (double budgetFactor = 1; budgetFactor <= 3; budgetFactor += 0.5) {
                 long budget = (long) (NODES * budgetFactor * Integer.BYTES);
                 for (double sgIndex = 0; sgIndex <= 1; sgIndex += 1d / 7){
-                    double sgSize = Math.sin(sgIndex);
+                    double sgSize = Math.sin(sgIndex * Math.PI);
                     builder.build(sgSize, budget, timeLimit);
 
-                    HistogramOfShorts histogramOfShorts = algorithm.getHistogram();
-                    String toTable = histogramOfShorts.toCSVTableFull(algorithm.getPathsOrdering(), new AdjacencyList(cineast), NODES);
+                    testFileContents += System.lineSeparator() + builder.toCSV();
                 }
             }
         }
-        //Utils.writeToFile("testHistogramBiblioCSV"+System.currentTimeMillis()+".csv", toTable);
-    }
-
-    public void testHistogramEstimationCSV() throws IOException {
-
+        Utils.writeToFile("deepBuildTest"+System.currentTimeMillis()+".csv", testFileContents);
     }
 }

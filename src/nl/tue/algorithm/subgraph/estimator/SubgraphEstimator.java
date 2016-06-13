@@ -3,6 +3,7 @@ package nl.tue.algorithm.subgraph.estimator;
 import nl.tue.MemoryConstrained;
 import nl.tue.algorithm.subgraph.SubgraphCompressor;
 import nl.tue.io.Parser;
+import nl.tue.io.TupleList;
 import nl.tue.io.graph.AdjacencyList;
 
 import java.util.ArrayList;
@@ -80,14 +81,16 @@ public class SubgraphEstimator implements MemoryConstrained {
     }
 
     protected Parser parserFromStorage() {
-        byte[] compressed = new byte[subgraphLength];
-
-        System.arraycopy(storage, 0, compressed, 0, subgraphLength);
-
+        TupleList tupleList = decompressTupleList();
         Parser parser = new Parser();
-        parser.parse(SubgraphCompressor.decompressSubgraph(compressed));
-
+        parser.parse(tupleList);
         return parser;
+    }
+
+    public TupleList decompressTupleList() {
+        byte[] compressed = new byte[subgraphLength];
+        System.arraycopy(storage, 0, compressed, 0, subgraphLength);
+        return SubgraphCompressor.decompressSubgraph(compressed);
     }
 
     public int estimate(int[] query) {

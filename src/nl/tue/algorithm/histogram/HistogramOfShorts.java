@@ -75,7 +75,7 @@ public class HistogramOfShorts implements MemoryConstrained {
                 + estimationLengths.length * Short.BYTES + Integer.BYTES;
     }
 
-    public int calcSize() {
+    public int calcNEstimations() {
         int total = 0;
         for (int i = 0; i < estimationLengths.length; i++) {
             total += estimationLengths[i];
