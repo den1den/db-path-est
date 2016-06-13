@@ -14,11 +14,4 @@ public interface DCombiner<E> extends Comparator<E>{
      * @return
      */
     E concatEstimations(E headEstimation, E tailEstimation);
-
-    /**
-     * Combine (single or list of) estimations to a final result of tuples
-     * @param list
-     * @return
-     */
-    int estimationsToResult(List<E> list);
 }

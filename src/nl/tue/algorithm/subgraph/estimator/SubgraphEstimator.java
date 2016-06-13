@@ -36,16 +36,10 @@ public class SubgraphEstimator implements MemoryConstrained {
         this.accepter = acceptor;
     }
 
-    /**
-     * Builds a subgraph of the given graph and attempts to fit as much of it as possible into memory.
-     */
-    public void buildSummary(Parser p, int k, double b) {
-
-        AdjacencyList graph = new AdjacencyList(p);
+    public void buildSummary(AdjacencyList graph, int maximalPathLength, long budget, int labels) {
+        this.labels = (byte) labels;
 
         List<int[]> subgraph = new ArrayList<>();
-
-        this.labels = (byte) p.getNLabels();
 
         outerloop:
         for (int node : graph.getNodes().keySet()) {
@@ -62,14 +56,27 @@ public class SubgraphEstimator implements MemoryConstrained {
             }
         }
 
-        byte[] compressed = SubgraphCompressor.compressWithLimit(subgraph, (int) b - OVERHEAD);
+        int lBudget = (int) budget - OVERHEAD;
+        if(lBudget <= 0){
+            storage = new byte[0];
+            this.subgraphLength = storage.length;
+        } else {
+            byte[] compressed = SubgraphCompressor.compressWithLimit(subgraph, lBudget);
 
-        storage = new byte[(int) b - OVERHEAD];
+            storage = new byte[(int) Math.min(budget - OVERHEAD, 0)];
 
-        System.arraycopy(compressed, 0, storage, 0, compressed.length);
+            System.arraycopy(compressed, 0, storage, 0, compressed.length);
 
-        this.subgraphLength = compressed.length;
+            this.subgraphLength = compressed.length;
+        }
+    }
 
+    /**
+     * Builds a subgraph of the given graph and attempts to fit as much of it as possible into memory.
+     */
+    public void buildSummary(Parser p, int k, long b) {
+        AdjacencyList graph = new AdjacencyList(p);
+        buildSummary(graph, k, b, p.getNLabels());
     }
 
     protected Parser parserFromStorage() {

@@ -6,6 +6,7 @@ import nl.tue.algorithm.pathindex.PathIndex;
 import nl.tue.io.Parser;
 import nl.tue.io.graph.AdjacencyList;
 import nl.tue.io.graph.DirectedBackEdgeGraph;
+import org.junit.Assert;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,10 +26,16 @@ public class TestEnvironment {
     private int labels;
     private int summaryTime;
 
-    public TestEnvironment(List<String> queries, File file, String name) {
+    /**
+     * True when it's to big for a brute force
+     */
+    private boolean big;
+
+    public TestEnvironment(List<String> queries, File file, String name, boolean big) {
         this.queries = queries;
         this.file = file;
         this.name = name;
+        this.big = big;
     }
 
     private static List<ComparisonResult>
@@ -91,5 +98,18 @@ public class TestEnvironment {
         this.summaryTime = (int) (System.currentTimeMillis() - startSummary);
 
         return executeComparisonsForPaths(intArrQueries, algo, graph);
+    }
+
+    public boolean isBig() {
+        return big;
+    }
+
+    /**
+     * Fails when test enviroment is to large
+     */
+    public void checkBig() {
+        if(isBig()){
+            Assert.fail("Trying to execute a to large file");
+        }
     }
 }

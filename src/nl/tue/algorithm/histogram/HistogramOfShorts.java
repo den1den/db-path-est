@@ -2,14 +2,15 @@ package nl.tue.algorithm.histogram;
 
 import nl.tue.MemoryConstrained;
 import nl.tue.algorithm.paths.PathsOrdering;
+import nl.tue.io.graph.AdjacencyList;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
 /**
- * Histogram that stores short values for each path
+ * HistogramOfShorts that stores short values for each path
  */
-public class Histogram implements MemoryConstrained {
+public class HistogramOfShorts implements MemoryConstrained {
     /**
      * startRanges[0] = x iff bucket 0 starts at index x
      * ...
@@ -32,7 +33,7 @@ public class Histogram implements MemoryConstrained {
      */
     private short[] estimationLengths;
 
-    public Histogram(int[] startRanges, short[] estimations, short[] estimationLengths) {
+    public HistogramOfShorts(int[] startRanges, short[] estimations, short[] estimationLengths) {
         this.startRanges = startRanges;
         this.estimations = estimations;
         this.estimationLengths = estimationLengths;
@@ -116,6 +117,23 @@ public class Histogram implements MemoryConstrained {
                         .append(i).append(';') //bucket
                         .append(estimations[i]).append(System.lineSeparator()); //estimation
             }
+        }
+        return sb.toString();
+    }
+
+    public String toCSVTableFull(PathsOrdering ordering, AdjacencyList real, int NODES) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("1st-query; 1st-index; bucket; bucket-size; estimations; real").append(System.lineSeparator());
+        for (int i = 0; i < this.estimations.length; i++) {
+            int e = this.startRanges[i];
+            int[] query = ordering.get(e);
+            sb.append(Arrays.toString(query)).append(';') //1st-query
+                    .append(startRanges[i] + e).append(';') //index
+                    .append(i).append(';') //bucket
+                    .append(estimationLengths[i]).append(';') //bucket-size
+                    .append((double)estimations[i] / Short.MAX_VALUE).append(';') //estimation
+                    .append(real.getEstimation(query).getTuples()).append(System.lineSeparator()); //real
+
         }
         return sb.toString();
     }

@@ -152,17 +152,17 @@ public class TupleList extends AbstractList<int[]>{
         public long highestLabel = -1;
         public long highestDest = -1;
         public Set<Integer> labels;
-        public Set<Integer> unique;
+        public Set<Integer> nodes;
 
         public Meta() {
             labels = new TreeSet<>();
-            unique = new HashSet<>();
+            nodes = new HashSet<>();
             for (int[] tuple : TupleList.this){
                 int src = tuple[0], label = tuple[1], dest = tuple[2];
                 limits(src, label, dest);
-                unique.add(src);
+                nodes.add(src);
                 labels.add(label);
-                unique.add(dest);
+                nodes.add(dest);
             }
         }
 
@@ -193,12 +193,12 @@ public class TupleList extends AbstractList<int[]>{
                             " src from id = %d to %d%n" +
                             " labels = %s%n" +
                             " dst from id = %d to %d%n" +
-                            " unique nodes: %s%n" +
+                            " nodes nodes: %s%n" +
                             "}%n",
                     lowestSrc, highestSrc,
                     labels.size() <= 10 ? labels.toString() : "total = " + labels.size(),
                     lowestDest, highestDest,
-                    unique.size() <= 10 ? unique.toString() : "total = " + unique.size()
+                    nodes.size() <= 10 ? nodes.toString() : "total = " + nodes.size()
             );
         }
     }

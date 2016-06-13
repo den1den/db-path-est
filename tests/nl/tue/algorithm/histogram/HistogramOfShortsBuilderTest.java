@@ -11,6 +11,6 @@ import java.util.ArrayList;
 /**
  * Created by Dennis on 7-6-2016.
  */
-public class HistogramBuilderTest extends TestCase {
+public class HistogramOfShortsBuilderTest extends TestCase {
     static private final PathsOrdering pathsOrdering = new PathsOrderingLexicographical(15, 5);
 }

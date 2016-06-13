@@ -19,15 +19,10 @@ public class DynamicProgrammingSearch<E> {
         this.exact = exact;
     }
 
-    public int query(int[] query) {
-        return dynamic(query);
-    }
-
     Map<List<Integer>, E> calculatedCache = new HashMap<>();
 
-    int dynamic(int[] query) {
-        E best = getBest(query);
-        return combiner.estimationsToResult(Collections.singletonList(best));
+    public E query(int[] query) {
+        return getBest(query);
     }
 
     protected E getPreCalculated(int[] query){
@@ -86,14 +81,11 @@ public class DynamicProgrammingSearch<E> {
             super(combiner, exact);
         }
 
-        @Override
-        int dynamic(int[] query) {
-            SortedSet<E> best1 = getBestsOfFirstLevel(query);
-            ArrayList<E> list = new ArrayList<>(best1);
-            return combiner.estimationsToResult(list);
+        public List<E> queryFirstLevelList(int[] query){
+            return new ArrayList<>(queryFirstLevel(query));
         }
 
-        TreeSet<E> getBestsOfFirstLevel(int[] query) {
+        public TreeSet<E> queryFirstLevel(int[] query) {
             TreeSet<E> bests = new TreeSet<>();
             // First level is different
 

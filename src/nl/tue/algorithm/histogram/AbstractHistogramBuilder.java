@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 /**
  * @param <E> Intermediate guessing class
- * @param <H> Histogram output
+ * @param <H> HistogramOfShorts output
  * @param <JR> JoinResult class
  * @param <J> Joiner class
  */
@@ -177,12 +177,12 @@ public abstract class AbstractHistogramBuilder<E, H, JR extends JoinResult<E>, J
     public abstract long estMemUsage();
 
     /**
-     * Histogram builder
+     * HistogramOfShorts builder
      * You add Double estimations with `addEstimation` to this histogram builder
-     * It then builds `toHistogram` a Histogram of shorts
+     * It then builds `toHistogram` a HistogramOfShorts of shorts
      * @see AbstractHistogramBuilder#build(Estimator, PathsOrdering)
      */
-    public static class Short extends AbstractHistogramBuilder<Double, Histogram, JoinResult.NumberJoinResult, Joiner<Double, JoinResult.NumberJoinResult>>{
+    public static class Short extends AbstractHistogramBuilder<Double, HistogramOfShorts, JoinResult.NumberJoinResult, Joiner<Double, JoinResult.NumberJoinResult>>{
 
         public Short(Joiner<Double, JoinResult.NumberJoinResult> joiner) {
             super(joiner);
@@ -190,12 +190,12 @@ public abstract class AbstractHistogramBuilder<E, H, JR extends JoinResult<E>, J
         }
 
         /**
-         * Goes from Double ranges to short Histogram
+         * Goes from Double ranges to short HistogramOfShorts
          * @param estimatedRanges
          * @return
          */
         @Override
-        protected Histogram createH(ArrayList<HistogramRange<java.lang.Double>> estimatedRanges) {
+        protected HistogramOfShorts createH(ArrayList<HistogramRange<java.lang.Double>> estimatedRanges) {
             ArrayList<Integer> startRanges = new ArrayList<>(estimatedRanges.size());
             ArrayList<java.lang.Short> estimations = new ArrayList<>(estimatedRanges.size());
             ArrayList<java.lang.Short> estimationLengths = new ArrayList<>(estimatedRanges.size());
@@ -220,7 +220,7 @@ public abstract class AbstractHistogramBuilder<E, H, JR extends JoinResult<E>, J
                 } while (betweenAB > 0);
                 index++;
             }
-            return new Histogram(Utils.toArray(startRanges), Utils.toArrayS(estimations), Utils.toArrayS(estimationLengths));
+            return new HistogramOfShorts(Utils.toArray(startRanges), Utils.toArrayS(estimations), Utils.toArrayS(estimationLengths));
         }
 
         private java.lang.Short compressEstimation(Double estimation) {

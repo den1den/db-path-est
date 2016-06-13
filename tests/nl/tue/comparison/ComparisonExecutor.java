@@ -6,6 +6,7 @@ import nl.tue.algorithm.NaiveJoinAlgorithm;
 import nl.tue.algorithm.histogram.JoinResult;
 import nl.tue.algorithm.histogram.Joiner;
 import nl.tue.algorithm.subgraph.*;
+import nl.tue.algorithm.subgraph_sf.SubGraphAlgorithm_SF;
 import nl.tue.io.graph.AdjacencyList;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -20,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static junit.framework.TestCase.fail;
 
 /**
  * Created by Nathan on 5/25/2016.
@@ -82,13 +85,13 @@ public class ComparisonExecutor {
     public static Object[] getParams() {
         List<TestEnvironment> environments = new ArrayList<>();
 
-        TestEnvironment biblio = new TestEnvironment(biblioQueries, biblioFile, "Biblio");
+        TestEnvironment biblio = new TestEnvironment(biblioQueries, biblioFile, "Biblio", false);
         environments.add(biblio);
 
-        TestEnvironment music = new TestEnvironment(musicQueries, musicFile, "Music");
+        TestEnvironment music = new TestEnvironment(musicQueries, musicFile, "Music", true);
         environments.add(music);
 
-        TestEnvironment cineasts = new TestEnvironment(cineastQueries, cineastFile, "Cineast");
+        TestEnvironment cineasts = new TestEnvironment(cineastQueries, cineastFile, "Cineast", true);
         environments.add(cineasts);
 
         return environments.toArray();
@@ -148,6 +151,7 @@ public class ComparisonExecutor {
 
     @Test
     public void testAlgorithm_Brute() {
+        this.env.checkBig();
         reportSingleEnv(new Algorithm_Brute(), this.env, "Brute");
     }
 
@@ -175,6 +179,6 @@ public class ComparisonExecutor {
     public void testAlgorithm_SubgraphWithSpecificFactors() {
         Joiner<Double, JoinResult.NumberJoinResult> baiscJoiner = new Joiner.BasicJoiner();
         double subGraphSize = 0.9;
-        reportSingleEnv(new SubGraphAlgorithm_SF(baiscJoiner, subGraphSize), this.env, "SubgraphSF_basicJoiner_" + subGraphSize);
+        reportSingleEnv(new SubGraphAlgorithm_SF(baiscJoiner), this.env, "SubgraphSF_basicJoiner_" + subGraphSize);
     }
 }

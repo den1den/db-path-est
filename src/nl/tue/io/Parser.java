@@ -14,11 +14,11 @@ public class Parser implements Iterable<int[]> {
     /**
      * Unprocessed original edge list
      */
-     private TupleList tuples = new TupleList();
+    private TupleList tuples = new TupleList();
 
     /**
      * Map that contains the edge mapping which maps tuples from the world to the application domain. Edges in the
-     * application domain start at 0, are consecutive and go up to n - 1. Where n is the number of unique labels. Back
+     * application domain start at 0, are consecutive and go up to n - 1. Where n is the number of nodes labels. Back
      * tuples are assigned from n to 2n - 1. Where the back edge for a label l can be found by doing l + n.
      */
     private Map<String, Integer> edgeMappings = new HashMap<>();
@@ -46,10 +46,10 @@ public class Parser implements Iterable<int[]> {
     public void parse(TupleList edges) {
         tuples = new TupleList(edges.size());
 
-        for(int[] tuple : edges) {
+        for (int[] tuple : edges) {
             tuples.add(tuple);
 
-            if(!this.edgeMappings.containsKey("+" + tuple[1])) {
+            if (!this.edgeMappings.containsKey("+" + tuple[1])) {
                 this.edgeMappings.put("+" + tuple[1], this.edgeMappings.size());
             }
         }
@@ -95,7 +95,7 @@ public class Parser implements Iterable<int[]> {
         int k = 0;
         do {
             int charIndex = 0;
-            for (int i = k*path.length; i <(k+1)*path.length; i++) {
+            for (int i = k * path.length; i < (k + 1) * path.length; i++) {
                 int num1 = i + 1;
                 int num2 = Character.getNumericValue((path[charIndex]));
                 charIndex++;
@@ -107,10 +107,9 @@ public class Parser implements Iterable<int[]> {
             k++;
         } while (k < times);
 
-        for (long[] longArray: pathList
+        for (long[] longArray : pathList
                 ) {
-            for (int i =0;i < longArray.length;i++)
-            {
+            for (int i = 0; i < longArray.length; i++) {
                 fw.append(String.valueOf(longArray[i]) + " ");
             }
             fw.append(System.lineSeparator());
@@ -275,5 +274,9 @@ public class Parser implements Iterable<int[]> {
 
     public int[] getTuple(int i) {
         return tuples.get(i);
+    }
+
+    public TupleList.Meta calcMetadata(){
+        return tuples.new Meta();
     }
 }
