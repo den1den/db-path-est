@@ -1,5 +1,8 @@
 package nl.tue;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -57,5 +60,15 @@ public class Utils {
             r[i] = shorts.get(i);
         }
         return r;
+    }
+
+    public static void writeToFile(String file, String content) {
+        try {
+            BufferedWriter fileWriter = new BufferedWriter(new FileWriter(file));
+            fileWriter.append(content);
+            fileWriter.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

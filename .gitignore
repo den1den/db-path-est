@@ -58,3 +58,4 @@ fabric.properties
 /src/nl/tue/visualization/StoredVizualization.java
 test.csv
 results.csv
+test*.csv

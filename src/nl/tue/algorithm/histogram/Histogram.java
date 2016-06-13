@@ -83,4 +83,32 @@ public class Histogram implements MemoryConstrained {
             this.value = value;
         }
     }
+
+    public String toCSVTable(PathsOrdering ordering){
+        StringBuilder sb = new StringBuilder();
+        sb.append("1st-query; 1st-index; bucket; bucket-size; estimations").append(System.lineSeparator());
+        for (int i = 0; i < this.estimations.length; i++) {
+            int e = this.startRanges[i];
+            sb.append(Arrays.toString(ordering.get(e))).append(';') //1st-query
+                    .append(startRanges[i] + e).append(';') //index
+                    .append(i).append(';') //bucket
+                    .append(estimationLengths[i]).append(';') //bucket-size
+                    .append(estimations[i]).append(System.lineSeparator()); //estimation
+        }
+        return sb.toString();
+    }
+
+    public String toCSVTableExplcicitly(PathsOrdering ordering){
+        StringBuilder sb = new StringBuilder();
+        sb.append("query; index; bucket; estimations").append(System.lineSeparator());
+        for (int i = 0; i < this.estimations.length; i++) {
+            for (int e = 0; e < estimationLengths[i]; e++) {
+                sb.append(Arrays.toString(ordering.get(e))).append(';') //query
+                        .append(startRanges[i] + e).append(';') //index
+                        .append(i).append(';') //bucket
+                        .append(estimations[i]).append(System.lineSeparator()); //estimation
+            }
+        }
+        return sb.toString();
+    }
 }

@@ -24,7 +24,7 @@ public abstract class PathsOrdering implements Iterable<int[]>, MemoryConstraine
         double MAX = (Math.pow(LABELS, MAX_PATH_LENGT + 1) - 1) / (LABELS - 1);
         MAX -= 1; // Excluding the root
         if (MAX > Integer.MAX_VALUE) {
-            throw new ArithmeticException(String.format("labels, maxPathLength combo is to large for an integer by %.1f%", 100 * MAX / Integer.MAX_VALUE));
+            throw new ArithmeticException(String.format("labels, maxPathLength combo is to large for an integer by a factor %.1f%n", MAX / Integer.MAX_VALUE));
         }
         return (int) MAX;
     }
