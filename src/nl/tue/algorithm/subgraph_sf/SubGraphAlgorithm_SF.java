@@ -22,11 +22,6 @@ public class SubGraphAlgorithm_SF extends Algorithm implements DCombiner<Short>,
     Joiner<Double, JoinResult.NumberJoinResult> joiner;
     int NODES;
 
-    /**
-     * Number of seconds to attempt histogram building
-     */
-    public static int STOPPING_TIME = 10;
-
     public SubGraphAlgorithm_SF(Joiner<Double, JoinResult.NumberJoinResult> joiner) {
         this.joiner = joiner;
     }

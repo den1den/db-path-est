@@ -114,6 +114,14 @@ public class TupleList extends AbstractList<int[]>{
         }
     }
 
+    public void writeToCSVFile(File filename){
+        try {
+            writeToCSV(new BufferedWriter(new FileWriter(filename)));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void writeToCSV(BufferedWriter writer) throws IOException {
         writer.write("Source,Label,Target");
         writer.newLine();

@@ -25,7 +25,6 @@ public class SubGraphAlgorithm_SFTest extends TestCase {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        SubGraphAlgorithm_SF.STOPPING_TIME = 3;
     }
 
     public void testdeepBuildTestCSV() throws IOException {
@@ -48,7 +47,7 @@ public class SubGraphAlgorithm_SFTest extends TestCase {
             for (double budgetFactor = 1; budgetFactor <= 3; budgetFactor += 0.5) {
                 long budget = (long) (NODES * budgetFactor * Integer.BYTES);
                 for (double sgIndex = 0; sgIndex <= 1; sgIndex += 1d / 7){
-                    double sgSize = Math.sin(sgIndex * Math.PI);
+                    double sgSize = (1 - Math.cos(sgIndex * Math.PI)) / 2;
                     builder.build(sgSize, budget, timeLimit);
 
                     testFileContents += System.lineSeparator() + builder.toCSV();

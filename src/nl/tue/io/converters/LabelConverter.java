@@ -45,7 +45,7 @@ public class LabelConverter {
 
     public TupleList devide(int devide){
         TupleList.Meta m = original.new Meta();
-        assert m.lowestLabel > 0;
+        assert m.lowestLabel >= 0;
         int[] mapping = new int[(int) (m.highestLabel + 1)];
         for (int label = 0; label < m.highestLabel; label++) {
             mapping[label] = label / devide;

@@ -132,6 +132,22 @@ public class IntSet extends AbstractSet<Integer> {
         size = 0;
     }
 
+    @Override
+    public boolean contains(Object o) {
+        Integer integer = (Integer) o;
+        if (integer < 0) {
+            return false;
+        }
+        int bagIndex = integer / BAG_SIZE;
+        if (bagIndex >= bags.length) {
+            return false;
+        }
+        int bitIndex = integer % BAG_SIZE;
+        int selector = (1 << bitIndex);
+
+        return isSet(bagIndex, bitIndex);
+    }
+
     class Iterator implements java.util.Iterator<Integer> {
         final int MAX = bags.length * BAG_SIZE;
         int index = 0;
