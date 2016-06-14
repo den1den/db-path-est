@@ -69,7 +69,8 @@ public class SGA_SF_Builder {
         // Building histogram
         long histogramSize = budget - subGraphSize - BUILD_TO.pathsOrdering.getBytesUsed();
         int histogramTimeLimit = (int) Math.ceil((timeSG * histogramRelativeTimeLimit));
-        buildHistogram(histogramSize, histogramTimeLimit);
+        boolean minimalFirstLevel = true;
+        buildHistogram(histogramSize, histogramTimeLimit, minimalFirstLevel);
 
         timeTotal = toSeconds(t0) + parsing;
         System.out.printf("%-30s build in %.2f seconds, and used %.2f%% of %s bytes%n",
@@ -87,7 +88,7 @@ public class SGA_SF_Builder {
         return BUILD_TO.NODES;
     }
 
-    void buildHistogram(long BYTES, int STOPPING_TIME) {
+    void buildHistogram(long BYTES, int STOPPING_TIME, boolean min1Level) {
         long t0;
         long t1;
         t0 = System.currentTimeMillis();
@@ -95,8 +96,10 @@ public class SGA_SF_Builder {
         AbstractHistogramBuilder.Short histogramBuilder = new AbstractHistogramBuilder.Short(BUILD_TO.joiner);
         Iterator<int[]> pathsIterator = BUILD_TO.pathsOrdering.iterator();
         while (pathsIterator.hasNext()) {
+            int[] next = pathsIterator.next();
+
             t1 = System.currentTimeMillis();
-            if (t1 - t0 > STOPPING_TIME * 1000) {
+            if (t1 - t0 > STOPPING_TIME * 1000 && !(next.length == 1 && min1Level)) {
                 //Takes more then 2 seconds
                 System.out.printf("%-30s building prematurely stopped at %.1f seconds%n",
                         getClass().getSimpleName(),
@@ -105,26 +108,20 @@ public class SGA_SF_Builder {
                 break;
             }
 
-            int[] next = pathsIterator.next();
+
             int nextIndex = BUILD_TO.pathsOrdering.get(next);
 
             int subGraphResult = BUILD_TO.subgraph.estimate(next);
             int actualResult = GRAPH.getEstimation(next).getTuples();
-            Short storedShortVal;
 
             if(subGraphResult > actualResult){
-                System.err.println("Error: subgraph gave non zero result, while GRAPH is zero."
-                        + Thread.currentThread().getStackTrace()[1]);
+                throw new Error("Error: subgraph gave non zero result, while GRAPH is zero.");
             }
-            System.out.printf("subGraphResult: %-10d actualResult %-10d", subGraphResult, actualResult);
 
             Short toBeStored = BUILD_TO.whatToStore(subGraphResult, actualResult);
 
             if(toBeStored == null){
-                System.out.printf(" storing: nothing%n");
                 continue;
-            } else {
-                System.out.printf(" storing: %-10d%n", toBeStored);
             }
             histogramBuilder.addEstimation(Double.valueOf(toBeStored), nextIndex);
 

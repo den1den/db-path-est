@@ -41,4 +41,8 @@ public abstract class PathsOrdering implements Iterable<int[]>, MemoryConstraine
     public long getBytesUsed() {
         return BYTES;
     }
+
+    public int getNLabels() {
+        return LABELS;
+    }
 }

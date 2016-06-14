@@ -47,9 +47,6 @@ public class TestEnvironment {
             long startTime = System.currentTimeMillis();
 
             int estimation = method.query(path);
-            if(estimation == 0){
-                method.query(path);
-            }
 
             int estimationTime = (int) (System.currentTimeMillis() - startTime);
 

@@ -91,10 +91,10 @@ public class SubGraphAlgorithm_SF extends Algorithm implements DCombiner<Short>,
         return histogram;
     }
 
-    public Short whatToStore(int actualResult, int subGraphResult) {
-        short r;
+    public Short whatToStore(int subGraphResult, int actualResult) {
+        Short r;
         if (actualResult == 0) {
-            return null;
+            r = null;
         } else if (subGraphResult != 0) {
             double factorOfPrediction = (double) subGraphResult / actualResult;
             r = (short) (factorOfPrediction * Short.MAX_VALUE);
@@ -109,26 +109,36 @@ public class SubGraphAlgorithm_SF extends Algorithm implements DCombiner<Short>,
                 r = -1;
             }
         }
+
+        //Printing
+        System.out.printf("subGraphResult: %-10d actualResult %-10d", subGraphResult, actualResult);
+        if(r == null){
+            System.out.printf(" storing: nothing%n");
+        } else {
+            System.out.printf(" storing: %-10d%n", r);
+        }
         return r;
     }
 
     private int storedToResult(int[] query, Short dpResult) {
+        int result;
         if (dpResult == 0) {
-            return 0;
+            result = 0;
         } else if (dpResult > 0) {
             // Factor with subgraph
             int estimate = subgraph.estimate(query);
             if(estimate == 0){
                 System.err.println("subgraph returns zero while non zero was expected, do wild guess");
-                return (int) (((double) dpResult / Short.MAX_VALUE)*NODES);
+                result = (int) (((double) dpResult / Short.MAX_VALUE)*NODES);
+            } else {
+                double factor = (double) dpResult / Short.MAX_VALUE;
+                result = (int) (estimate * factor);
             }
-            double factor = (double) dpResult / Short.MAX_VALUE;
-            return (int) (estimate * factor);
         } else {
             // Subgraph will return 0, while actual is bigger
-            assert subgraph.estimate(query) == 0;
             double factor = (double) dpResult / Short.MIN_VALUE;
-            return (int) (factor * NODES);
+            result = (int) (factor * NODES);
         }
+        return result;
     }
 }

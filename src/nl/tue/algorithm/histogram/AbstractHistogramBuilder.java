@@ -19,9 +19,11 @@ public abstract class AbstractHistogramBuilder<E, H, JR extends JoinResult<E>, J
 
     protected J joiner;
     protected JR result;
+
     int maxIndex = Integer.MAX_VALUE;
     TreeSet<HistogramRange<E>> ranges = new TreeSet<>();
     HistogramRange<E> lower = null, higher = null;
+
     public AbstractHistogramBuilder(J joiner) {
         this.joiner = joiner;
         ranges.add(new HistogramRange<>(null, 0, maxIndex));
