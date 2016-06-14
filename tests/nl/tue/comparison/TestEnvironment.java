@@ -47,6 +47,9 @@ public class TestEnvironment {
             long startTime = System.currentTimeMillis();
 
             int estimation = method.query(path);
+            if(estimation == 0){
+                method.query(path);
+            }
 
             int estimationTime = (int) (System.currentTimeMillis() - startTime);
 
@@ -83,6 +86,7 @@ public class TestEnvironment {
             throw new RuntimeException(e);
         }
 
+        // Map String query to Int query
         List<int[]> intArrQueries = this.queries.stream().map(s -> Main.translateTextQueryToDomainQuery(s, parser)).
                 collect(Collectors.toList());
 

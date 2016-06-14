@@ -43,6 +43,10 @@ public class SubGraphAlgorithm_SF extends Algorithm implements DCombiner<Short>,
         } else if (dpResult > 0) {
             // Factor with subgraph
             int estimate = subgraph.estimate(query);
+            if(estimate == 0){
+                System.err.println("subgraph returns zero while non zero was expected, do wild guess");
+                return (int) (((double) dpResult / Short.MAX_VALUE)*NODES);
+            }
             double factor = (double) dpResult / Short.MAX_VALUE;
             return (int) (estimate * factor);
         } else {
@@ -69,7 +73,19 @@ public class SubGraphAlgorithm_SF extends Algorithm implements DCombiner<Short>,
 
     @Override
     public Short concatEstimations(Short headEstimation, Short tailEstimation) {
-        return (short) Math.min(headEstimation, tailEstimation);
+        if(headEstimation == null){
+            if(tailEstimation == null){
+                System.err.println("Error combining unknown estimations...");
+                return -1;
+            }
+            System.err.println("Very rough estimation (1) ...");
+            return tailEstimation;
+        } else if (tailEstimation == null) {
+            System.err.println("Very rough estimation (2) ...");
+            return tailEstimation;
+        } else {
+            return (short) Math.min(headEstimation, tailEstimation);
+        }
     }
 
     @Override
