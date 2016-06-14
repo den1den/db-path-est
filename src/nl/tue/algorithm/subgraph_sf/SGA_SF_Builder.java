@@ -72,7 +72,7 @@ public class SGA_SF_Builder {
         buildHistogram(histogramSize, histogramTimeLimit);
 
         timeTotal = toSeconds(t0) + parsing;
-        System.out.printf("%30s build in %.2f seconds, and used %.2f%% of %s bytes%n",
+        System.out.printf("%-30s build in %.2f seconds, and used %.2f%% of %s bytes%n",
                 BUILD_TO.getClass().getSimpleName(),
                 timeTotal,
                 ((double) BUILD_TO.getBytesUsed()) / budget * 100,
@@ -98,7 +98,7 @@ public class SGA_SF_Builder {
             t1 = System.currentTimeMillis();
             if (t1 - t0 > STOPPING_TIME * 1000) {
                 //Takes more then 2 seconds
-                System.out.printf("%30s building prematurely stopped at %.1f seconds%n",
+                System.out.printf("%-30s building prematurely stopped at %.1f seconds%n",
                         getClass().getSimpleName(),
                         toSeconds(t0));
                 timeout = true;
@@ -116,19 +116,17 @@ public class SGA_SF_Builder {
                 System.err.println("Error: subgraph gave non zero result, while GRAPH is zero."
                         + Thread.currentThread().getStackTrace()[1]);
             }
-            System.out.printf("subGraphResult: %10d actualResult %10d", subGraphResult, actualResult);
+            System.out.printf("subGraphResult: %-10d actualResult %-10d", subGraphResult, actualResult);
 
-            if (actualResult == 0) {
+            Short toBeStored = BUILD_TO.whatToStore(subGraphResult, actualResult);
+
+            if(toBeStored == null){
+                System.out.printf(" storing: nothing%n");
                 continue;
-            } else if (subGraphResult == 0) {
-                //Factor will be infinite, so we replace it with the proportion
-                double partOfTotal = (double) actualResult / nNodes();
-                storedShortVal = (short) (partOfTotal * Short.MIN_VALUE);
             } else {
-                double factorOfPrediction = (double) subGraphResult / actualResult;
-                storedShortVal = (short) (factorOfPrediction * Short.MAX_VALUE);
+                System.out.printf(" storing: %-10d%n", toBeStored);
             }
-            histogramBuilder.addEstimation(Double.valueOf(storedShortVal), nextIndex);
+            histogramBuilder.addEstimation(Double.valueOf(toBeStored), nextIndex);
 
             if (histogramBuilder.estMemUsage() >= BYTES) {
                 break;
@@ -137,7 +135,7 @@ public class SGA_SF_Builder {
         BUILD_TO.histogram = histogramBuilder.toHistogram();
 
         timeH = toSeconds(t0);
-        System.out.printf("%30s build in %.2f seconds, and used %.2f%% of %s bytes%n",
+        System.out.printf("%-30s build in %.2f seconds, and used %.2f%% of %s bytes%n",
                 BUILD_TO.histogram.getClass().getSimpleName(),
                 timeH,
                 ((double) BUILD_TO.histogram.getBytesUsed()) / BYTES * 100,
@@ -149,7 +147,7 @@ public class SGA_SF_Builder {
         BUILD_TO.subgraph = new SubgraphEstimator();
         BUILD_TO.subgraph.buildSummary(GRAPH, maximalPathLength, subGraphSize, nLabels());
         timeSG = toSeconds(t0);
-        System.out.printf("%30s build in %.1f seconds, and used %.2f%% of %s bytes.%n",
+        System.out.printf("%-30s build in %.1f seconds, and used %.2f%% of %s bytes.%n",
                 BUILD_TO.subgraph.getClass().getSimpleName(),
                 timeSG,
                 ((double) BUILD_TO.subgraph.getBytesUsed()) / subGraphSize * 100,

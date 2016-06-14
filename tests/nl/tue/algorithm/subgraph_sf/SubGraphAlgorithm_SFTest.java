@@ -39,6 +39,9 @@ public class SubGraphAlgorithm_SFTest extends TestCase {
         SGA_SF_Builder builder = new SGA_SF_Builder(algorithm, p, maxPathLength - 2, LABELSFORWARDBACKWARD, NODES);
         builder.build(.5, NODES * 2*Integer.BYTES, 10);
 
+        System.out.println("Factors:");
+        System.out.print(algorithm.getHistogram().toCSVTable(algorithm.getPathsOrdering()));
+
         int result = algorithm.query(query);
         System.out.println("Estm: "+result);
         System.out.println("Real: "+new AdjacencyList(p).solvePathQuery(query).size());

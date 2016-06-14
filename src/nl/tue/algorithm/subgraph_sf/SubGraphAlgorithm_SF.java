@@ -38,23 +38,7 @@ public class SubGraphAlgorithm_SF extends Algorithm implements DCombiner<Short>,
     public int query(int[] query) {
         DynamicProgrammingSearch<Short> search = new DynamicProgrammingSearch<>(this, this);
         Short dpResult = search.query(query);
-        if (dpResult == 0) {
-            return 0;
-        } else if (dpResult > 0) {
-            // Factor with subgraph
-            int estimate = subgraph.estimate(query);
-            if(estimate == 0){
-                System.err.println("subgraph returns zero while non zero was expected, do wild guess");
-                return (int) (((double) dpResult / Short.MAX_VALUE)*NODES);
-            }
-            double factor = (double) dpResult / Short.MAX_VALUE;
-            return (int) (estimate * factor);
-        } else {
-            // Subgraph will return 0, while actual is bigger
-            assert subgraph.estimate(query) == 0;
-            double factor = (double) dpResult / Short.MIN_VALUE;
-            return (int) (factor * NODES);
-        }
+        return storedToResult(query, dpResult);
     }
 
     @Override
@@ -105,5 +89,46 @@ public class SubGraphAlgorithm_SF extends Algorithm implements DCombiner<Short>,
 
     public HistogramOfShorts getHistogram() {
         return histogram;
+    }
+
+    public Short whatToStore(int actualResult, int subGraphResult) {
+        short r;
+        if (actualResult == 0) {
+            return null;
+        } else if (subGraphResult != 0) {
+            double factorOfPrediction = (double) subGraphResult / actualResult;
+            r = (short) (factorOfPrediction * Short.MAX_VALUE);
+            if(r == 0){
+                r = 1;
+            }
+        } else {
+            //Factor will be infinite, so we replace it with the proportion
+            double partOfTotal = (double) actualResult / NODES;
+            r = (short) (partOfTotal * Short.MIN_VALUE);
+            if(r == 0){
+                r = -1;
+            }
+        }
+        return r;
+    }
+
+    private int storedToResult(int[] query, Short dpResult) {
+        if (dpResult == 0) {
+            return 0;
+        } else if (dpResult > 0) {
+            // Factor with subgraph
+            int estimate = subgraph.estimate(query);
+            if(estimate == 0){
+                System.err.println("subgraph returns zero while non zero was expected, do wild guess");
+                return (int) (((double) dpResult / Short.MAX_VALUE)*NODES);
+            }
+            double factor = (double) dpResult / Short.MAX_VALUE;
+            return (int) (estimate * factor);
+        } else {
+            // Subgraph will return 0, while actual is bigger
+            assert subgraph.estimate(query) == 0;
+            double factor = (double) dpResult / Short.MIN_VALUE;
+            return (int) (factor * NODES);
+        }
     }
 }
