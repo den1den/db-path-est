@@ -90,7 +90,7 @@ public class SubgraphCompressor {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-       return bos.toByteArray();
+        return bos.toByteArray();
     }
 
     public static byte[] decompress(byte[] input) {
@@ -117,14 +117,14 @@ public class SubgraphCompressor {
     }
 
     public static TupleList decompressSubgraph(byte[] compressed) {
-        if(compressed.length == 0){
+        if (compressed.length == 0) {
             return new TupleList();
         }
         byte[] decompressed = decompress(compressed);
 
         TupleList out = new TupleList();
 
-        for(int i = 0; i < decompressed.length; i+=EDGE_LENGTH) {
+        for (int i = 0; i < decompressed.length; i += EDGE_LENGTH) {
             byte[] edge = new byte[EDGE_LENGTH];
 
             System.arraycopy(decompressed, i, edge, 0, EDGE_LENGTH);
@@ -138,54 +138,62 @@ public class SubgraphCompressor {
     public static byte[] compressWithLimit(Iterable<int[]> provider, int b) {
         int initialEdgeCount = b / EDGE_LENGTH;
 
-        byte[] initial = new byte[initialEdgeCount * 7];
+        ArrayList<Byte> edgesCompr = new ArrayList<>();
 
-        int added = 0;
 
-        for(int[] edge : provider) {
+        for (int[] edge : provider) {
             byte[] bytes = compressEdge(edge);
-            int destPos = added * 7;
-            if(initial.length >= destPos + 7){
-                throw new ArrayIndexOutOfBoundsException("this fails?");
+
+            for (byte edgePart : bytes) {
+                edgesCompr.add(edgePart);
             }
-            System.arraycopy(bytes, 0, initial, destPos, 7); // Why not use ByteBuffer?
-            added++;
 
-            if(added == initialEdgeCount) {
-                byte[] compressed = compress(initial);
 
-                if(compressed.length < b) {
+            if (edgesCompr.size() / 7 == initialEdgeCount) {
+                byte[] edges = new byte[edgesCompr.size()];
 
-                    double rateOfCompression = (double) initial.length / (double) compressed.length;
+                for (int i = 0; i < edges.length; i++) {
+                    edges[i] = edgesCompr.get(i);
+                }
+
+                byte[] compressed = compress(edges);
+
+                if (compressed.length < b) {
+
+                    double rateOfCompression = (double) edgesCompr.size() / 7 / (double) compressed.length;
 
                     int left = (int) (((b - compressed.length) / EDGE_LENGTH) * rateOfCompression);
 
                     initialEdgeCount += left;
-
-                    byte[] newInitial = new byte[initialEdgeCount*7];
-
-                    System.arraycopy(initial, 0, newInitial, 0, initial.length);
-
-                    initial = newInitial;
+                } else {
+                    break;
                 }
+            } else if (edgesCompr.size() / 7 > initialEdgeCount) {
+                break;
             }
         }
 
-        byte[] out = new byte[added*EDGE_LENGTH];
+    byte[] out = new byte[edgesCompr.size()];
 
-        /**
-         * Remove empty tail of array.
-         */
-        System.arraycopy(initial, 0, out, 0, out.length);
+    for(
+    int i = 0;
+    i<out.length;i++)
 
-        return compress(out);
+    {
+        out[i] = edgesCompr.get(i);
     }
+
+    return
+
+    compress(out);
+
+}
 
     public static byte[] doublesToByteArray(List<Double> doubles) {
         byte[] out = new byte[doubles.size() * 8];
 
-        for(int i = 0; i < doubles.size(); i++) {
-            ByteBuffer.wrap(out, i*8, 8).putDouble(doubles.get(i));
+        for (int i = 0; i < doubles.size(); i++) {
+            ByteBuffer.wrap(out, i * 8, 8).putDouble(doubles.get(i));
         }
 
         return out;
@@ -196,13 +204,12 @@ public class SubgraphCompressor {
 
         int doubles = bytes.length / 8;
 
-        for(int i = 0; i < doubles; i++) {
-            out.add(ByteBuffer.wrap(bytes, i*8, 8).getDouble());
+        for (int i = 0; i < doubles; i++) {
+            out.add(ByteBuffer.wrap(bytes, i * 8, 8).getDouble());
         }
 
         return out;
     }
-
 
 
 }

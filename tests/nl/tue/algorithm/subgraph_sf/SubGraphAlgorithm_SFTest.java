@@ -33,14 +33,14 @@ public class SubGraphAlgorithm_SFTest extends TestCase {
 
         Parser p = cineast;
         int NODES = 61774;
-        int LABELS = 4;
+        int LABELSFORWARDBACKWARD = 4;
 
         p = biblio;
         NODES = 837;
-        LABELS = 6;
+        LABELSFORWARDBACKWARD = 12;
 
         int maxPathLength = 8;
-        SGA_SF_Builder builder = new SGA_SF_Builder(algorithm, p, maxPathLength, LABELS, NODES);
+        SGA_SF_Builder builder = new SGA_SF_Builder(algorithm, p, maxPathLength, LABELSFORWARDBACKWARD, NODES);
 
         String testFileContents = SGA_SF_Builder.toCSVHeader();
         for (double timeLimit = 0.1; timeLimit <= 6.4; timeLimit *= 2){
@@ -54,6 +54,6 @@ public class SubGraphAlgorithm_SFTest extends TestCase {
                 }
             }
         }
-        Utils.writeToFile("deepBuildTest"+System.currentTimeMillis()+".csv", testFileContents);
+        //Utils.writeToFile("deepBuildTest"+System.currentTimeMillis()+".csv", testFileContents);
     }
 }

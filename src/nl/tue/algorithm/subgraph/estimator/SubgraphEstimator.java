@@ -64,7 +64,7 @@ public class SubgraphEstimator implements MemoryConstrained {
         } else {
             byte[] compressed = SubgraphCompressor.compressWithLimit(subgraph, lBudget);
 
-            storage = new byte[(int) Math.min(budget - OVERHEAD, 0)];
+            storage = new byte[(int) Math.max(budget - OVERHEAD, 0)];
 
             System.arraycopy(compressed, 0, storage, 0, compressed.length);
 
