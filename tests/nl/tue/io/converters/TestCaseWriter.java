@@ -10,7 +10,7 @@ import java.io.File;
  * Writes smaller test cases to folder: tests\resources\[biblio cineast AND music]
  * running time: 3 seconds
  */
-public class GraphGenerator {
+public class TestCaseWriter {
     @Test
     public void testGenerateCineasts() throws Exception {
         File f = ComparisonExecutor.cineastFile;
@@ -29,7 +29,7 @@ public class GraphGenerator {
         generate(f, "music");
     }
 
-    private static File BASEFOLDER = new File("tests\\resources");
+    public static File BASEFOLDER = new File("tests\\resources");
 
     private void generate(File file, String set) {
         File folder = new File(BASEFOLDER, set);

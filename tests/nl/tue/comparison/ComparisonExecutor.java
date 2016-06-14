@@ -7,6 +7,7 @@ import nl.tue.algorithm.histogram.JoinResult;
 import nl.tue.algorithm.histogram.Joiner;
 import nl.tue.algorithm.subgraph.*;
 import nl.tue.algorithm.subgraph_sf.SubGraphAlgorithm_SF;
+import nl.tue.io.converters.TestCaseWriter;
 import nl.tue.io.graph.AdjacencyList;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -85,6 +86,16 @@ public class ComparisonExecutor {
     public static Object[] getParams() {
         List<TestEnvironment> environments = new ArrayList<>();
 
+        // Adds the provided datasets to the environments
+        addOnlyProvidedDatasets(environments);
+
+        // Adds the extra datasets to the environments, scaled in labels and nodes
+        addModifiedProvidedDatasets(environments);
+
+        return environments.toArray();
+    }
+
+    private static void addOnlyProvidedDatasets(List<TestEnvironment> environments) {
         TestEnvironment biblio = new TestEnvironment(biblioQueries, biblioFile, "Biblio", false);
         environments.add(biblio);
 
@@ -93,8 +104,23 @@ public class ComparisonExecutor {
 
         TestEnvironment cineasts = new TestEnvironment(cineastQueries, cineastFile, "Cineast", true);
         environments.add(cineasts);
+    }
 
-        return environments.toArray();
+    private static void addModifiedProvidedDatasets(List<TestEnvironment> environments) {
+        for (File testfile : new File(TestCaseWriter.BASEFOLDER, "biblio").listFiles()){
+            TestEnvironment env = new TestEnvironment(biblioQueries, testfile, "Biblio", false);
+            environments.add(env);
+        }
+
+        for (File testfile : new File(TestCaseWriter.BASEFOLDER, "music").listFiles()){
+            TestEnvironment env = new TestEnvironment(musicQueries, testfile, "Music", true);
+            environments.add(env);
+        }
+
+        for (File testfile : new File(TestCaseWriter.BASEFOLDER, "cineast").listFiles()){
+            TestEnvironment env = new TestEnvironment(cineastQueries, testfile, "Cineast", true);
+            environments.add(env);
+        }
     }
 
     private static double computeAverage(List<Double> in) {
