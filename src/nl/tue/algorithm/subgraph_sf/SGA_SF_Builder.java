@@ -14,7 +14,7 @@ import java.util.Iterator;
  * SubGraphAlgorithm_SF (Specfic Factors)
  */
 public class SGA_SF_Builder {
-    final int LABELS, NODES;
+    final int LABELSFORWARDBACKWARD, NODES;
     final SubGraphAlgorithm_SF BUILD_TO;
     final int MAX_PATH_LENGTH;
     final AdjacencyList GRAPH;
@@ -31,7 +31,7 @@ public class SGA_SF_Builder {
         GRAPH = new AdjacencyList(p);
         parsing = toSeconds(t0);
         TupleList.Meta meta = p.calcMetadata();
-        this.LABELS = meta.labels.size();
+        this.LABELSFORWARDBACKWARD = meta.labels.size();
         this.NODES = meta.nodes.size();
     }
 
@@ -39,8 +39,8 @@ public class SGA_SF_Builder {
         return (double) (System.currentTimeMillis() - t0) / 1000;
     }
 
-    public SGA_SF_Builder(SubGraphAlgorithm_SF BUILD_TO, Parser p, int MAX_PATH_LENGTH, int LABELS, int NODES) {
-        this.LABELS = LABELS;
+    public SGA_SF_Builder(SubGraphAlgorithm_SF BUILD_TO, Parser p, int MAX_PATH_LENGTH, int LABELSFORWARDBACKWARD, int NODES) {
+        this.LABELSFORWARDBACKWARD = LABELSFORWARDBACKWARD;
         this.NODES = NODES;
         this.BUILD_TO = BUILD_TO;
         this.MAX_PATH_LENGTH = MAX_PATH_LENGTH;
@@ -80,7 +80,7 @@ public class SGA_SF_Builder {
     }
 
     private int nLabels() {
-        return LABELS;
+        return LABELSFORWARDBACKWARD;
     }
 
     private int nNodes() {
@@ -145,7 +145,7 @@ public class SGA_SF_Builder {
     void buildSubgraph(int maximalPathLength, long subGraphSize) {
         long t0 = System.currentTimeMillis();
         BUILD_TO.subgraph = new SubgraphEstimator();
-        BUILD_TO.subgraph.buildSummary(GRAPH, maximalPathLength, subGraphSize, nLabels());
+        BUILD_TO.subgraph.buildSummary(GRAPH, maximalPathLength, subGraphSize, nLabels()*2);
         timeSG = toSeconds(t0);
         System.out.printf("%30s build in %.1f seconds, and used %.2f%% of %s bytes.%n",
                 BUILD_TO.subgraph.getClass().getSimpleName(),

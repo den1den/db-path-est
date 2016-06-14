@@ -134,7 +134,7 @@ public class ComparisonExecutor {
         PrintWriter writer = new PrintWriter(new FileWriter(OUTPUT_FILE, true));
 
         for (ComparisonResult res : results) {
-            writer.println(String.format("%s, %d, %d, %d, %s, %d, %s, %d, %d", env.getName(),  env.getNodes(),
+            writer.println(String.format("%s,%d,%d,%d,%s,%d,%s,%d,%d", env.getName(),  env.getNodes(),
                     env.getLabels(), env.getSummaryTime(), res.getIndex().getPath(), res.getQueryTime(), methodName,
                     res.getEstimation(), res.getResult()));
         }
@@ -143,13 +143,13 @@ public class ComparisonExecutor {
         writer.close();
     }
 
-    @Test
+    //@Test
     public void testAlgorithm_NaiveIndexAndJoin() {
         Algorithm algo = new NaiveJoinAlgorithm();
         reportSingleEnv(algo, env, "NaiveIndex");
     }
 
-    @Test
+   // @Test
     public void testAlgorithm_Brute() {
         this.env.checkBig();
         reportSingleEnv(new Algorithm_Brute(), this.env, "Brute");
@@ -173,6 +173,11 @@ public class ComparisonExecutor {
     @Test
     public void testAlgorithm_SubgraphWithEdgeBasedFactors() {
         reportSingleEnv(new SubgraphWithEdgeFactorAlgorithm(), this.env, "SubgraphEdgeBased");
+    }
+
+    @Test
+    public void testAlgorithm_SubgraphAverage() {
+        reportSingleEnv(new SubgraphAverageOfThree(), this.env, "SubgraphAverage");
     }
 
     @Test
