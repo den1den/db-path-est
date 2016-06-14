@@ -68,7 +68,7 @@ public class SGA_SF_Builder {
 
         // Building histogram
         long histogramSize = budget - subGraphSize - BUILD_TO.pathsOrdering.getBytesUsed();
-        int histogramTimeLimit = (int) Math.ceil((timeH * histogramRelativeTimeLimit));
+        int histogramTimeLimit = (int) Math.ceil((timeSG * histogramRelativeTimeLimit));
         buildHistogram(histogramSize, histogramTimeLimit);
 
         timeTotal = toSeconds(t0) + parsing;

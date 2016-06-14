@@ -49,8 +49,9 @@ public class DynamicProgrammingSearch<E> {
 
         if (query.length <= 1) {
             // Cannot split further
-            throw new RuntimeException("Cannot split up a query into a smaller query " +
+            System.err.println("Cannot split up a query into a smaller query " +
                     "and query estimate is not know exactly. query = " + Arrays.toString(query));
+            return null;
             // Could use guesstimate here?
         }
         PathSplitter splitter = new PathSplitter(query);

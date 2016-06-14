@@ -69,7 +69,19 @@ public class SubGraphAlgorithm_SF extends Algorithm implements DCombiner<Short>,
 
     @Override
     public Short concatEstimations(Short headEstimation, Short tailEstimation) {
-        return (short) Math.min(headEstimation, tailEstimation);
+        if(headEstimation == null){
+            if(tailEstimation == null){
+                System.err.println("Error combining unknown estimations...");
+                return -1;
+            }
+            System.err.println("Very rough estimation (1) ...");
+            return tailEstimation;
+        } else if (tailEstimation == null) {
+            System.err.println("Very rough estimation (2) ...");
+            return tailEstimation;
+        } else {
+            return (short) Math.min(headEstimation, tailEstimation);
+        }
     }
 
     @Override
