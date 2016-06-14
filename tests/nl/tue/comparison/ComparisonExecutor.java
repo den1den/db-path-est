@@ -90,7 +90,7 @@ public class ComparisonExecutor {
         addOnlyProvidedDatasets(environments);
 
         // Adds the extra datasets to the environments, scaled in labels and nodes
-        //addModifiedProvidedDatasets(environments);
+        // addModifiedProvidedDatasets(environments);
 
         return environments.toArray();
     }
@@ -107,17 +107,17 @@ public class ComparisonExecutor {
     }
 
     private static void addModifiedProvidedDatasets(List<TestEnvironment> environments) {
-        for (File testfile : new File(TestCaseWriter.BASEFOLDER, "biblio").listFiles()){
+        for (File testfile : new File(TestCaseWriter.BASEFOLDER, "biblio").listFiles()) {
             TestEnvironment env = new TestEnvironment(biblioQueries, testfile, "Biblio", false);
             environments.add(env);
         }
 
-        for (File testfile : new File(TestCaseWriter.BASEFOLDER, "music").listFiles()){
+        for (File testfile : new File(TestCaseWriter.BASEFOLDER, "music").listFiles()) {
             TestEnvironment env = new TestEnvironment(musicQueries, testfile, "Music", true);
             environments.add(env);
         }
 
-        for (File testfile : new File(TestCaseWriter.BASEFOLDER, "cineast").listFiles()){
+        for (File testfile : new File(TestCaseWriter.BASEFOLDER, "cineast").listFiles()) {
             TestEnvironment env = new TestEnvironment(cineastQueries, testfile, "Cineast", true);
             environments.add(env);
         }
@@ -160,7 +160,7 @@ public class ComparisonExecutor {
         PrintWriter writer = new PrintWriter(new FileWriter(OUTPUT_FILE, true));
 
         for (ComparisonResult res : results) {
-            writer.println(String.format("%s,%d,%d,%d,%s,%d,%s,%d,%d", env.getName(),  env.getNodes(),
+            writer.println(String.format("%s,%d,%d,%d,%s,%d,%s,%d,%d", env.getName(), env.getNodes(),
                     env.getLabels(), env.getSummaryTime(), res.getIndex().getPath(), res.getQueryTime(), methodName,
                     res.getEstimation(), res.getResult()));
         }
@@ -175,7 +175,7 @@ public class ComparisonExecutor {
         reportSingleEnv(algo, env, "NaiveIndex");
     }
 
-   // @Test
+    // @Test
     public void testAlgorithm_Brute() {
         this.env.checkBig();
         reportSingleEnv(new Algorithm_Brute(), this.env, "Brute");
