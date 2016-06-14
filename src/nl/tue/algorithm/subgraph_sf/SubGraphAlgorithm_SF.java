@@ -43,6 +43,10 @@ public class SubGraphAlgorithm_SF extends Algorithm implements DCombiner<Short>,
         } else if (dpResult > 0) {
             // Factor with subgraph
             int estimate = subgraph.estimate(query);
+            if(estimate == 0){
+                System.err.println("subgraph returns zero while non zero was expected, do wild guess");
+                return (int) (((double) dpResult / Short.MAX_VALUE)*NODES);
+            }
             double factor = (double) dpResult / Short.MAX_VALUE;
             return (int) (estimate * factor);
         } else {

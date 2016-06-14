@@ -90,7 +90,7 @@ public class ComparisonExecutor {
         addOnlyProvidedDatasets(environments);
 
         // Adds the extra datasets to the environments, scaled in labels and nodes
-        addModifiedProvidedDatasets(environments);
+        //addModifiedProvidedDatasets(environments);
 
         return environments.toArray();
     }

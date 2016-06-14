@@ -27,19 +27,32 @@ public class SubGraphAlgorithm_SFTest extends TestCase {
         }
     }
 
-    public void testdeepBuildTestCSV() throws IOException {
-        Joiner<Double, JoinResult.NumberJoinResult> baiscJoiner = new Joiner.BasicJoiner();
-        SubGraphAlgorithm_SF algorithm = new SubGraphAlgorithm_SF(baiscJoiner);
-
+    /**
+     * ERROR Found
+     */
+    public void testEst0Real2(){
+        int[] query = new int[]{3, 3, 2};
         Parser p = cineast;
         int NODES = 61774;
-        int LABELSFORWARDBACKWARD = 4;
+        int LABELSFORWARDBACKWARD = 4 * 2;
 
-        p = biblio;
-        NODES = 837;
-        LABELSFORWARDBACKWARD = 12;
+        SGA_SF_Builder builder = new SGA_SF_Builder(algorithm, p, maxPathLength - 2, LABELSFORWARDBACKWARD, NODES);
+        builder.build(.5, NODES * 2*Integer.BYTES, 10);
 
-        int maxPathLength = 8;
+        int result = algorithm.query(query);
+        System.out.println("Estm: "+result);
+        System.out.println("Real: "+new AdjacencyList(p).solvePathQuery(query).size());
+    }
+
+    Joiner<Double, JoinResult.NumberJoinResult> baiscJoiner = new Joiner.BasicJoiner();
+    SubGraphAlgorithm_SF algorithm = new SubGraphAlgorithm_SF(baiscJoiner);
+    int maxPathLength = 8;
+
+    public void testdeepBuildTestCSV() throws IOException {
+        Parser p = biblio;
+        int NODES = 837;
+        int LABELSFORWARDBACKWARD = 6 * 2;
+
         SGA_SF_Builder builder = new SGA_SF_Builder(algorithm, p, maxPathLength, LABELSFORWARDBACKWARD, NODES);
 
         String testFileContents = SGA_SF_Builder.toCSVHeader();

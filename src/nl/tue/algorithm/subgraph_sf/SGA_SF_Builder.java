@@ -14,7 +14,7 @@ import java.util.Iterator;
  * SubGraphAlgorithm_SF (Specfic Factors)
  */
 public class SGA_SF_Builder {
-    final int LABELSFORWARDBACKWARD, NODES;
+    final int LABELSFORWARDBACKWARD;
     final SubGraphAlgorithm_SF BUILD_TO;
     final int MAX_PATH_LENGTH;
     final AdjacencyList GRAPH;
@@ -31,8 +31,8 @@ public class SGA_SF_Builder {
         GRAPH = new AdjacencyList(p);
         parsing = toSeconds(t0);
         TupleList.Meta meta = p.calcMetadata();
-        this.LABELSFORWARDBACKWARD = meta.labels.size();
-        this.NODES = meta.nodes.size();
+        this.LABELSFORWARDBACKWARD = meta.labels.size() * 2;
+        BUILD_TO.NODES = meta.nodes.size();
     }
 
     private static double toSeconds(long t0) {
@@ -41,7 +41,7 @@ public class SGA_SF_Builder {
 
     public SGA_SF_Builder(SubGraphAlgorithm_SF BUILD_TO, Parser p, int MAX_PATH_LENGTH, int LABELSFORWARDBACKWARD, int NODES) {
         this.LABELSFORWARDBACKWARD = LABELSFORWARDBACKWARD;
-        this.NODES = NODES;
+        BUILD_TO.NODES = NODES;
         this.BUILD_TO = BUILD_TO;
         this.MAX_PATH_LENGTH = MAX_PATH_LENGTH;
 
@@ -84,7 +84,7 @@ public class SGA_SF_Builder {
     }
 
     private int nNodes() {
-        return NODES;
+        return BUILD_TO.NODES;
     }
 
     void buildHistogram(long BYTES, int STOPPING_TIME) {
@@ -112,11 +112,13 @@ public class SGA_SF_Builder {
             int actualResult = GRAPH.getEstimation(next).getTuples();
             Short storedShortVal;
 
+            if(subGraphResult > actualResult){
+                System.err.println("Error: subgraph gave non zero result, while GRAPH is zero."
+                        + Thread.currentThread().getStackTrace()[1]);
+            }
+            System.out.printf("subGraphResult: %10d actualResult %10d", subGraphResult, actualResult);
+
             if (actualResult == 0) {
-                if (subGraphResult != 0) {
-                    System.err.println("Error: subgraph gave non zero result, while GRAPH is zero."
-                            + Thread.currentThread().getStackTrace()[2]);
-                }
                 continue;
             } else if (subGraphResult == 0) {
                 //Factor will be infinite, so we replace it with the proportion
@@ -145,7 +147,7 @@ public class SGA_SF_Builder {
     void buildSubgraph(int maximalPathLength, long subGraphSize) {
         long t0 = System.currentTimeMillis();
         BUILD_TO.subgraph = new SubgraphEstimator();
-        BUILD_TO.subgraph.buildSummary(GRAPH, maximalPathLength, subGraphSize, nLabels()*2);
+        BUILD_TO.subgraph.buildSummary(GRAPH, maximalPathLength, subGraphSize, nLabels());
         timeSG = toSeconds(t0);
         System.out.printf("%30s build in %.1f seconds, and used %.2f%% of %s bytes.%n",
                 BUILD_TO.subgraph.getClass().getSimpleName(),
