@@ -17,7 +17,7 @@ public class SubgraphWithEdgeFactorAlgorithm extends Algorithm {
     }
 
     @Override
-    public int query(int[] query) {
+    public long query(int[] query) {
         return withEdgeBasedFactors.estimate(query);
     }
 

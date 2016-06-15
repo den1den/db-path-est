@@ -4,8 +4,8 @@ import nl.tue.MemoryConstrained;
 import nl.tue.algorithm.paths.PathsOrdering;
 import nl.tue.io.graph.AdjacencyList;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * HistogramOfShorts that stores short values for each path
@@ -16,14 +16,14 @@ public class HistogramOfShorts implements MemoryConstrained {
      * ...
      * startRanges[i] = z iff bucket i starts at index z
      */
-    private int[] startRanges;
+    int[] startRanges;
 
     /**
      * estimations[0] = Estimation of bucket x
      * ...
      * estimations[i] = Estimation of bucket startRanges[i]
      */
-    private short[] estimations;
+    short[] estimations;
 
     /**
      * Length of the buckets
@@ -31,7 +31,7 @@ public class HistogramOfShorts implements MemoryConstrained {
      * ...
      * estimationLengths[i] = Size of bucket i s.t. bucket = (startRanges[i], startRanges[i] + estimations[i] - 1)
      */
-    private short[] estimationLengths;
+    short[] estimationLengths;
 
     public HistogramOfShorts(int[] startRanges, short[] estimations, short[] estimationLengths) {
         this.startRanges = startRanges;
@@ -83,14 +83,8 @@ public class HistogramOfShorts implements MemoryConstrained {
         return total;
     }
 
-    public class HistogramEntry{
-        int index;
-        short value;
-
-        public HistogramEntry(int index, short value) {
-            this.index = index;
-            this.value = value;
-        }
+    public Iterator<HistogramEntry> iterator() {
+        return new HistogramIterator();
     }
 
     public String toCSVTable(PathsOrdering ordering){
@@ -121,7 +115,7 @@ public class HistogramOfShorts implements MemoryConstrained {
         return sb.toString();
     }
 
-    public String toCSVTableFull(PathsOrdering ordering, AdjacencyList real, int NODES) {
+    public String toCSVTableFullRaw(PathsOrdering ordering, AdjacencyList real, int NODES) {
         StringBuilder sb = new StringBuilder();
         sb.append("1st-query; 1st-index; bucket; bucket-size; estimations; real").append(System.lineSeparator());
         for (int i = 0; i < this.estimations.length; i++) {
@@ -136,5 +130,43 @@ public class HistogramOfShorts implements MemoryConstrained {
 
         }
         return sb.toString();
+    }
+
+    public String calcEffectiveness() {
+        int biggestGap = 0;
+        int a = startRanges[0];
+        for (int i = 1; i < startRanges.length; i++) {
+            int b = startRanges[i];
+            if (b - a > biggestGap) {
+                biggestGap = b - a;
+            }
+        }
+        double avgLength = estimationLengths[0];
+        for (int i = 1; i < estimationLengths.length; i++) {
+            avgLength += estimationLengths[i];
+        }
+        avgLength /= estimationLengths.length;
+        return String.format("%d estimations, avg bucket size %.2f, biggest gap %d", estimationLengths.length, avgLength, biggestGap);
+    }
+
+    /**
+     * Created by Dennis on 15-6-2016.
+     */
+    public class HistogramIterator implements Iterator<HistogramEntry> {
+        private int pos = 0;
+
+        @Override
+        public boolean hasNext() {
+            return startRanges.length > pos;
+        }
+
+        @Override
+        public HistogramEntry next() {
+            int pos = this.pos++;
+            int a = startRanges[pos];
+            int b = a + estimationLengths[pos];
+            short est = estimations[pos];
+            return new HistogramEntry(a, b, est);
+        }
     }
 }

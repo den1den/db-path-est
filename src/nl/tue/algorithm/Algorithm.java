@@ -13,7 +13,7 @@ public abstract class Algorithm implements MemoryConstrained {
 
     public abstract void buildSummary(Parser p, int maximalPathLength, long budget);
 
-    public abstract int query(int[] query);
+    public abstract long query(int[] query);
 
     @Override
     public abstract long getBytesUsed();

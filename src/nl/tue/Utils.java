@@ -67,6 +67,7 @@ public class Utils {
             BufferedWriter fileWriter = new BufferedWriter(new FileWriter(file));
             fileWriter.append(content);
             fileWriter.close();
+            System.out.println("Written " + content.length() + " chars to file: " + file);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

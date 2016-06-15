@@ -17,7 +17,7 @@ public class SubgraphWithFactorsAlgorithm extends Algorithm {
     }
 
     @Override
-    public int query(int[] query) {
+    public long query(int[] query) {
         return estimatorWithFactors.estimate(query);
     }
 

@@ -21,7 +21,7 @@ public class SubgraphAverageOfThree extends Algorithm {
     }
 
     @Override
-    public int query(int[] query) {
+    public long query(int[] query) {
         return esti.estimate(query);
     }
 

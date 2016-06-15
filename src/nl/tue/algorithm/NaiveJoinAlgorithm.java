@@ -23,7 +23,7 @@ public class NaiveJoinAlgorithm extends Algorithm {
     }
 
     @Override
-    public int query(int[] query) {
+    public long query(int[] query) {
         Collection<PathSummary> pathSummaries = this.indexQueryEstimator.retrieveAllExactEstimations();
 
         PathIndex reqIndex = new PathIndex(query);

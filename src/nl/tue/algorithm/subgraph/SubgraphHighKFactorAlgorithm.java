@@ -17,7 +17,7 @@ public class SubgraphHighKFactorAlgorithm extends Algorithm {
     }
 
     @Override
-    public int query(int[] query) {
+    public long query(int[] query) {
         return withHighKFactors.estimate(query);
     }
 

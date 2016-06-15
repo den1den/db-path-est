@@ -14,14 +14,13 @@ import java.util.Iterator;
  * SubGraphAlgorithm_SF (Specfic Factors)
  */
 public class SGA_SF_Builder {
+    public final double parsing;
     final int LABELSFORWARDBACKWARD;
     final SubGraphAlgorithm_SF BUILD_TO;
     final int MAX_PATH_LENGTH;
     final AdjacencyList GRAPH;
-
     public boolean timeout;
     public double timeH, timeSG, timeTotal;
-    public final double parsing;
 
     public SGA_SF_Builder(SubGraphAlgorithm_SF BUILD_TO, Parser p, int maximalPathLength) {
         this.BUILD_TO = BUILD_TO;
@@ -35,10 +34,6 @@ public class SGA_SF_Builder {
         BUILD_TO.NODES = meta.nodes.size();
     }
 
-    private static double toSeconds(long t0) {
-        return (double) (System.currentTimeMillis() - t0) / 1000;
-    }
-
     public SGA_SF_Builder(SubGraphAlgorithm_SF BUILD_TO, Parser p, int MAX_PATH_LENGTH, int LABELSFORWARDBACKWARD, int NODES) {
         this.LABELSFORWARDBACKWARD = LABELSFORWARDBACKWARD;
         BUILD_TO.NODES = NODES;
@@ -50,6 +45,16 @@ public class SGA_SF_Builder {
         parsing = toSeconds(t0);
     }
 
+    private static double toSeconds(long t0) {
+        return (double) (System.currentTimeMillis() - t0) / 1000;
+    }
+
+    public static String toCSVHeader() {
+        return "total_time; Parser_time; total_memory; total_nodes; " +
+                "histogram_time; histogram_timeout; histogram_memory; histogram_tuples; " +
+                "subgraph_time; subgraph_memory; subgraph_edges";
+    }
+
     private void resetTime() {
         timeout = false;
         timeH = Double.NaN;
@@ -59,6 +64,7 @@ public class SGA_SF_Builder {
 
     public void build(double sgSize, long budget, double histogramRelativeTimeLimit) {
         resetTime();
+        buildCurve();
         long t0 = System.currentTimeMillis();
         BUILD_TO.pathsOrdering = new PathsOrderingLexicographical(nLabels(), MAX_PATH_LENGTH);
 
@@ -78,6 +84,15 @@ public class SGA_SF_Builder {
                 timeTotal,
                 ((double) BUILD_TO.getBytesUsed()) / budget * 100,
                 budget);
+    }
+
+    private void buildCurve() {
+        long N2 = BUILD_TO.NODES2();
+        int M = -Short.MIN_VALUE;
+        int M2 = Math.multiplyExact(M, M);
+        BUILD_TO.A = (double) (N2 - M) / (M2 - 3 * M + 2);
+        BUILD_TO.B = -1.0 + (double) ((N2 - M) * 3) / (M2 - 3 * M + 2);
+        BUILD_TO.C = (double) ((N2 - M) * 2) / (M2 - 3 * M + 2);
     }
 
     private int nLabels() {
@@ -149,12 +164,6 @@ public class SGA_SF_Builder {
                 timeSG,
                 ((double) BUILD_TO.subgraph.getBytesUsed()) / subGraphSize * 100,
                 subGraphSize);
-    }
-
-    public static String toCSVHeader() {
-        return "total_time; Parser_time; total_memory; total_nodes; " +
-                "histogram_time; histogram_timeout; histogram_memory; histogram_tuples; " +
-                "subgraph_time; subgraph_memory; subgraph_edges";
     }
 
     public String toCSV() {

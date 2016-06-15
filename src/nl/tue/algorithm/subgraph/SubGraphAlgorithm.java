@@ -25,7 +25,7 @@ public class SubGraphAlgorithm extends Algorithm {
     }
 
     @Override
-    public int query(int[] query) {
+    public long query(int[] query) {
         return estimator.estimate(query);
     }
 

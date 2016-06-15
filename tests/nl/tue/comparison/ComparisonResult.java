@@ -9,10 +9,10 @@ public class ComparisonResult {
 
     private final PathIndex index;
     private final int result;
-    private final int estimation;
+    private final long estimation;
     private final int queryTime;
 
-    public ComparisonResult(PathIndex index, int result, int estimation, int queryTime) {
+    public ComparisonResult(PathIndex index, int result, long estimation, int queryTime) {
         this.index = index;
         this.result = result;
         this.estimation = estimation;
@@ -27,7 +27,7 @@ public class ComparisonResult {
         return result;
     }
 
-    public int getEstimation() {
+    public long getEstimation() {
         return estimation;
     }
 

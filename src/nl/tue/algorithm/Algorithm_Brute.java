@@ -37,7 +37,7 @@ public class Algorithm_Brute extends Algorithm {
     }
 
     @Override
-    public int query(int[] query) {
+    public long query(int[] query) {
         return fullTree.exact(query);
     }
 

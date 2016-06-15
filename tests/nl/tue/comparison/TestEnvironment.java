@@ -46,7 +46,7 @@ public class TestEnvironment {
         for(int[] path : paths) {
             long startTime = System.currentTimeMillis();
 
-            int estimation = method.query(path);
+            long estimation = method.query(path);
 
             int estimationTime = (int) (System.currentTimeMillis() - startTime);
 
