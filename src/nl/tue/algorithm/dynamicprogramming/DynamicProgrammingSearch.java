@@ -64,7 +64,7 @@ public class DynamicProgrammingSearch<E> {
             E headEstimation = getBest(head);
             E tailEstimation = getBest(tail);
             E combined = combiner.concatEstimations(headEstimation, tailEstimation);
-            if (best == null || combiner.compare(combined, best) > 0) {
+            if (best == null || combiner.compare(combined, best) < 0) {
                 // Maximizing value
                 best = combined;
             }

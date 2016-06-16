@@ -62,3 +62,4 @@ test*.csv
 tests/resources/biblio/
 tests/resources/cineast/
 tests/resources/music/
+*.xlsx

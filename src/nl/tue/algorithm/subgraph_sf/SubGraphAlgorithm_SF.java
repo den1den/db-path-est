@@ -21,7 +21,6 @@ import java.util.Iterator;
  * Created by Dennis on 8-6-2016.
  */
 public class SubGraphAlgorithm_SF extends Algorithm implements DCombiner<Short>, DInput<Short> {
-    public boolean printing = false;
     HistogramOfShorts histogram;
     SubgraphEstimator subgraph;
     PathsOrdering pathsOrdering;
@@ -99,13 +98,18 @@ public class SubGraphAlgorithm_SF extends Algorithm implements DCombiner<Short>,
     }
 
     long y(int x) {
-        double y = (A * x) * x + B * x + C;
+        long x2 = Math.multiplyExact((long)x, x);
+        double y = (A * x2) + B * x + C;
         return Math.round(y);
     }
 
-    int x(int y) {
+    int x(long y) {
         double wD = Math.sqrt(B * B - 4 * A * (C - y));
-        double x = (-B + wD) / (2 * A);
+        double x = (-B - wD) / (2 * A);
+        if(x > -2){
+            // Precision not high enough, so do a hard cut
+            return -1;
+        }
         long round = Math.round(x);
         return Math.toIntExact(round);
     }
@@ -135,16 +139,13 @@ public class SubGraphAlgorithm_SF extends Algorithm implements DCombiner<Short>,
             // y(Short.MIN_VALUE) = NODES^2
             // And a < b \wedge a >= 1 => y(x=a) < y(x=b)
             int toBeStored = actualResult;
-            int x = -x(toBeStored);
+            int x = x(toBeStored);
             if (x > -1 || x < Short.MIN_VALUE) {
                 throw new Error();
             }
             r = (short) x;
         }
 
-        //Printing
-        if (printing)
-            System.out.printf("subGraphResult: %-10d actualResult %-10d storing: %-10d%n", subGraphResult, actualResult, r);
         return r;
     }
 
@@ -177,7 +178,41 @@ public class SubGraphAlgorithm_SF extends Algorithm implements DCombiner<Short>,
         return result;
     }
 
-    public String toCSVTableFullProcessed(PathsOrdering ordering, AdjacencyList REAL, int NODES) {
+    /**
+     * Very slow.
+     * Takes about same time as building it
+     * @param ordering
+     * @param REAL
+     * @return
+     */
+    public String toCSVTableFullProcessed(PathsOrdering ordering, AdjacencyList REAL) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("query; index; bucket; bucket-size; bucket-value; subgraph-estimate; real; NODES^2").append(System.lineSeparator());
+
+        long NODES2 = NODES2();
+        HistogramOfShorts histogram = getHistogram();
+        Iterator<HistogramEntry> iterator = histogram.iterator();
+        int bucket = 0;
+        while (iterator.hasNext()) {
+            HistogramEntry next = iterator.next();
+            for (int index = next.low; index < next.high; index++) {
+                int[] query = ordering.get(index);
+                int sge = subgraph.estimate(query);
+                sb.append(Arrays.toString(query)).append(';') //query
+                        .append(index + index).append(';') //index
+                        .append(bucket).append(';') //bucket
+                        .append(next.length()).append(';') //bucket-size
+                        .append(next.value).append(';') //bucket-value
+                        .append(sge).append(';') //subgraph-estimate
+                        .append(REAL.getEstimation(query).getTuples()).append(';') //real
+                        .append(NODES2).append(System.lineSeparator()); //NODES^2
+            }
+            bucket++;
+        }
+        return sb.toString();
+    }
+
+    public String toCSVTableProcessed(PathsOrdering ordering, AdjacencyList REAL) {
         StringBuilder sb = new StringBuilder();
         sb.append("1st-query; 1st-index; bucket; bucket-size; bucket-value; subgraph-estimate; real; NODES^2").append(System.lineSeparator());
 

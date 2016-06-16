@@ -14,6 +14,7 @@ import java.util.Iterator;
  * SubGraphAlgorithm_SF (Specfic Factors)
  */
 public class SGA_SF_Builder {
+    public boolean printing = false;
     public final double parsing;
     final int LABELSFORWARDBACKWARD;
     final SubGraphAlgorithm_SF BUILD_TO;
@@ -134,6 +135,9 @@ public class SGA_SF_Builder {
             }
 
             Short toBeStored = BUILD_TO.whatToStore(subGraphResult, actualResult);
+            //Printing
+            if (printing)
+                System.out.printf("subGraphResult: %-10d actualResult %-10d storing: %-10d%n", subGraphResult, actualResult, toBeStored);
 
             if(toBeStored == null){
                 continue;
