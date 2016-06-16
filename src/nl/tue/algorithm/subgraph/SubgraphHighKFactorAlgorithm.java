@@ -1,6 +1,7 @@
 package nl.tue.algorithm.subgraph;
 
 import nl.tue.algorithm.Algorithm;
+import nl.tue.algorithm.subgraph.estimator.AcceptNode;
 import nl.tue.algorithm.subgraph.estimator.SubgraphEstimatorsWithHighKFactors;
 import nl.tue.io.Parser;
 
@@ -10,9 +11,19 @@ import nl.tue.io.Parser;
 public class SubgraphHighKFactorAlgorithm extends Algorithm {
     protected SubgraphEstimatorsWithHighKFactors withHighKFactors = null;
 
+    private final AcceptNode acceptor;
+
+    public SubgraphHighKFactorAlgorithm() {
+        acceptor = AcceptNode.everySecondOrThird();
+    }
+
+    public SubgraphHighKFactorAlgorithm(AcceptNode acceptor) {
+        this.acceptor = acceptor;
+    }
+
     @Override
     public void buildSummary(Parser p, int maximalPathLength, long budget) {
-        withHighKFactors = new SubgraphEstimatorsWithHighKFactors();
+        withHighKFactors = new SubgraphEstimatorsWithHighKFactors(this.acceptor);
         withHighKFactors.buildSummary(p, maximalPathLength, budget);
     }
 

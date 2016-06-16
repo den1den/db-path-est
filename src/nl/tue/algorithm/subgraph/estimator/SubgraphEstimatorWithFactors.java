@@ -58,9 +58,12 @@ public class SubgraphEstimatorWithFactors extends SubgraphEstimator {
         List<Double> factorList = SubgraphCompressor.byteArrayToDoubles(factorListCompr);
 
         return (int) (factorList.get(query.length - 1) * (double)res);
-
-
     }
 
+    @Override
+    public long getBytesUsed() {
+        long base = super.getBytesUsed();
 
+        return base + OVERHEAD + k * 8;
+    }
 }

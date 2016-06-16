@@ -26,5 +26,58 @@ computeBoxplot <- function(results) {
     
   }
   
+}
+
+plotMemResults <- function(memDataset) {
+  
+  graphs <- unique(memDataset$graph)
+  
+  for(graph in graphs) {
+    graphdf <- memDataset[memDataset$graph == graph,]
+    
+    memUsages <- sort(unique(graphdf$memUsage))
+    
+    xVals <- vector('list', length(memUsages))
+    yVals <- vector('list', length(memUsages))
+    
+    i <<- 1
+    
+    for(memUsage in memUsages) {
+      
+      memDf <- graphdf[graphdf$memUsage == memUsage,]
+      
+      accuracies <<- vector('list', nrow(memDf))
+      
+      j <<- 1
+      
+      by(memDf, 1:nrow(memDf), function(row) {
+        
+        if(row$expected == 0 && row$estimation == 0) {
+          avg <- 1
+        } else {
+          avg <- (row$expected - (row$expected - row$estimation)) / row$expected
+        }
+        
+        
+        accuracies[[j]] <<- avg
+        
+        j <<- j + 1
+      })
+      
+      avgAcc <- mean(unlist(accuracies))
+      
+      yVals[[i]] <- avgAcc
+      xVals[[i]] <- memUsage / graphdf[graphdf$memUsage == memUsage,]$filesize[[1]];
+      
+      i <<- i + 1
+    }
+    
+    png(filename=paste('D:/Plots/',graph,'.png', sep =""))
+    
+    plot(x = xVals, y = yVals, type="o")
+    
+    dev.off()
+  }
+  
   
 }

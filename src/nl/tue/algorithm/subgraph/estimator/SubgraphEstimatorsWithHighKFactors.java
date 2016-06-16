@@ -23,8 +23,11 @@ public class SubgraphEstimatorsWithHighKFactors extends SubgraphEstimator {
      */
     private static final int QUERY_LIMIT_FOR_FACTOR = 2;
 
-
     private byte k;
+
+    public SubgraphEstimatorsWithHighKFactors(AcceptNode acceptor) {
+        super(acceptor);
+    }
 
     @Override
     public void buildSummary(Parser p, int k, long b) {
@@ -156,5 +159,12 @@ public class SubgraphEstimatorsWithHighKFactors extends SubgraphEstimator {
          */
         return (factors.stream().mapToDouble(Double::doubleValue).sum() / (double) factors.size());
 
+    }
+
+    @Override
+    public long getBytesUsed() {
+        long base = super.getBytesUsed();
+
+        return base + OVERHEAD + k*8;
     }
 }

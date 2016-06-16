@@ -12,7 +12,8 @@ import java.util.List;
  */
 public class SubgraphEstimatorWithEdgeBasedFactors extends SubgraphEstimator {
 
-    private static final int OVERHEAD = 0;
+    private static final int OVERHEAD = 1;
+
 
     @Override
     public void buildSummary(Parser p, int k, long b) {
@@ -75,5 +76,12 @@ public class SubgraphEstimatorWithEdgeBasedFactors extends SubgraphEstimator {
 
         return SubgraphCompressor.byteArrayToDoubles(factorListCompr);
 
+    }
+
+    @Override
+    public long getBytesUsed() {
+        long base = super.getBytesUsed();
+
+        return base + OVERHEAD + labels * 8;
     }
 }

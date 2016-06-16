@@ -22,9 +22,13 @@ public class TestEnvironment {
     private final File file;
     private final String name;
 
+    private final int parts;
+    private final int partsUsed;
+
     private int nodes;
     private int labels;
     private int summaryTime;
+    private long memUsage;
 
     /**
      * True when it's to big for a brute force
@@ -32,10 +36,16 @@ public class TestEnvironment {
     private boolean big;
 
     public TestEnvironment(List<String> queries, File file, String name, boolean big) {
+        this(queries, file, name, big, 1, 1);
+    }
+
+    public TestEnvironment(List<String> queries, File file, String name, boolean big, int parts, int partUsed) {
         this.queries = queries;
         this.file = file;
         this.name = name;
         this.big = big;
+        this.parts = parts;
+        this.partsUsed = partUsed;
     }
 
     private static List<ComparisonResult>
@@ -74,6 +84,14 @@ public class TestEnvironment {
         return summaryTime;
     }
 
+    public long getMemUsage() {
+        return memUsage;
+    }
+
+    public long fileLength() {
+        return this.file.length();
+    }
+
     public List<ComparisonResult> execute(Algorithm algo) {
         Parser parser = new Parser();
 
@@ -97,6 +115,8 @@ public class TestEnvironment {
         algo.buildSummary(parser, 5, graph.getNodes().keySet().size() * 8);
 
         this.summaryTime = (int) (System.currentTimeMillis() - startSummary);
+
+        this.memUsage = algo.getBytesUsed();
 
         return executeComparisonsForPaths(intArrQueries, algo, graph);
     }

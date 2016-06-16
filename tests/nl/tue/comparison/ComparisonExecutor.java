@@ -53,7 +53,7 @@ public class ComparisonExecutor {
             outputFile.createNewFile();
             PrintWriter writer = new PrintWriter(outputFile);
 
-            writer.println("graph, nodes, labels, buildTime, query, queryTime, algoId, estimation, expected");
+            writer.println("graph, nodes, labels, filesize, buildTime, query, queryTime, memUsage, algoId, estimation, expected");
             writer.flush();
             writer.close();
         }
@@ -160,9 +160,9 @@ public class ComparisonExecutor {
         PrintWriter writer = new PrintWriter(new FileWriter(OUTPUT_FILE, true));
 
         for (ComparisonResult res : results) {
-            writer.println(String.format("%s,%d,%d,%d,%s,%d,%s,%d,%d", env.getName(), env.getNodes(),
-                    env.getLabels(), env.getSummaryTime(), res.getIndex().getPath(), res.getQueryTime(), methodName,
-                    res.getEstimation(), res.getResult()));
+            writer.println(String.format("%s,%d,%d,%d,%d,%s,%d,%d,%s,%d,%d", env.getName(), env.getNodes(),
+                    env.getLabels(), env.fileLength(), env.getSummaryTime(), res.getIndex().getPath(), res.getQueryTime(), env.getMemUsage(),
+                    methodName, res.getEstimation(), res.getResult()));
         }
 
         writer.flush();
@@ -181,32 +181,47 @@ public class ComparisonExecutor {
         reportSingleEnv(new Algorithm_Brute(), this.env, "Brute");
     }
 
-    @Test
+    //@Test
     public void testAlgorithm_Subgraph() {
         reportSingleEnv(new SubGraphAlgorithm(), this.env, "Subgraph");
     }
 
-    @Test
+    //@Test
     public void testAlgorithm_SubgraphWithFactors() {
         reportSingleEnv(new SubgraphWithFactorsAlgorithm(), this.env, "SubgraphKFactors");
     }
 
     @Test
-    public void testAlgorithm_SubgraphWithHighKFactors() {
-        reportSingleEnv(new SubgraphHighKFactorAlgorithm(), this.env, "SubgraphHighK");
+    public void testAlgorithm_SubgraphWithHighKFactors_default() {
+        reportSingleEnv(new SubgraphHighKFactorAlgorithm(), this.env, "SubgraphHighK_23");
     }
 
     @Test
+    public void testAlgorithm_SubgraphWithHighKFactors_secondNode() {
+        reportSingleEnv(new SubgraphHighKFactorAlgorithm(node -> node % 2 == 0), this.env, "SubgraphHighK_2");
+    }
+
+    @Test
+    public void testAlgorithm_SubgraphWithHighKFactors_thirdNode() {
+        reportSingleEnv(new SubgraphHighKFactorAlgorithm(node -> node % 3 == 0), this.env, "SubgraphHighK_3");
+    }
+
+    @Test
+    public void testAlgorithm_SubgraphWithHighKFactors_fithNode() {
+        reportSingleEnv(new SubgraphHighKFactorAlgorithm(node -> node % 5 == 0), this.env, "SubgraphHighK_5");
+    }
+
+    //@Test
     public void testAlgorithm_SubgraphWithEdgeBasedFactors() {
         reportSingleEnv(new SubgraphWithEdgeFactorAlgorithm(), this.env, "SubgraphEdgeBased");
     }
 
-    @Test
+    //@Test
     public void testAlgorithm_SubgraphAverage() {
         reportSingleEnv(new SubgraphAverageOfThree(), this.env, "SubgraphAverage");
     }
 
-    @Test
+    //@Test
     public void testAlgorithm_SubgraphWithSpecificFactors() {
         Joiner<Double, JoinResult.NumberJoinResult> baiscJoiner = new Joiner.BasicJoiner();
         double subGraphSize = 0.9;

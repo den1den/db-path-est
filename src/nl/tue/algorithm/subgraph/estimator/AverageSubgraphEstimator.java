@@ -107,4 +107,10 @@ public class AverageSubgraphEstimator extends SubgraphEstimator {
 
     }
 
+    @Override
+    public long getBytesUsed() {
+        long base = super.getBytesUsed();
+
+        return base + OVERHEAD + labels * 8 + (k + 2) * 8;
+    }
 }
