@@ -46,18 +46,17 @@ public class SummaryTimeRes {
                 envs.add(new TestEnvironment(new ArrayList<String>(), cineast, "cineast", false, parts, i));
             }
 
-
-
             for (TestEnvironment env : envs) {
                 SubgraphHighKFactorAlgorithm algo = new SubgraphHighKFactorAlgorithm();
 
                 env.execute(algo);
 
-                writer.println(String.format("%d,%d,%s", env.getEdges(), env.getSummaryTime(), env.getName()));
+                String o = String.format("%d,%d,%s", env.getEdges(), env.getSummaryTime(), env.getName());
+                writer.println(o);
+                System.out.println(o);
             }
-
             writer.flush();
-            writer.close();
         }
+        writer.close();
     }
 }
