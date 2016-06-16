@@ -4,6 +4,8 @@ import nl.tue.Main;
 import nl.tue.algorithm.Algorithm;
 import nl.tue.algorithm.pathindex.PathIndex;
 import nl.tue.io.Parser;
+import nl.tue.io.TupleList;
+import nl.tue.io.converters.EdgeConverter;
 import nl.tue.io.graph.AdjacencyList;
 import nl.tue.io.graph.DirectedBackEdgeGraph;
 import org.junit.Assert;
@@ -27,6 +29,7 @@ public class TestEnvironment {
 
     private int nodes;
     private int labels;
+    private int edges;
     private int summaryTime;
     private long memUsage;
 
@@ -101,14 +104,28 @@ public class TestEnvironment {
             throw new RuntimeException(e);
         }
 
+        EdgeConverter converter = new EdgeConverter(parser.getTuples());
+
+        List<TupleList> parts = converter.devide(this.parts).subList(0, partsUsed);
+
+
+
+        TupleList tuples = converter.combine(parts);
+
+        Parser finalParser = new Parser();
+        finalParser.parse(tuples);
+
+
+
         // Map String query to Int query
-        List<int[]> intArrQueries = this.queries.stream().map(s -> Main.translateTextQueryToDomainQuery(s, parser)).
+        List<int[]> intArrQueries = this.queries.stream().map(s -> Main.translateTextQueryToDomainQuery(s, finalParser)).
                 collect(Collectors.toList());
 
-        AdjacencyList graph = new AdjacencyList(parser);
+        AdjacencyList graph = new AdjacencyList(finalParser);
 
         this.nodes = graph.getNodes().size();
         this.labels = parser.getNLabels()/2;
+        this.edges = tuples.size();
 
         long startSummary = System.currentTimeMillis();
 
@@ -123,6 +140,10 @@ public class TestEnvironment {
 
     public boolean isBig() {
         return big;
+    }
+
+    public int getEdges() {
+        return edges;
     }
 
     /**

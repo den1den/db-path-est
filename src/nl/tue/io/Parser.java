@@ -255,6 +255,10 @@ public class Parser implements Iterable<int[]> {
         return tuples.size();
     }
 
+    public TupleList getTuples() {
+        return tuples;
+    }
+
     @Override
     public Iterator<int[]> iterator() {
         // No remove or add in the parser
