@@ -23,39 +23,48 @@ public interface Joiner<E, R extends JoinResult<E>> extends MemoryConstrained {
 
         @Override
         public void calcJoint(JoinResult.NumberJoinResult result, int leftTuples, Double leftEstimate, Double estimate, int rightTuples, Double rightEstimate) {
-            result.joinLeft = false;
-            result.joinRight = false;
-            boolean leftCandiate;
-            leftCandiate = isCandiate(leftEstimate, estimate);
-            if (leftCandiate) {
+            if (leftEstimate == null && rightEstimate == null) {
+                // Nothing to join
+                result.joinLeft = false;
+                result.joinRight = false;
+                result.newEstimate = estimate;
+                return;
+            }
+            Join left = canJoin(estimate, leftEstimate);
+            if (left == Join.POSITIVE) {
                 result.joinLeft = Math.abs(leftEstimate - estimate) < 10;
+            } else if (left == Join.NEGATIVE) {
+                result.joinLeft = Math.abs(leftEstimate - estimate) < 2;
+            } else {
+                result.joinLeft = left == Join.ZERO;
             }
-            boolean rightCandiate;
-            rightCandiate = isCandiate(rightEstimate, estimate);
-            if (rightCandiate) {
+            Join right = canJoin(estimate, rightEstimate);
+            if (right == Join.POSITIVE) {
                 result.joinRight = Math.abs(rightEstimate - estimate) < 10;
-            }
-            if (rightEstimate != null && leftEstimate != null) {
-                if (rightEstimate == 0 && leftEstimate == 0) {
-                    boolean join = estimate == 0;
-                    result.joinLeft = join;
-                    result.joinRight = join;
-                    result.newEstimate = estimate;
-                }
+            } else if (right == Join.NEGATIVE) {
+                result.joinRight = Math.abs(rightEstimate - estimate) < 2;
+            } else {
+                result.joinRight = right == Join.ZERO;
             }
             result.setWeightedAverage(leftTuples, leftEstimate, estimate, rightTuples, rightEstimate);
         }
 
-        private boolean isCandiate(Double canEstimate, Double middleEstimate) {
-            boolean candidate = false;
-            if (canEstimate != null) {
-                if (canEstimate > 0 && middleEstimate > 0) {
-                    candidate = true;
-                } else if (canEstimate < 0 && middleEstimate < 0) {
-                    candidate = true;
+        private Join canJoin(Double centerEstimate, Double edgeEstimate) {
+            Join result = Join.NO;
+            if (edgeEstimate != null) {
+                if (edgeEstimate > 0 && centerEstimate > 0) {
+                    result = Join.POSITIVE;
+                } else if (edgeEstimate < 0 && centerEstimate < 0) {
+                    result = Join.NEGATIVE;
+                } else if (edgeEstimate == 0 && centerEstimate == 0) {
+                    result = Join.ZERO;
                 }
             }
-            return candidate;
+            return result;
+        }
+
+        private enum Join {
+            NO, NEGATIVE, ZERO, POSITIVE
         }
     }
 }

@@ -76,7 +76,7 @@ public class SubGraphAlgorithm_SFTest extends TestCase {
         builder.build(.5, NODES * 2 * Integer.BYTES, 20);
 
         //Utils.writeToFile("testEst0Real2.csv", algorithm.toCSVTableProcessed(algorithm.getPathsOrdering(), REAL));
-        //Utils.writeToFile("testEst0Real2Full.csv", algorithm.toCSVTableFullProcessed(algorithm.getPathsOrdering(), REAL));
+        Utils.writeToFile("testEst0Real2Full.csv", algorithm.toCSVTableFullProcessed(algorithm.getPathsOrdering(), REAL));
 
         assertEquals(REAL.solvePathQuery(query).size(), algorithm.query(query), 1);
     }
