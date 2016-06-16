@@ -69,20 +69,16 @@ public class SubGraphAlgorithm_SFTest extends TestCase {
         assertEquals(0, algorithm.query(query));
     }
 
-    /**
-     * ERROR Found
-     */
-    public void testEst0Real2(){
+    public void testEst0Real2() {
         int[] query = new int[]{3, 3, 2};
 
-        SGA_SF_Builder builder = new SGA_SF_Builder(algorithm, PARSER, maxPathLength - 2, LABELS_FORWARDS_BACKWARDS, NODES);
-        builder.build(.5, NODES * 2*Integer.BYTES, 10);
+        builder.printing = true;
+        builder.build(.5, NODES * 2 * Integer.BYTES, 20);
 
-        Utils.writeToFile("testEst0Real2.csv", algorithm.toCSVTableFullProcessed(algorithm.getPathsOrdering(), REAL, NODES));
+        //Utils.writeToFile("testEst0Real2.csv", algorithm.toCSVTableProcessed(algorithm.getPathsOrdering(), REAL));
+        Utils.writeToFile("testEst0Real2Full.csv", algorithm.toCSVTableFullProcessed(algorithm.getPathsOrdering(), REAL));
 
-        System.out.println("Estm: " + algorithm.query(query));
-        System.out.println("Real: " + REAL.solvePathQuery(query).size());
-        fail("Manual check, still not right");
+        assertEquals(REAL.solvePathQuery(query).size(), algorithm.query(query), 1);
     }
 
     public void testdeepBuildTestCSV() throws IOException {
@@ -94,10 +90,10 @@ public class SubGraphAlgorithm_SFTest extends TestCase {
         SGA_SF_Builder builder = new SGA_SF_Builder(algorithm, PARSER, maxPathLength, LABELSFORWARDBACKWARD, NODES);
 
         String testFileContents = SGA_SF_Builder.toCSVHeader();
-        for (double timeLimit = 0.1; timeLimit <= 6.4; timeLimit *= 2){
+        for (double timeLimit = 0.1; timeLimit <= 6.4; timeLimit *= 2) {
             for (double budgetFactor = 1; budgetFactor <= 3; budgetFactor += 0.5) {
                 long budget = (long) (NODES * budgetFactor * Integer.BYTES);
-                for (double sgIndex = 0; sgIndex <= 1; sgIndex += 1d / 7){
+                for (double sgIndex = 0; sgIndex <= 1; sgIndex += 1d / 7) {
                     double sgSize = (1 - Math.cos(sgIndex * Math.PI)) / 2;
                     builder.build(sgSize, budget, timeLimit);
 
@@ -108,14 +104,24 @@ public class SubGraphAlgorithm_SFTest extends TestCase {
         //Utils.writeToFile("deepBuildTest"+System.currentTimeMillis()+".csv", testFileContents);
     }
 
-    public void testXY() throws Exception {
-        buildSimple();
+    public void testCurvePoints() throws Exception {
+        buildEmpty();
+        assertTrue(algorithm.NODES2() > 2);
         assertEquals(1, algorithm.y(-1));
         assertEquals(2, algorithm.y(-2)); // linear trend
         assertEquals(algorithm.NODES2(), algorithm.y(Short.MIN_VALUE)); // ends at N^2
     }
 
-    private void buildSimple() {
+    public void testCurveInverse() throws Exception {
+        buildEmpty();
+        assertTrue(algorithm.NODES2() > 2);
+        assertEquals(-1, algorithm.x(1));
+        assertEquals(-2, algorithm.x(2));
+        assertEquals(Short.MIN_VALUE, algorithm.x(algorithm.NODES2())); // linear trend
+        assertEquals(algorithm.NODES2(), algorithm.y(Short.MIN_VALUE)); // ends at N^2
+    }
+
+    private void buildEmpty() {
         builder.build(0, 0, 0);
     }
 }
