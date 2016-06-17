@@ -65,4 +65,5 @@ test*.csv
 tests/resources/biblio/
 tests/resources/cineast/
 tests/resources/music/
+.Rproj.user
 *.xlsx
