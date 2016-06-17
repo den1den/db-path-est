@@ -56,8 +56,10 @@ public class SummaryTimeRes {
                 writer.println(String.format("%d,%d,%s", env.getEdges(), env.getSummaryTime(), env.getName()));
             }
 
+
             writer.flush();
-            writer.close();
         }
+
+        writer.close();
     }
 }

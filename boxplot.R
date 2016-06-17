@@ -56,6 +56,10 @@ plotMemResults <- function(memDataset) {
           avg <- 1
         } else {
           avg <- (row$expected - (row$expected - row$estimation)) / row$expected
+          
+          if(avg < 1) {
+            avg <- avg + 1
+          }
         }
         
         
@@ -72,12 +76,74 @@ plotMemResults <- function(memDataset) {
       i <<- i + 1
     }
     
-    png(filename=paste('D:/Plots/',graph,'.png', sep =""))
+    png(filename=paste('D:/Plots/',graph,'-mem.png', sep =""), width = 2400, height = 2400)
     
     plot(x = xVals, y = yVals, type="o")
     
     dev.off()
   }
+}
+
+plotSummaryBuildTime <- function(summaryResults) {
+  dataSets <- unique(summaryResults$dataset);
   
+  for(dataset in dataSets) {
+    summaryForDataset = summaryResults[summaryResults$dataset == dataset,];
+    
+    edgesVector <- sort(unique(summaryForDataset$edges));
+    
+    meanSummaryTimeVector <- vector( length = length(edgesVector))
+    sdVector <- vector(length = length(edgesVector))
+    
+    i <- 1
+    
+    for(edgeCount in edgesVector) {
+      summaryTime <- summaryForDataset[summaryForDataset$edges == edgeCount,]$sTime
+      
+      meanSummaryTimeVector[i] <- mean(summaryTime);
+      sdVector[i] <- sd(summaryTime);
+      i <- i + 1
+    }
+    
+    options(scipen=6)
+    
+    meanMatrix <- matrix(ncol = length(edgesVector), nrow = 1)
+    sdMatrix <- matrix(ncol = length(edgesVector), nrow = 1)
+    
+    i <- 1
+    
+    for(mean in meanSummaryTimeVector) {
+      meanMatrix[1, i] <- mean;
+      
+      i <- i + 1
+    }
+    
+    i <- 1
+    
+    for(sd in sdVector) {
+      sdMatrix[1, i] <- sd
+      
+      i <- i + 1
+    }
+    
+    colnames(meanMatrix) <- edgesVector;
+    colnames(sdMatrix) <- edgesVector
+    
+    png(filename=paste('D:/Plots/',dataset, '-summaryTimeMean','.png', sep =""), width = 1200, height = 1100)
+    
+    barplot(meanMatrix, main = dataset, beside = FALSE, ylab = 'ms', xlab = 'edges',
+            col = c('azure3'))
+    
+    dev.off();
+    
+    png(filename=paste('D:/Plots/',dataset, '-summaryTimesd','.png', sep =""), width = 1200, height = 1100)
+    
+    barplot(sdMatrix, main = dataset, beside = FALSE, ylab = 'ms', xlab = 'edges',
+            col = c('azure3'))
+    
+    dev.off();
+    
+  }
   
 }
+
