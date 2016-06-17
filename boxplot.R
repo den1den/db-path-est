@@ -11,14 +11,22 @@ computeBoxplot <- function(results) {
     
     png(filename=paste('D:/Plots/',algo,'.png', sep =""))
   
-    plot <- xyplot(algoFrame$estimation ~ algoFrame$expected, groups = algoFrame$graph, 
-         scales = list(x = list(log = 2), y = list(log = 2)),
-         panel = function(...) {
-           panel.xyplot(...)
-           panel.abline(a=0, b=1)
-         }, auto.key = list(columns = nlevels(algoFrame$graph)), xlab = 'Expected', ylab='Estimation',
-         main = algo)
-    
+    plot <- xyplot(
+      algoFrame$estimation ~ algoFrame$expected,
+      groups = algoFrame$graph, 
+      scales = list(x = list(log = 10, cex=1.5, min=0),
+                    y = list(log = 10, cex=1.5, min=0)),
+      panel = function(...) {
+        panel.xyplot(...)
+        panel.abline(a=0, b=1)
+      },
+      #auto.key = list(columns = nlevels(algoFrame$graph)),
+      xlab = list(label="Expected", cex=2.5),
+      ylab=list(label="Estimation", cex=2.5),
+      pch=20,
+      cex=2,
+      main = list(label=algo, cex=3, font=1),
+    )
     print(plot)
     
     dev.off()
